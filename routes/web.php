@@ -40,10 +40,6 @@ Route::get('/logout', [LogoutController::class, 'logout'])->name('logout.access'
 // Dashboard Controller
 Route::middleware('auth')->group(function(){
     Route::resource('app/dashboard', DashboardController::class);
-    Route::get('/dashboard/cpu', [DashboardController::class, 'cpu'])->name('dashboard.cpu');
-    Route::get('/dashboard/uptime', [DashboardController::class, 'uptime'])->name('dashboard.uptime');
-    Route::get('/dashboard/{traffic}', [DashboardController::class, 'traffic'])->name('dashboard.traffic');
-    Route::get('/dashboard/traffic/report', [DashboardController::class, 'report'])->name('dashboard.report');
 });
 
 
@@ -89,6 +85,7 @@ Route::middleware('auth')->group(function(){
 
 //Data Role Users
 Route::middleware('auth')->group(function(){
+    Route::get('usersroles/data', [RoleController::class, 'rolesData'])->name('data.roles');
     Route::resource('app/usersroles', RoleController::class);
     Route::post('app/usersroles/posts', [RoleController::class, 'posts'])->name('posts.roles');
     Route::post('app/usersroles/upposts', [RoleController::class, 'upposts'])->name('upposts.roles');

@@ -240,31 +240,4 @@
         });
     });
 </script>
-
-<script>
-    $(document).ready(function() {
-        // Apply individual column search
-        var table;
-
-        if (!$.fn.DataTable.isDataTable('.basic-datatable')) {
-            table = $('.basic-datatable').DataTable({
-                processing: true,
-                serverSide: true,
-                ajax: '{!! route('data.kategori') !!}',
-                columns: [
-                    { data: 'name_kategori', name: 'name_kategori', searchable: true },
-                    { data: 'created_at', name: 'created_at', searchable: false },
-                    { data: 'action', name: 'action', orderable: false, searchable: false },
-                ],
-                searching: false, // Menonaktifkan fitur searching all
-                language: {
-                    search: '',
-                    searchPlaceholder: 'Search...',
-                }
-            });
-        } else {
-            table = $('.basic-datatable').DataTable();
-        }
-    });
-</script>
 @endsection

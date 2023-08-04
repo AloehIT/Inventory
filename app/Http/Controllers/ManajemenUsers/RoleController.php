@@ -15,14 +15,14 @@ use App\Models\hasModelRole;
 class RoleController extends Controller
 {
 
-    public function kategoriData(Request $request)
+    public function rolesData(Request $request)
     {
         $role = RoleModel::orderBy('id', 'DESC');
 
         return Datatables::of($role)
             ->addColumn('action', function ($row) {
                 // Add your action buttons here, similar to your Blade file
-                return view('usermanager.roles.actions', compact('row'))->render();
+                return view('usersmanager.roles.actions', compact('row'))->render();
             })
             ->editColumn('created_at', function ($row) {
                 return $row->created_at->isoFormat('dddd, D MMMM Y');
