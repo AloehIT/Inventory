@@ -16,35 +16,34 @@ $id_bm = 'BRG-'. $tanggal.'-'.$random;
     @include('layouts.main.breadcrumb')
 
 
+    <form action="{{ route('posts.barang-masuk') }}" method="POST" enctype="multipart/form-data">
+        @csrf
+        <div class="row">
+            <div class="col-12">
+                <div class="card recent-sales overflow-auto">
 
-    <div class="row">
-        <div class="col-12">
-            <div class="card recent-sales overflow-auto">
-
-                <div class="card-body">
-                    <div class="row justify-content-between">
-                        <div class="col-lg-6 col-md-6  col-12 py-3">
-                            <h3 class="text-dark">@yield('title') <i class="bi bi-box-arrow-in-left text-success"></i>
-                            </h3>
-                            <p class="mb-0">Data Seluruh @yield('title') yang terdaftar pada system</p>
-                            <p>Akses saat ini : <b>{{ $auth['role'] ?? '' }}</b> <i
-                                    class="bi bi-key-fill text-warning"></i></p>
-                        </div>
-                        <div class="col-lg-6 col-md-6 col-12 text-end">
-                            <img src="{{ asset('assets/icon/bg-barang.png') }}" class="img-fluid" width="150">
+                    <div class="card-body">
+                        <div class="row justify-content-between">
+                            <div class="col-lg-6 col-md-6  col-12 py-3">
+                                <h3 class="text-dark">@yield('title') <i class="bi bi-box-arrow-in-left text-success"></i>
+                                </h3>
+                                <p class="mb-0">Data Seluruh @yield('title') yang terdaftar pada system</p>
+                                <p>Akses saat ini : <b>{{ $auth['role'] ?? '' }}</b> <i
+                                        class="bi bi-key-fill text-warning"></i></p>
+                            </div>
+                            <div class="col-lg-6 col-md-6 col-12 text-end">
+                                <img src="{{ asset('assets/icon/bg-barang.png') }}" class="img-fluid" width="150">
+                            </div>
                         </div>
                     </div>
+
                 </div>
-
             </div>
-        </div>
 
 
-        <form action="{{ route('posts.barang-masuk') }}" method="POST" enctype="multipart/form-data">
-            @csrf
+
             <div class="col-xl-12">
                 <div class="card p-4">
-
                     <div class="row gy-4 g-2">
                         <input type="hidden" name="id" value="{{ $edit['id'] ?? '' }}">
 
@@ -83,99 +82,98 @@ $id_bm = 'BRG-'. $tanggal.'-'.$random;
                                 @enderror
                             </div>
                         </div>
+                    </div>
+                </div>
 
+                <div class="card p-4">
+                    <div class="row gy-4 g-2">
                         <div class="form-group fieldGroup">
                             <div class="row g-1">
-                                <div class="col-sm-3 mb-0">
-                                    <div class="form-group form-group-default">
-                                        <label><span class="text-primary">!</span>Barcode</label>
-                                        <select class="form-control mb-0 barcode select2 select" data-toggle="select2">
-                                            <option disabled selected>Cari..</option>
-                                            @foreach ($barang as $item)
-                                            <option value="{{ $item->barcode }}">{{ $item->barcode }}</option>
-                                            @endforeach
-                                        </select>
-                                    </div>
-                                </div>
+                                <table>
+                                    <tr>
+                                        <td class="col-sm-5 mb-0">
+                                            <div class="form-group form-group-default">
+                                                <label><span class="text-primary">!</span>Barcode</label>
+                                                <select class="form-control mb-0 barcode select2 select" data-toggle="select2">
+                                                    <option disabled selected>Cari..</option>
+                                                    @foreach ($barang as $item)
+                                                    <option value="{{ $item->barcode }}">{{ $item->barcode }} | {{ $item->nama_barang }}</option>
+                                                    @endforeach
+                                                </select>
+                                            </div>
+                                        </td>
 
-                                <div class="col-sm-3 mb-0">
-                                    <div class="form-group form-group-default">
-                                        <label><span class="text-primary">!</span>Kode Barang</label>
-                                        <input name="kode_barang[]" type="text" min="0"
-                                            class="form-control kodeBarang @error ('kode_barang[]') is-invalid @enderror mb-0"
-                                            placeholder="Kode Barang">
-                                        @error('kode_barang[]')
-                                        <span class="invalid-feedback" role="alert" style="font-size: 11px;">
-                                            <strong>{{ $message }}</strong>
-                                        </span>
-                                        @enderror
-                                    </div>
-                                </div>
+                                        <td class="col-sm-5 mb-0">
+                                            <div class="form-group form-group-default">
+                                                <label><span class="text-primary">!</span>Kode Barang</label>
+                                                <input name="kode_barang[]" type="text" min="0"
+                                                    class="form-control kodeBarang @error ('kode_barang[]') is-invalid @enderror mb-0"
+                                                    placeholder="Kode Barang">
+                                                @error('kode_barang[]')
+                                                <span class="invalid-feedback" role="alert" style="font-size: 11px;">
+                                                    <strong>{{ $message }}</strong>
+                                                </span>
+                                                @enderror
+                                            </div>
+                                        </td>
 
-                                <div class="col-sm-3 mb-0" hidden>
-                                    <div class="form-group form-group-default">
-                                        <label><span class="text-primary">!</span>ID Barang</label>
-                                        <input name="id_barang[]" type="text" min="0"
-                                            class="form-control idBarang @error ('id_barang[]') is-invalid @enderror mb-0"
-                                            placeholder="ID Barang">
-                                        @error('id_barang[]')
-                                        <span class="invalid-feedback" role="alert" style="font-size: 11px;">
-                                            <strong>{{ $message }}</strong>
-                                        </span>
-                                        @enderror
-                                    </div>
-                                </div>
+                                        <td class="col-sm-3 mb-0" hidden>
+                                            <div class="form-group form-group-default">
+                                                <label><span class="text-primary">!</span>ID Barang</label>
+                                                <input name="id_barang[]" type="text" min="0"
+                                                    class="form-control idBarang @error ('id_barang[]') is-invalid @enderror mb-0"
+                                                    placeholder="ID Barang">
+                                                @error('id_barang[]')
+                                                <span class="invalid-feedback" role="alert" style="font-size: 11px;">
+                                                    <strong>{{ $message }}</strong>
+                                                </span>
+                                                @enderror
+                                            </div>
+                                        </td>
 
-                                <div class="col-sm-4 mb-0">
-                                    <div class="form-group form-group-default">
-                                        <label><span class="text-primary">!</span>Nama Barang</label>
-                                        <input name="nama_barang[]" type="text" min="0"
-                                            class="form-control namaBarang @error ('nama_barang[]') is-invalid @enderror mb-0"
-                                            placeholder="Nama Barang Masuk">
-                                        @error('nama_barang[]')
-                                        <span class="invalid-feedback" role="alert" style="font-size: 11px;">
-                                            <strong>{{ $message }}</strong>
-                                        </span>
-                                        @enderror
-                                    </div>
-                                </div>
+                                        <td class="col-sm-4 mb-0" hidden>
+                                            <div class="form-group form-group-default">
+                                                <label><span class="text-primary">!</span>Nama Barang</label>
+                                                <input name="nama_barang[]" type="text" min="0"
+                                                    class="form-control namaBarang @error ('nama_barang[]') is-invalid @enderror mb-0"
+                                                    placeholder="Nama Barang Masuk">
+                                                @error('nama_barang[]')
+                                                <span class="invalid-feedback" role="alert" style="font-size: 11px;">
+                                                    <strong>{{ $message }}</strong>
+                                                </span>
+                                                @enderror
+                                            </div>
+                                        </td>
 
-                                <div class="col-sm-1 mb-0">
-                                    <div class="form-group form-group-default">
-                                        <label><span class="text-primary">!</span>Stok</label>
-                                        <input name="qty[]" type="number" min="0"
-                                            class="form-control @error ('qty[]') is-invalid @enderror mb-0"
-                                            placeholder="0">
-                                        @error('qty[]')
-                                        <span class="invalid-feedback" role="alert" style="font-size: 11px;">
-                                            <strong>{{ $message }}</strong>
-                                        </span>
-                                        @enderror
-                                    </div>
-                                </div>
+                                        <td class="col-sm-1 mb-0">
+                                            <div class="form-group form-group-default">
+                                                <label><span class="text-primary">!</span>Stok</label>
+                                                <input name="qty[]" type="number" min="0"
+                                                    class="form-control @error ('qty[]') is-invalid @enderror mb-0"
+                                                    placeholder="0">
+                                                @error('qty[]')
+                                                <span class="invalid-feedback" role="alert" style="font-size: 11px;">
+                                                    <strong>{{ $message }}</strong>
+                                                </span>
+                                                @enderror
+                                            </div>
+                                        </td>
 
-                                <div class="col-sm-1 mb-0">
-                                    <label><span class="text-primary"></span>Aksi</label><br>
-                                    <div class="d-flex">
-                                        <a data-bs-toggle="modal" data-bs-target="#daftarbarang"
-                                            class="btn btn-sm btn-warning"><i class="bi bi-list-columns"></i></a>
-                                        <a href="javascript:void(0)"
-                                            class="btn btn-sm btn-success addMore text-white"><i
-                                                class="mdi mdi-playlist-plus"></i></a>
-                                    </div>
-                                </div>
+                                        <td class="col-sm-1 mb-0">
+                                            <label><span class="text-primary"></span>Aksi</label><br>
+                                            <div class="d-flex">
+                                                <a data-bs-toggle="modal" data-bs-target="#daftarbarang"
+                                                    class="btn btn-sm btn-warning"><i class="bi bi-list-columns"></i></a>
+                                                <a href="javascript:void(0)"
+                                                    class="btn btn-sm btn-success addMore text-white"><i
+                                                        class="mdi mdi-playlist-plus"></i></a>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </table>
                             </div>
                         </div>
 
-
-
-                        <div class="col-sm-12 mb-0">
-                            <div calass="form-group form-group-default">
-                                <label>Catatan</label>
-                                <textarea name="deskripsi" id="deskripsi" type="text" class="form-control"
-                                    placeholder="Lainnya...."></textarea>
-                            </div>
-                        </div>
 
                         <div class="col-md-12 text-end">
                             <a href="{{ url('app/barang-masuk') }}" class="btn btn-sm text-white"
@@ -189,29 +187,26 @@ $id_bm = 'BRG-'. $tanggal.'-'.$random;
                 </div>
 
             </div>
-
-        </form>
-    </div>
+        </div>
+    </form>
 
 
     <div class="form-group fieldGroupCopy" style="display: none;">
         <div class="row g-1">
             <input name="id_bm[]" type="hidden" class="form-control mb-0" placeholder="ID Barang Masuk" value="{{ $edit['id_bm'] ?? $id_bm }}" readonly>
-            <div class="col-sm-3 mb-0">
+            <div class="col-sm-5 mb-0">
                 <div class="form-group form-group-default">
-                    <label><span class="text-primary">!</span>Barcode</label>
                     <select class="form-control mb-0 barcode select2" data-toggle="select2">
                         <option disabled selected>Cari..</option>
                         @foreach ($barang as $item)
-                        <option value="{{ $item->barcode }}">{{ $item->barcode }}</option>
+                        <option value="{{ $item->barcode }}">{{ $item->barcode }} | {{ $item->nama_barang }}</option>
                         @endforeach
                     </select>
                 </div>
             </div>
 
-            <div class="col-sm-3 mb-0">
+            <div class="col-sm-5 mb-0">
                 <div class="form-group form-group-default">
-                    <label><span class="text-primary">!</span>Kode Barang</label>
                     <input name="kode_barang[]" type="text" min="0"
                         class="form-control kodeBarang @error ('kode_barang[]') is-invalid @enderror mb-0"
                         placeholder="Kode Barang">
@@ -223,9 +218,8 @@ $id_bm = 'BRG-'. $tanggal.'-'.$random;
                 </div>
             </div>
 
-            <div class="col-sm-3 mb-0" hidden>
+            <div class="col-sm-5 mb-0" hidden>
                 <div class="form-group form-group-default">
-                    <label><span class="text-primary">!</span>ID Barang</label>
                     <input name="id_barang[]" type="text" min="0"
                         class="form-control idBarang @error ('id_barang[]') is-invalid @enderror mb-0"
                         placeholder="ID Barang">
@@ -237,9 +231,8 @@ $id_bm = 'BRG-'. $tanggal.'-'.$random;
                 </div>
             </div>
 
-            <div class="col-sm-4 mb-0">
+            <div class="col-sm-4 mb-0" hidden>
                 <div class="form-group form-group-default">
-                    <label><span class="text-primary">!</span>Nama Barang</label>
                     <input name="nama_barang[]" type="text" min="0"
                         class="form-control namaBarang @error ('nama_barang[]') is-invalid @enderror mb-0"
                         placeholder="Nama Barang Masuk">
@@ -253,7 +246,6 @@ $id_bm = 'BRG-'. $tanggal.'-'.$random;
 
             <div class="col-sm-1 mb-0">
                 <div class="form-group form-group-default">
-                    <label><span class="text-primary">!</span>Stok</label>
                     <input name="qty[]" type="number" min="0"
                         class="form-control @error ('qty[]') is-invalid @enderror mb-0" placeholder="0">
                     @error('qty[]')
@@ -265,7 +257,6 @@ $id_bm = 'BRG-'. $tanggal.'-'.$random;
             </div>
 
             <div class="col-sm-1 mb-0">
-                <label><span class="text-primary"></span>Aksi</label><br>
                 <div class="d-flex flex-row">
                     <a data-bs-toggle="modal" data-bs-target="#daftarbarang" class="btn btn-sm btn-warning"><i
                             class="bi bi-list-columns"></i></a>
@@ -322,7 +313,7 @@ $id_bm = 'BRG-'. $tanggal.'-'.$random;
 
                 // Append the new 'select' element to the last fieldGroup and initialize select2 on it
                 $('body').find('.fieldGroup:last').after(fieldHTML);
-                $('body').find('.fieldGroup:last .col-sm-3:first').html(clonedSelect);
+                $('body').find('.fieldGroup:last .col-sm-5:first').html(clonedSelect);
 
                 // Initialize select2 on the cloned select element
                 clonedSelect.select2({

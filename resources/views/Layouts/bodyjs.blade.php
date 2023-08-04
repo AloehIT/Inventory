@@ -16,14 +16,12 @@
 <!-- demo app -->
 <script src="{{ URL::to('assets/js/pages/demo.dashboard-crm.js') }}"></script>
 <script type="text/javascript" src="https://unpkg.com/trix@2.0.0/dist/trix.umd.min.js"></script>
-<script src="{{ URL::to('assets/js/pages/demo.datatable-init.js') }}"></script>
 <script src="{{ URL::to('assets/js/pages/demo.customers.js') }}"></script>
 <!-- end demo js-->
 
 <!-- data table js-->
 <script src="{{ URL::to('assets/js/vendor/jquery.dataTables.min.js') }}"></script>
 <script src="{{ URL::to('assets/js/vendor/dataTables.bootstrap5.js') }}"></script>
-<script src="{{ URL::to('assets/js/vendor/dataTables.responsive.min.js') }}"></script>
 <!-- end data table js-->
 
 {{-- upload img --}}

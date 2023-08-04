@@ -5,6 +5,7 @@ namespace App\Http\Controllers\MasterData;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
+use Yajra\DataTables\Facades\DataTables;
 
 use App\Models\User;
 use App\Models\Kategori;
@@ -12,6 +13,22 @@ use App\Models\Perusahaan;
 
 class KategoriBarangController extends Controller
 {
+    public function kategoriData(Request $request)
+    {
+        $kategori = Kategori::where('guard_config', 'Barang');
+
+        return Datatables::of($kategori)
+            ->addColumn('action', function ($row) {
+                // Add your action buttons here, similar to your Blade file
+                return view('inventory.kategori-barang.actions', compact('row'))->render();
+            })
+            ->editColumn('created_at', function ($row) {
+                return $row->created_at->isoFormat('dddd, D MMMM Y');
+            })
+            ->rawColumns(['action'])
+            ->toJson();
+    }
+
 
     public function index()
     {
@@ -22,7 +39,7 @@ class KategoriBarangController extends Controller
                 ->first(),
 
                 'perusahaan' => Perusahaan::where('setting', 'Config')->where('name_config', 'conf_perusahaan')->first(),
-                'kategori' => Kategori::Where('guard_config', 'Barang')->get(),
+                'kategori' => Kategori::where('guard_config', 'Barang')->get(),
             ];
 
             return view('inventory.kategori-barang.index', $data);

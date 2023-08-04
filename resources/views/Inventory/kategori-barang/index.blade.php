@@ -2,6 +2,11 @@
 @extends('layouts.app')
 @section('title', 'Kategori Barang')
 @section('content-page')
+<style>
+    .dataTables_filter {
+        display: none; /* Menyembunyikan kotak pencarian */
+    }
+</style>
 <div class="container-fluid">
     @include('layouts.main.breadcrumb')
 
@@ -50,77 +55,25 @@
                                     <table class="basic-datatable table dt-responsive nowrap w-100" style="font-size: 12px;">
                                         <thead>
                                             <tr>
-                                                <th>#</th>
                                                 <th>Nama</th>
                                                 <th>Ditambahkan</th>
                                                 <th style="width: 75px;">Action</th>
                                             </tr>
+                                            <tr>
+                                                <th>
+                                                    <input type="text" class="form-control form-control-sm" placeholder="Search Nama" />
+                                                </th>
+                                                <th>
+                                                    <input type="date" class="form-control form-control-sm" placeholder="Search Ditambahkan" />
+                                                </th>
+                                                <th>
+                                                    <input type="text" class="form-control form-control-sm" readonly>
+                                                </th>
+                                            </tr>
                                         </thead>
+
                                         <tbody>
-                                            @foreach ($kategori as $no => $item)
-                                                <tr>
-                                                    <div hidden>{{ $id = $item['id'] }}</div>
-                                                    <td>
-                                                        {{ $no+1 }}
-                                                    </td>
-                                                    <td>
-                                                        {{ $item['name_kategori'] ?? '' }}
-                                                    </td>
 
-                                                    <td>
-                                                        {{ $carbon::parse($item['created_at'] ?? 'd-m-Y')->isoFormat('dddd, D MMMM Y H:m A') }}
-                                                    </td>
-
-                                                    <td>
-                                                        <a class="action-icon" type="button" data-bs-toggle="modal" data-bs-target="#edit{{ $id }}"> <i class="mdi mdi-square-edit-outline text-info"></i></a>
-                                                        <a href="{{ route('delete.kategoribarang', $id) }}" type="button" onclick="return confirm('Apakah anda yakin ingin menghapus kategori : {{ $item['name_kategori'] }} ?')" class="action-icon" style="outline: none; border: none; background: none;"> <i class="mdi mdi-delete text-danger"></i></a>
-                                                    </td>
-                                                </tr>
-
-
-                                                <div id="edit{{ $id }}" class="modal fade" tabindex="-1" role="dialog" aria-hidden="true">
-                                                    <div class="modal-dialog modal-dialog-centered">
-                                                        <div class="modal-content">
-
-                                                            <div class="modal-body">
-                                                                <div class="text-start mt-4 mb-2 mx-3">
-                                                                    <div class="d-flex justify-content-between mt-3">
-                                                                        <div>
-                                                                            <h5 class="text-uppercase mb-0"><i class="uil-filter text-warning"></i> Ubah @yield('title')</h5>
-                                                                            <p class="">{{ $perusahaan['value'] ?? '' }}</p>
-                                                                        </div>
-
-                                                                        <a type="button" data-bs-dismiss="modal" class="text-danger" style="font-size: 25px;"><i class="uil-multiply"></i></a>
-                                                                   </div>
-                                                                </div>
-
-                                                                <form class="ps-3 pe-3" action="{{ route('upposts.kategoribarang') }}" method="POST">
-                                                                    @csrf
-                                                                    <div class="mx-3">
-                                                                        <div class="mb-3">
-                                                                            <input type="hidden" name="id" value="{{ $id }}">
-                                                                            <label for="name_kategori" class="form-label">Nama Kategori</label>
-                                                                            <input class="form-control @error('name_kategori') is-invalid @enderror" type="text" id="name_kategori" name="name_kategori" placeholder="Nama Kategori" value="{{ $item['name_kategori'] ?? '' }}">
-                                                                        </div>
-
-                                                                        <div class="mb-3" hidden>
-                                                                            <label for="guard_config" class="form-label">Guard Name</label>
-                                                                            <input class="form-control" type="text" id="guard_config" name="guard_config" value="Barang" readonly>
-                                                                        </div>
-
-                                                                        <div class="mb-3 text-end">
-                                                                            <button class="btn btn-sm text-white" style="background: red;" type="button" data-bs-dismiss="modal">Batal <i class="bi bi-x-lg"></i></button>
-                                                                            <button class="btn btn-sm btn-info" type="submit">Simpan <i class="bi bi-check-lg"></i></button>
-                                                                        </div>
-
-                                                                    </div>
-                                                                </form>
-
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            @endforeach
                                         </tbody>
                                     </table>
                                 </div>
@@ -138,14 +91,13 @@
 
 
 <div class="modal fade" id="add" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered modal-lg">
+    <div class="modal-dialog modal-dialog-centered modal-md">
         <div class="modal-content">
             <div class="modal-body">
                 <div class="text-start mt-4 mb-2 mx-3">
                     <div class="d-flex justify-content-between mt-3">
                         <div>
                             <h5 class="text-uppercase mb-0"><i class="uil-filter text-warning"></i> Tambah @yield('title')</h5>
-                            <p class="">{{ $perusahaan['value'] ?? '' }}</p>
                         </div>
 
                         <a type="button" data-bs-dismiss="modal" class="text-danger" style="font-size: 25px;"><i class="uil-multiply"></i></a>
@@ -195,6 +147,51 @@
     </div>
 </div>
 
+@foreach ($kategori as $item)
+<div id="edit{{ $item->id }}" class="modal fade" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+
+            <div class="modal-body">
+                <div class="text-start mt-4 mb-2 mx-3">
+                    <div class="d-flex justify-content-between mt-3">
+                        <div>
+                            <h5 class="text-uppercase mb-0"><i class="uil-filter text-warning"></i> Ubah @yield('title')</h5>
+                        </div>
+
+                        <a type="button" data-bs-dismiss="modal" class="text-danger" style="font-size: 25px;"><i class="uil-multiply"></i></a>
+                   </div>
+                </div>
+
+                <form class="ps-3 pe-3" action="{{ route('upposts.kategoribarang') }}" method="POST">
+                    @csrf
+                    <div class="">
+                        <div class="mb-3">
+                            <input type="hidden" name="id" value="{{ $item->id }}">
+                            <label for="name_kategori" class="form-label">Nama Kategori</label>
+                            <input class="form-control @error('name_kategori') is-invalid @enderror" type="text" id="name_kategori" name="name_kategori" placeholder="Nama Kategori" value="{{ $item['name_kategori'] ?? '' }}">
+                        </div>
+
+                        <div class="mb-3" hidden>
+                            <label for="guard_config" class="form-label">Guard Name</label>
+                            <input class="form-control" type="text" id="guard_config" name="guard_config" value="Barang" readonly>
+                        </div>
+
+                        <div class="mb-3 text-end">
+                            <button class="btn btn-sm text-white" style="background: red;" type="button" data-bs-dismiss="modal">Batal <i class="bi bi-x-lg"></i></button>
+                            <button class="btn btn-sm btn-info" type="submit">Simpan <i class="bi bi-check-lg"></i></button>
+                        </div>
+
+                    </div>
+                </form>
+
+            </div>
+        </div>
+    </div>
+</div>
+@endforeach
+
+
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
 <script>
     $(document).ready(function(){
@@ -215,6 +212,59 @@
         $("body").on("click",".remove",function(){
             $(this).parents(".fieldGroup").remove();
         });
+    });
+</script>
+
+<script>
+    $(document).ready(function() {
+        var table = $('.basic-datatable').DataTable({
+            processing: true,
+            serverSide: true,
+            ajax: '{!! route('data.kategori') !!}',
+            columns: [
+                { data: 'name_kategori', name: 'name_kategori' },
+                { data: 'created_at', name: 'created_at' },
+                { data: 'action', name: 'action', orderable: false, searchable: false },
+            ],
+            language: {
+                search: '',
+                searchPlaceholder: 'Search...',
+            }
+        });
+
+        // Apply search for each column
+        $('.basic-datatable thead th input').on('keyup change', function() {
+            table.column($(this).parent().index() + ':visible')
+                .search(this.value)
+                .draw();
+        });
+    });
+</script>
+
+<script>
+    $(document).ready(function() {
+        // Apply individual column search
+        var table;
+
+        if (!$.fn.DataTable.isDataTable('.basic-datatable')) {
+            table = $('.basic-datatable').DataTable({
+                processing: true,
+                serverSide: true,
+                ajax: '{!! route('data.kategori') !!}',
+                columns: [
+                    { data: 'name_kategori', name: 'name_kategori', searchable: true },
+                    { data: 'created_at', name: 'created_at', searchable: false },
+                    { data: 'action', name: 'action', orderable: false, searchable: false },
+                ],
+                searching: false, // Menonaktifkan fitur searching all
+                language: {
+                    search: '',
+                    searchPlaceholder: 'Search...',
+                }
+            });
+        } else {
+            table = $('.basic-datatable').DataTable();
+        }
     });
 </script>
 @endsection

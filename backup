@@ -1,0 +1,64 @@
+@foreach ($kategori as $no => $item)
+                                                <tr>
+                                                    <div hidden>{{ $id = $item['id'] }}</div>
+                                                    <td>
+                                                        {{ $no+1 }}
+                                                    </td>
+                                                    <td>
+                                                        {{ $item['name_kategori'] ?? '' }}
+                                                    </td>
+
+                                                    <td>
+                                                        {{ $carbon::parse($item['created_at'] ?? 'd-m-Y')->isoFormat('dddd, D MMMM Y H:m A') }}
+                                                    </td>
+
+                                                    <td>
+                                                        <a class="action-icon" type="button" data-bs-toggle="modal" data-bs-target="#edit{{ $id }}"> <i class="mdi mdi-square-edit-outline text-info"></i></a>
+                                                        <a href="{{ route('delete.kategoribarang', $id) }}" type="button" onclick="return confirm('Apakah anda yakin ingin menghapus kategori : {{ $item['name_kategori'] }} ?')" class="action-icon" style="outline: none; border: none; background: none;"> <i class="mdi mdi-delete text-danger"></i></a>
+                                                    </td>
+                                                </tr>
+
+
+                                                <div id="edit{{ $id }}" class="modal fade" tabindex="-1" role="dialog" aria-hidden="true">
+                                                    <div class="modal-dialog modal-dialog-centered">
+                                                        <div class="modal-content">
+
+                                                            <div class="modal-body">
+                                                                <div class="text-start mt-4 mb-2 mx-3">
+                                                                    <div class="d-flex justify-content-between mt-3">
+                                                                        <div>
+                                                                            <h5 class="text-uppercase mb-0"><i class="uil-filter text-warning"></i> Ubah @yield('title')</h5>
+                                                                            <p class="">{{ $perusahaan['value'] ?? '' }}</p>
+                                                                        </div>
+
+                                                                        <a type="button" data-bs-dismiss="modal" class="text-danger" style="font-size: 25px;"><i class="uil-multiply"></i></a>
+                                                                   </div>
+                                                                </div>
+
+                                                                <form class="ps-3 pe-3" action="{{ route('upposts.kategoribarang') }}" method="POST">
+                                                                    @csrf
+                                                                    <div class="mx-3">
+                                                                        <div class="mb-3">
+                                                                            <input type="hidden" name="id" value="{{ $id }}">
+                                                                            <label for="name_kategori" class="form-label">Nama Kategori</label>
+                                                                            <input class="form-control @error('name_kategori') is-invalid @enderror" type="text" id="name_kategori" name="name_kategori" placeholder="Nama Kategori" value="{{ $item['name_kategori'] ?? '' }}">
+                                                                        </div>
+
+                                                                        <div class="mb-3" hidden>
+                                                                            <label for="guard_config" class="form-label">Guard Name</label>
+                                                                            <input class="form-control" type="text" id="guard_config" name="guard_config" value="Barang" readonly>
+                                                                        </div>
+
+                                                                        <div class="mb-3 text-end">
+                                                                            <button class="btn btn-sm text-white" style="background: red;" type="button" data-bs-dismiss="modal">Batal <i class="bi bi-x-lg"></i></button>
+                                                                            <button class="btn btn-sm btn-info" type="submit">Simpan <i class="bi bi-check-lg"></i></button>
+                                                                        </div>
+
+                                                                    </div>
+                                                                </form>
+
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            @endforeach

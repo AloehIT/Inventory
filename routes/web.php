@@ -64,6 +64,7 @@ Route::middleware('auth')->group(function(){
 
 // Master Kategori Barang
 Route::middleware('auth')->group(function(){
+    Route::get('kategori/data', [KategoriBarangController::class, 'kategoriData'])->name('data.kategori');
     Route::resource('app/kategori-barang', KategoriBarangController::class);
     Route::post('app/kategori-barang/posts', [KategoriBarangController::class, 'posts'])->name('posts.kategoribarang');
     Route::post('app/kategori-barang/upposts', [KategoriBarangController::class, 'upposts'])->name('upposts.kategoribarang');
@@ -85,14 +86,6 @@ Route::middleware('auth')->group(function(){
     Route::post('app/barang-masuk/posts', [BarangMasukController::class, 'posts'])->name('posts.barang-masuk');
     Route::get('app/barang-masuk/delete/{id}', [BarangMasukController::class, 'deletebarangmasuk'])->name('delete.detail-barang-masuk');
 });
-
-
-
-
-
-
-
-
 
 //Data Role Users
 Route::middleware('auth')->group(function(){
@@ -118,3 +111,5 @@ Route::middleware('auth')->group(function(){
         return response()->json($barang);
     })->name('barang');
 });
+
+

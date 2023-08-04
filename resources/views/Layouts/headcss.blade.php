@@ -17,7 +17,6 @@
 <!-- Data Table -->
 <link href="{{ URL::to('assets/css/vendor/dataTables.bootstrap5.css') }}" rel="stylesheet" type="text/css">
 <link href="{{ URL::to('assets/css/vendor/responsive.bootstrap5.css') }}" rel="stylesheet" type="text/css">
-<link href="{{ URL::to('assets/css/vendor/buttons.bootstrap5.css') }}" rel="stylesheet" type="text/css">
 <link href="{{ URL::to('assets/css/vendor/select.bootstrap5.css') }}" rel="stylesheet" type="text/css">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
 <link href="{{URL::to('assets/css/vendor/simplemde.min.css')}}" rel="stylesheet" type="text/css" />

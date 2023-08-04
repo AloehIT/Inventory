@@ -5,6 +5,7 @@ namespace App\Http\Controllers\ManajemenUsers;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
+use Yajra\DataTables\Facades\DataTables;
 
 use App\Models\Perusahaan;
 use App\Models\User;
@@ -13,6 +14,24 @@ use App\Models\hasModelRole;
 
 class RoleController extends Controller
 {
+
+    public function kategoriData(Request $request)
+    {
+        $role = RoleModel::orderBy('id', 'DESC');
+
+        return Datatables::of($role)
+            ->addColumn('action', function ($row) {
+                // Add your action buttons here, similar to your Blade file
+                return view('usermanager.roles.actions', compact('row'))->render();
+            })
+            ->editColumn('created_at', function ($row) {
+                return $row->created_at->isoFormat('dddd, D MMMM Y');
+            })
+            ->rawColumns(['action'])
+            ->toJson();
+    }
+
+
     public function index()
     {
         try {
