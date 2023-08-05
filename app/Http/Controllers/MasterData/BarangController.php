@@ -25,16 +25,12 @@ class BarangController extends Controller
         return Datatables::of($barang)
             ->addColumn('action', function ($row) {
                 // Add your action buttons here, similar to your Blade file
-                return view('inventory.kategori-barang.actions', compact('row'))->render();
-            })
-            ->addColumn('action', function ($row) {
-                // Add your action buttons here, similar to your Blade file
-                return view('inventory.kategori-barang.actions', compact('row'))->render();
+                return view('inventory.daftar-barang.actions', compact('row'))->render();
             })
             ->editColumn('created_at', function ($row) {
                 return $row->created_at->isoFormat('dddd, D MMMM Y');
             })
-            ->rawColumns(['action'])
+            ->rawColumns(['action', 'barcode'])
             ->toJson();
     }
 
