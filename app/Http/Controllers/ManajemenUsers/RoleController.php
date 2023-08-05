@@ -17,7 +17,7 @@ class RoleController extends Controller
 
     public function rolesData(Request $request)
     {
-        $role = RoleModel::orderBy('id', 'DESC');
+        $role = RoleModel::all();
 
         return Datatables::of($role)
             ->addColumn('action', function ($row) {

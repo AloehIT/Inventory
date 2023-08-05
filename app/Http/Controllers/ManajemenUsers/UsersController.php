@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
+use Yajra\DataTables\Facades\DataTables;
 
 use App\Models\Perusahaan;
 use App\Models\User;
@@ -15,6 +16,25 @@ use App\Models\RoleModel;
 
 class UsersController extends Controller
 {
+    public function usersData(Request $request)
+    {
+        $users = DetailUsers::join('users', 'users.id', '=', 'detail_users.id')
+        ->select('detail_users.*', 'detail_users.nama_users', 'users.username', 'users.unique', 'users.role', 'users.status', 'users.email')
+        ->where('users.status', 1);
+
+        return Datatables::of($users)
+            ->addColumn('action', function ($row) {
+                // Add your action buttons here, similar to your Blade file
+                return view('usersmanager.users.actions', compact('row'))->render();
+            })
+            ->editColumn('created_at', function ($row) {
+                return $row->created_at->isoFormat('dddd, D MMMM Y');
+            })
+            ->rawColumns(['action'])
+            ->toJson();
+    }
+
+
     public function index()
     {
         try {
@@ -28,8 +48,7 @@ class UsersController extends Controller
                 ->first(),
 
 
-                'users' => User::join('detail_users', 'detail_users.id', '=', 'users.id')
-                ->orderBy('users.created_at', 'DESC')
+                'users' => User::Where('users.status', 1)
                 ->get(),
             ];
 

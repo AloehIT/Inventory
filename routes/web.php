@@ -49,14 +49,25 @@ Route::middleware('auth')->group(function(){
     Route::post('app/pengaturan/posts', [PengaturanController::class, 'posts'])->name('umum.posts');
 });
 
-// Master Daftar Barang
+//Data Role Users
 Route::middleware('auth')->group(function(){
-    Route::get('app/daftar-barang/ubah/{id}', [BarangController::class, 'update'])->name('update.barang');
-    Route::get('app/daftar-barang/tambah', [BarangController::class, 'create'])->name('create.barang');
-    Route::resource('app/daftar-barang', BarangController::class);
-    Route::post('app/daftar-barang/posts', [BarangController::class, 'posts'])->name('posts.barang');
-    Route::get('app/daftar-barang/delete/{id}', [BarangController::class, 'delete'])->name('delete.barang');
+    Route::get('usersroles/data', [RoleController::class, 'rolesData'])->name('data.roles');
+    Route::resource('app/usersroles', RoleController::class);
+    Route::post('app/usersroles/posts', [RoleController::class, 'posts'])->name('posts.roles');
+    Route::post('app/usersroles/upposts', [RoleController::class, 'upposts'])->name('upposts.roles');
+    Route::get('app/usersroles/delete/{id}', [RoleController::class, 'delete'])->name('delete.roles');
 });
+
+//Data Users
+Route::middleware('auth')->group(function(){
+    Route::get('users/data', [UsersController::class, 'usersData'])->name('data.users');
+    Route::get('app/usermanager/tambah', [UsersController::class, 'create'])->name('create.usermanager');
+    Route::get('app/usermanager/ubah/{id}', [UsersController::class, 'update'])->name('update.usermanager');
+    Route::resource('app/usermanager', UsersController::class);
+    Route::post('app/usermanager/posts', [UsersController::class, 'posts'])->name('posts.usermanager');
+    Route::get('app/usermanager/delete/{id}', [UsersController::class, 'delete'])->name('delete.usermanager');
+});
+
 
 // Master Kategori Barang
 Route::middleware('auth')->group(function(){
@@ -69,10 +80,23 @@ Route::middleware('auth')->group(function(){
 
 //Master Satuan Barang
 Route::middleware('auth')->group(function(){
+    Route::get('satuan/data', [SatuanController::class, 'satuanData'])->name('data.satuan');
     Route::resource('app/satuans', SatuanController::class);
     Route::post('app/satuans/posts', [SatuanController::class, 'posts'])->name('posts.satuanbarang');
     Route::get('app/satuans/delete/{id}', [SatuanController::class, 'delete'])->name('delete.satuanbarang');
 });
+
+
+// Master Daftar Barang
+Route::middleware('auth')->group(function(){
+    Route::get('barang/data', [BarangController::class, 'barangData'])->name('data.barang');
+    Route::get('app/daftar-barang/ubah/{id}', [BarangController::class, 'update'])->name('update.barang');
+    Route::get('app/daftar-barang/tambah', [BarangController::class, 'create'])->name('create.barang');
+    Route::resource('app/daftar-barang', BarangController::class);
+    Route::post('app/daftar-barang/posts', [BarangController::class, 'posts'])->name('posts.barang');
+    Route::get('app/daftar-barang/delete/{id}', [BarangController::class, 'delete'])->name('delete.barang');
+});
+
 
 // Master Daftar BarangMasuk
 Route::middleware('auth')->group(function(){
@@ -83,23 +107,6 @@ Route::middleware('auth')->group(function(){
     Route::get('app/barang-masuk/delete/{id}', [BarangMasukController::class, 'deletebarangmasuk'])->name('delete.detail-barang-masuk');
 });
 
-//Data Role Users
-Route::middleware('auth')->group(function(){
-    Route::get('usersroles/data', [RoleController::class, 'rolesData'])->name('data.roles');
-    Route::resource('app/usersroles', RoleController::class);
-    Route::post('app/usersroles/posts', [RoleController::class, 'posts'])->name('posts.roles');
-    Route::post('app/usersroles/upposts', [RoleController::class, 'upposts'])->name('upposts.roles');
-    Route::get('app/usersroles/delete/{id}', [RoleController::class, 'delete'])->name('delete.roles');
-});
-
-//Data Role Users
-Route::middleware('auth')->group(function(){
-    Route::get('app/usermanager/tambah', [UsersController::class, 'create'])->name('create.usermanager');
-    Route::get('app/usermanager/ubah/{id}', [UsersController::class, 'update'])->name('update.usermanager');
-    Route::resource('app/usermanager', UsersController::class);
-    Route::post('app/usermanager/posts', [UsersController::class, 'posts'])->name('posts.usermanager');
-    Route::get('app/usermanager/delete/{id}', [UsersController::class, 'delete'])->name('delete.usermanager');
-});
 
 // API GET Barang
 Route::middleware('auth')->group(function(){

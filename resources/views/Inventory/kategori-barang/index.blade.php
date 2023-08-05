@@ -6,6 +6,9 @@
     .dataTables_filter {
         display: none; /* Menyembunyikan kotak pencarian */
     }
+    .dataTables_paginate {
+        float: left;
+    }
 </style>
 <div class="container-fluid">
     @include('layouts.main.breadcrumb')
@@ -17,7 +20,7 @@
                 <div class="card-body">
                     <div class="row justify-content-between">
                         <div class="col-lg-6 col-md-6  col-12 py-3">
-                            <h3 class="text-dark">@yield('title') ERP</h3>
+                            <h3 class="text-dark">@yield('title')</h3>
                             <p class="mb-0">Data Seluruh @yield('title') yang terdaftar pada system</p>
                             <p>Akses saat ini : <b>{{ $auth['role'] ?? '' }}</b> <i
                                     class="bi bi-key-fill text-warning"></i></p>
@@ -35,15 +38,18 @@
             <div class="card">
                 <div class="card-body">
                     <div class="row mb-2">
-                        <div class="col-sm-4">
-                            <div class="dropdown">
-                                <a class="btn btn-sm btn-secondary dropdown-toggle btn-info" href="#" role="button" id="dropdownMenuLink" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                    <i class="mdi mdi-menu"></i> Manajemen Kategori
-                                </a>
+                        <div class="col-sm-12">
+                            <div class="d-flex flex-row">
+                                <div class="dropdown">
+                                    <a class="btn btn-sm btn-secondary dropdown-toggle btn-info" href="#" role="button" id="dropdownMenuLink" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                        <i class="mdi mdi-menu"></i> Manajemen Kategori
+                                    </a>
 
-                                <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
-                                    <a class="dropdown-item" type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#add"><i class="uil-plus"></i> Tambah Kategori Baru</a>
+                                    <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
+                                        <a class="dropdown-item" type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#add"><i class="uil-plus"></i> Tambah Kategori Baru</a>
+                                    </div>
                                 </div>
+                                <button id="refresh-btn" class="btn btn-sm mx-1 text-white" style="background: rgb(27, 96, 255);"><i class="bi bi-arrow-clockwise"></i> Refresh</button>
                             </div>
                         </div>
                     </div>
@@ -61,7 +67,7 @@
                                             </tr>
                                             <tr>
                                                 <th>
-                                                    <input type="text" class="form-control form-control-sm" placeholder="Search Nama" />
+                                                    <input type="text" class="form-control form-control-sm" placeholder="Kategori" />
                                                 </th>
                                                 <th>
                                                     <input type="date" class="form-control form-control-sm" placeholder="Search Ditambahkan" />
@@ -219,7 +225,9 @@
     $(document).ready(function() {
         var table = $('.basic-datatable').DataTable({
             processing: true,
+            dom: '<"left"l>ftr<"right"ip>',
             serverSide: true,
+            info: false,
             ajax: '{!! route('data.kategori') !!}',
             columns: [
                 { data: 'name_kategori', name: 'name_kategori' },
@@ -231,6 +239,17 @@
                 searchPlaceholder: 'Search...',
             }
         });
+
+        // Fungsi untuk melakukan refresh data tabel
+        function refreshTable() {
+            table.ajax.reload(null, false);
+        }
+
+        // Event click pada tombol refresh
+        $('#refresh-btn').on('click', function() {
+            refreshTable();
+        });
+
 
         // Apply search for each column
         $('.basic-datatable thead th input').on('keyup change', function() {

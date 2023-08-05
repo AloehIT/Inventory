@@ -10,16 +10,15 @@
     @include('layouts.main.breadcrumb')
     <div class="col-12">
         <div class="card recent-sales overflow-auto">
-
             <div class="card-body">
-                <div class="row justify-content-between">
+                <div class="row justify-content-between mx-3">
                     <div class="col-lg-6 col-md-6  col-12 py-3">
                         <p class="mb-0">{{ $perusahaan['value'] ?? '' }}</p>
                         <h3 class="text-dark">@yield('title')</h3>
                         <p class="mb-0 text-lowercase">Atur @yield('title') anda</p>
                     </div>
-                    <div class="col-lg-6 col-md-6 col-12 text-end">
-                        <img src="{{ asset('assets/icon/bg-pengaturanumum.png') }}" class="img-fluid" width="220">
+                    <div class="col-lg-6 col-md-6 col-12 text-end p-3">
+                        <img src="{{ asset('assets/icon/bg-pengaturanumum.png') }}" class="img-fluid" width="120">
                     </div>
                 </div>
             </div>

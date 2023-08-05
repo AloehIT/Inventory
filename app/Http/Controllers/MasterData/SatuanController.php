@@ -5,6 +5,7 @@ namespace App\Http\Controllers\MasterData;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
+use Yajra\DataTables\Facades\DataTables;
 
 use App\Models\Perusahaan;
 use App\Models\User;
@@ -12,6 +13,23 @@ use App\Models\Satuan;
 
 class SatuanController extends Controller
 {
+    public function satuanData(Request $request)
+    {
+        $satuan = Satuan::all();
+
+        return Datatables::of($satuan)
+            ->addColumn('action', function ($row) {
+                // Add your action buttons here, similar to your Blade file
+                return view('inventory.satuan-barang.actions', compact('row'))->render();
+            })
+            ->editColumn('created_at', function ($row) {
+                return $row->created_at->isoFormat('dddd, D MMMM Y');
+            })
+            ->rawColumns(['action'])
+            ->toJson();
+    }
+
+
     public function index()
     {
         try {

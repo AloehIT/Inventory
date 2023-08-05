@@ -22,10 +22,10 @@
                     </div>
                     <div class="col-md-6">
                         <div class="card-body">
-                            <div class="brand-wrapper">
+                            <div class="brand-wrapper mb-1">
                                 <a href="{{ route('login') }}" class="d-flex flex-wrap justify-content-start">
-                                    <span><img src="assets/icon/icon.png" alt="" height="50"></span>
-                                    <h1 class="text-dark"> System Gudang</h1>
+                                    <span><img src="assets/icon/bg-barang.png" alt="" height="50"></span>
+                                    <h1 class="text-dark p-2"> Inventory</h1>
                                 </a>
                             </div>
                             <form action="{{ route('login.access') }}" method="POST">

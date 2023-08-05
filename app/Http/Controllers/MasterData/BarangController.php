@@ -5,6 +5,7 @@ namespace App\Http\Controllers\MasterData;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
+use Yajra\DataTables\Facades\DataTables;
 
 use App\Models\Perusahaan;
 use App\Models\User;
@@ -14,6 +15,29 @@ use App\Models\Satuan;
 
 class BarangController extends Controller
 {
+
+    public function barangData(Request $request)
+    {
+        $barang = Barang::join('users', 'users.id', '=', 'barangs.user_id')
+        ->join('satuans', 'satuans.id', '=', 'barangs.satuan_id')
+        ->select('barangs.*', 'satuans.satuan', 'users.username');
+
+        return Datatables::of($barang)
+            ->addColumn('action', function ($row) {
+                // Add your action buttons here, similar to your Blade file
+                return view('inventory.kategori-barang.actions', compact('row'))->render();
+            })
+            ->addColumn('action', function ($row) {
+                // Add your action buttons here, similar to your Blade file
+                return view('inventory.kategori-barang.actions', compact('row'))->render();
+            })
+            ->editColumn('created_at', function ($row) {
+                return $row->created_at->isoFormat('dddd, D MMMM Y');
+            })
+            ->rawColumns(['action'])
+            ->toJson();
+    }
+
     public function index()
     {
         try {

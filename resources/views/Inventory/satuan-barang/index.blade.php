@@ -2,6 +2,14 @@
 @extends('layouts.app')
 @section('title', 'Satuan Barang')
 @section('content-page')
+<style>
+    .dataTables_filter {
+        display: none;
+    }
+    .dataTables_paginate {
+        float: left;
+    }
+</style>
 <div class="container-fluid">
     @include('layouts.main.breadcrumb')
 
@@ -50,84 +58,28 @@
                                     <table class="basic-datatable table dt-responsive nowrap w-100" style="font-size: 12px;">
                                         <thead>
                                             <tr>
-                                                <th>#</th>
                                                 <th>Satuan Barang</th>
                                                 <th>Ditambahkan</th>
                                                 <th>Keterangan</th>
                                                 <th style="width: 75px;">Action</th>
                                             </tr>
+                                            <tr>
+                                                <th>
+                                                    <input type="text" class="form-control form-control-sm" placeholder="Satuan" />
+                                                </th>
+                                                <th>
+                                                    <input type="date" class="form-control form-control-sm" placeholder="Search Ditambahkan" />
+                                                </th>
+                                                <th>
+                                                    <input type="text" class="form-control form-control-sm" placeholder="Keterangan">
+                                                </th>
+                                                <th>
+                                                    <input type="text" class="form-control form-control-sm" readonly>
+                                                </th>
+                                            </tr>
                                         </thead>
                                         <tbody>
-                                            @foreach ($satuan as $no => $item)
-                                                <tr>
-                                                    <div hidden>{{ $id = $item['id'] }}</div>
-                                                    <td>
-                                                        {{ $no+1 }}
-                                                    </td>
-                                                    <td>
-                                                        {{ $item->satuan }}
-                                                    </td>
-                                                    <td>
-                                                        {{ $carbon::parse($item['created_at'] ?? 'd-m-Y')->isoFormat('dddd, D MMMM Y H:m A') }}
-                                                    </td>
-                                                    <td>
-                                                        {!! $item['keterangan_satuan'] ?? 'Tidak ada keterangan' !!}
-                                                    </td>
-                                                    <td>
-                                                        <a class="action-icon" type="button" data-bs-toggle="modal" data-bs-target="#edit{{ $id }}"> <i class="mdi mdi-square-edit-outline text-info"></i></a>
-                                                        <a href="{{ route('delete.satuanbarang', $id) }}" type="button" onclick="return confirm('Apakah anda yakin ingin menghapus Satuan : {{ $item['satuan'] }} ?')" class="action-icon" style="outline: none; border: none; background: none;"> <i class="mdi mdi-delete text-danger"></i></a>
-                                                    </td>
-                                                </tr>
 
-
-                                                <div id="edit{{ $id }}" class="modal fade" tabindex="-1" role="dialog" aria-hidden="true">
-                                                    <div class="modal-dialog modal-dialog-centered">
-                                                        <div class="modal-content">
-
-                                                            <div class="modal-body">
-                                                                <div class="text-start mt-4 mb-2 mx-3">
-                                                                    <div class="d-flex justify-content-between mt-3">
-                                                                        <div>
-                                                                            <h5 class="text-uppercase mb-0"><i class="uil-balance-scale text-info"></i> Ubah @yield('title')</h5>
-                                                                            <p class="">{{ $perusahaan['value'] ?? '' }}</p>
-                                                                        </div>
-
-                                                                        <a type="button" data-bs-dismiss="modal" class="text-danger" style="font-size: 25px;"><i class="uil-multiply"></i></a>
-                                                                   </div>
-                                                                </div>
-
-                                                                <form class="ps-3 pe-3" action="{{ route('posts.satuanbarang') }}" method="POST">
-                                                                    @csrf
-                                                                    <div class="mx-3">
-                                                                        <div class="mb-3">
-                                                                            <input type="hidden" name="id" value="{{ $id }}">
-                                                                            <label for="satuan" class="form-label">Satuan Barang</label>
-                                                                            <input class="form-control @error('satuan') is-invalid @enderror" type="text" id="satuan" name="satuan" placeholder="Satuan" value="{{ $item['satuan'] ?? old('satuan') }}">
-                                                                            @error('satuan')
-                                                                            <span class="invalid-feedback" role="alert" style="font-size: 11px;">
-                                                                                <strong>{{ $message }}</strong>
-                                                                            </span>
-                                                                            @enderror
-                                                                        </div>
-
-                                                                        <div class="mb-3">
-                                                                            <label for="keterangan" class="form-label">Keterangan</label>
-                                                                            <textarea name="keterangan" class="form-control" id="keterangan" cols="30" rows="5" placeholder="Ketikan teks disini...">{{ $item['keterangan_satuan'] ?? old('keterangan') }}</textarea>
-                                                                        </div>
-
-                                                                        <div class="mb-3 text-end">
-                                                                            <button class="btn btn-sm text-white" style="background: red;" type="button" data-bs-dismiss="modal">Batal <i class="bi bi-x-lg"></i></button>
-                                                                            <button class="btn btn-sm btn-info" type="submit">Simpan <i class="bi bi-check-lg"></i></button>
-                                                                        </div>
-
-                                                                    </div>
-                                                                </form>
-
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            @endforeach
                                         </tbody>
                                     </table>
                                 </div>
@@ -144,7 +96,7 @@
 </div>
 
 
-<div id="add" class="modal fade" tabindex="-1" role="dialog" aria-hidden="true">
+{{-- <div id="add" class="modal fade" tabindex="-1" role="dialog" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
 
@@ -188,4 +140,93 @@
         </div>
     </div>
 </div>
+
+<div id="edit{{ $id }}" class="modal fade" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+
+            <div class="modal-body">
+                <div class="text-start mt-4 mb-2 mx-3">
+                    <div class="d-flex justify-content-between mt-3">
+                        <div>
+                            <h5 class="text-uppercase mb-0"><i class="uil-balance-scale text-info"></i> Ubah @yield('title')</h5>
+                            <p class="">{{ $perusahaan['value'] ?? '' }}</p>
+                        </div>
+
+                        <a type="button" data-bs-dismiss="modal" class="text-danger" style="font-size: 25px;"><i class="uil-multiply"></i></a>
+                   </div>
+                </div>
+
+                <form class="ps-3 pe-3" action="{{ route('posts.satuanbarang') }}" method="POST">
+                    @csrf
+                    <div class="mx-3">
+                        <div class="mb-3">
+                            <input type="hidden" name="id" value="{{ $id }}">
+                            <label for="satuan" class="form-label">Satuan Barang</label>
+                            <input class="form-control @error('satuan') is-invalid @enderror" type="text" id="satuan" name="satuan" placeholder="Satuan" value="{{ $item['satuan'] ?? old('satuan') }}">
+                            @error('satuan')
+                            <span class="invalid-feedback" role="alert" style="font-size: 11px;">
+                                <strong>{{ $message }}</strong>
+                            </span>
+                            @enderror
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="keterangan" class="form-label">Keterangan</label>
+                            <textarea name="keterangan" class="form-control" id="keterangan" cols="30" rows="5" placeholder="Ketikan teks disini...">{{ $item['keterangan_satuan'] ?? old('keterangan') }}</textarea>
+                        </div>
+
+                        <div class="mb-3 text-end">
+                            <button class="btn btn-sm text-white" style="background: red;" type="button" data-bs-dismiss="modal">Batal <i class="bi bi-x-lg"></i></button>
+                            <button class="btn btn-sm btn-info" type="submit">Simpan <i class="bi bi-check-lg"></i></button>
+                        </div>
+
+                    </div>
+                </form>
+
+            </div>
+        </div>
+    </div>
+</div> --}}
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+<script>
+    $(document).ready(function() {
+        var table = $('.basic-datatable').DataTable({
+            processing: true,
+            dom: '<"left"l>ftr<"right"ip>',
+            serverSide: true,
+            info: false,
+            ajax: '{!! route('data.satuan') !!}',
+            columns: [
+                { data: 'satuan', name: 'satuan' },
+                { data: 'created_at', name: 'created_at' },
+                { data: 'keterangan_satuan', name: 'keterangan_satuan'},
+                { data: 'action', name: 'action', orderable: false, searchable: false },
+            ],
+            language: {
+                search: '',
+                searchPlaceholder: 'Search...',
+            }
+        });
+
+        // Fungsi untuk melakukan refresh data tabel
+        function refreshTable() {
+            table.ajax.reload(null, false);
+        }
+
+        // Event click pada tombol refresh
+        $('#refresh-btn').on('click', function() {
+            refreshTable();
+        });
+
+
+        // Apply search for each column
+        $('.basic-datatable thead th input').on('keyup change', function() {
+            table.column($(this).parent().index() + ':visible')
+                .search(this.value)
+                .draw();
+        });
+    });
+</script>
 @endsection
