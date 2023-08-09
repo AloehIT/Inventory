@@ -59,19 +59,14 @@
                                     <table class="basic-datatable table dt-responsive nowrap w-100" style="font-size: 12px;">
                                         <thead>
                                             <tr>
-                                                <th>Nama</th>
-                                                <th>Ditambahkan</th>
-                                                <th style="width: 75px;">Action</th>
-                                            </tr>
-                                            <tr>
                                                 <th>
-                                                    <input type="text" class="form-control form-control-sm" placeholder="Kategori" />
+                                                    Nama <br> <input type="text" class="form-control form-control-sm" placeholder="Kategori" />
                                                 </th>
                                                 <th>
-                                                    <input type="date" class="form-control form-control-sm" placeholder="Search Ditambahkan" />
+                                                    Ditambahkan <br> <input type="date" class="form-control form-control-sm"/>
                                                 </th>
-                                                <th>
-                                                    <input type="text" class="form-control form-control-sm" readonly>
+                                                <th style="width: 75px;">
+                                                    Action <br> <span><br></span>
                                                 </th>
                                             </tr>
                                         </thead>

@@ -100,18 +100,24 @@ Route::middleware('auth')->group(function(){
 
 // Master Daftar BarangMasuk
 Route::middleware('auth')->group(function(){
-    Route::get('app/barang-masuk/ubah/{id}', [BarangMasukController::class, 'update'])->name('update.barang-masuk');
+    Route::get('barangmasuk/detaildata/{id_bm}', [BarangMasukController::class, 'detailData'])->name('data.detail.barangmasuk');
+    Route::get('barangmasuk/data', [BarangMasukController::class, 'barangmasukData'])->name('data.barangmasuk');
+    Route::get('app/barang-masuk/detail/{id_bm}', [BarangMasukController::class, 'update'])->name('update.barang-masuk');
     Route::get('app/barang-masuk/tambah', [BarangMasukController::class, 'create'])->name('create.barang-masuk');
     Route::resource('app/barang-masuk', BarangMasukController::class);
-    Route::post('app/barang-masuk/posts', [BarangMasukController::class, 'posts'])->name('posts.barang-masuk');
+    Route::post('app/barang-masuk/posts', [BarangMasukController::class, 'posts'])->name('posts.barangmasuk');
+    Route::post('app/barang-masuk/stok/posts', [BarangMasukController::class, 'poststok'])->name('stok.barangmasuk');
     Route::get('app/barang-masuk/delete/{id}', [BarangMasukController::class, 'deletebarangmasuk'])->name('delete.detail-barang-masuk');
+    Route::get('app/barang-masuk/deleteall/{id_bm}', [BarangMasukController::class, 'delete'])->name('delete.barang-masuk');
 });
 
 
 // API GET Barang
 Route::middleware('auth')->group(function(){
     Route::get('/caribarang/{barcode}', function ($barcode) {
-        $barang = DB::table('barangs')->where('barcode', $barcode)->get();
+        $barang = DB::table('barangs')
+        ->join('satuans', 'satuans.id', '=', 'barangs.satuan_id')
+        ->where('barcode', $barcode)->get();
         return response()->json($barang);
     })->name('barang');
 });

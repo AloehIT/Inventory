@@ -65,25 +65,17 @@
                                         style="font-size: 12px;">
                                         <thead>
                                             <tr>
-                                                <th>Nama</th>
-                                                <th>Posisi</th>
-                                                <th>Ditambahkan</th>
-                                                <th style="width: 75px;">Action</th>
-                                            </tr>
-                                            <tr>
                                                 <th>
-                                                    <input type="text" class="form-control form-control-sm"
-                                                        placeholder="Nama" />
+                                                    Nama <br> <input type="text" class="form-control form-control-sm" placeholder="Nama" />
                                                 </th>
                                                 <th>
-                                                    <input type="text" class="form-control form-control-sm"
-                                                        placeholder="Posisi" />
+                                                    Posisi <br> <input type="text" class="form-control form-control-sm" placeholder="Posisi" />
                                                 </th>
                                                 <th>
-                                                    <input type="date" class="form-control form-control-sm">
+                                                    Ditambahkan <br> <input type="date" class="form-control form-control-sm">
                                                 </th>
-                                                <th>
-                                                    <input type="text" class="form-control form-control-sm" readonly>
+                                                <th style="width: 75px;">
+                                                    Action <br> <span><br></span>
                                                 </th>
                                             </tr>
                                         </thead>

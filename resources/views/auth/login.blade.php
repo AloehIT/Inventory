@@ -23,10 +23,10 @@
                     <div class="col-md-6">
                         <div class="card-body">
                             <div class="brand-wrapper mb-1">
-                                <a href="{{ route('login') }}" class="d-flex flex-wrap justify-content-start">
+                                <div class="d-flex flex-wrap justify-content-start">
                                     <span><img src="assets/icon/bg-barang.png" alt="" height="50"></span>
                                     <h1 class="text-dark p-2"> Inventory</h1>
-                                </a>
+                                </div>
                             </div>
                             <form action="{{ route('login.access') }}" method="POST">
                                 @csrf

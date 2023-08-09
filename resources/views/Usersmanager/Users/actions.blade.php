@@ -1,2 +1,2 @@
-<a href="{{ route('update.usermanager', $row->id) }}" class="action-icon" type="button"> <i class="mdi mdi-square-edit-outline text-info"></i></a>
-<a href="{{ route('delete.usermanager', $row->id) }}" type="button" onclick="return confirm('Apakah anda yakin ingin menghapus users : {{ $row['nama_users'] }} ?')" class="action-icon" style="outline: none; border: none; background: none;"> <i class="mdi mdi-delete text-danger"></i></a>
+<a href="{{ route('update.usermanager', $row->id) }}" class="action-icon" type="button"> <i class="bi bi-pencil-fill text-info"></i></a>
+<a href="{{ route('delete.usermanager', $row->id) }}" type="button" onclick="return confirm('Apakah anda yakin ingin menghapus users : {{ $row['nama_users'] }} ?')" class="action-icon" style="outline: none; border: none; background: none;"> <i class="bi bi-trash text-danger"></i></a>

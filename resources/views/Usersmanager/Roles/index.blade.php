@@ -39,44 +39,28 @@
         <div class="col-12">
             <div class="card">
                 <div class="card-body">
-                    <div class="row mb-2">
-                        <div class="col-sm-12">
-                            <div class="d-flex flex-row">
-                                <div class="dropdown">
-                                    <a class="btn btn-sm btn-secondary dropdown-toggle btn-info" href="#" role="button" id="dropdownMenuLink" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                        <i class="mdi mdi-menu"></i> Manajemen @yield('title')
-                                    </a>
-
-                                    <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
-                                        <a class="dropdown-item" type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#add"><i class="mdi mdi-account-multiple-plus"></i> Tambah @yield('title') Baru</a>
-                                    </div>
-                                </div>
-                                <button id="refresh-btn" class="btn btn-sm mx-1 text-white" style="background: rgb(27, 96, 255);"><i class="bi bi-arrow-clockwise"></i> Refresh</button>
-                            </div>
-                        </div>
-                    </div>
-
                     <div class="tab-content">
                         <div class="card">
                             <div class="card-body p-4">
                                 <div class="table-responsive">
+                                    <div class="row mb-3 g-1 col-lg-12">
+                                        <div class="col-sm-3">
+                                            <label></label><br>
+                                            <a type="button" data-bs-toggle="modal" data-bs-target="#add" class="btn btn-sm btn-info"><i class="uil-plus"></i> Tambah</a>
+                                            <button id="refresh-btn" class="btn btn-sm text-white" style="background: rgb(27, 96, 255);"><i class="bi bi-arrow-clockwise"></i> Refresh</button>
+                                        </div>
+                                    </div>
+
                                     <table class="basic-datatable table dt-responsive nowrap w-100" style="font-size: 12px;">
                                         <thead>
                                             <tr>
-                                                <th>Nama</th>
-                                                <th>Ditambahkan</th>
-                                                <th style="width: 75px;">Action</th>
-                                            </tr>
-                                            <tr>
                                                 <th>
-                                                    <input type="text" class="form-control form-control-sm" placeholder="Search Nama" />
+                                                    Nama <br> <input type="text" class="form-control form-control-sm" placeholder="Search Nama" />
                                                 </th>
                                                 <th>
-                                                    <input type="date" class="form-control form-control-sm" placeholder="Search Ditambahkan" />
+                                                    Ditambahkan <br> <input type="date" class="form-control form-control-sm" placeholder="Search Ditambahkan" />
                                                 </th>
-                                                <th>
-                                                    <input type="text" class="form-control form-control-sm" readonly>
-                                                </th>
+                                                <th style="width: 75px;">Action <br> <span><br></span></th>
                                             </tr>
                                         </thead>
                                         <tbody>
@@ -160,7 +144,7 @@
 
                 <form class="ps-3 pe-3" action="{{ route('posts.roles') }}" method="POST">
                     @csrf
-                    <div class="mx-3">
+                    <div>
                         <div class="mb-3">
                             <input type="hidden" name="id" value="{{ $data->id }}">
                             <label for="role" class="form-label">Nama Role</label>
@@ -220,13 +204,61 @@
             refreshTable();
         });
 
-
         // Apply search for each column
         $('.basic-datatable thead th input').on('keyup change', function() {
             table.column($(this).parent().index() + ':visible')
                 .search(this.value)
                 .draw();
         });
+
+        // Fungsi untuk mengambil data tanggal awal dan akhir dari kolom "tgl_bm"
+        function getDateRangeFromColumn() {
+            var startDate = null;
+            var endDate = null;
+
+            table.column(1, { search: 'applied' }).data().each(function(date) {
+                var currentDate = new Date(date);
+                if (!startDate || currentDate < startDate) {
+                    startDate = currentDate;
+                }
+                if (!endDate || currentDate > endDate) {
+                    endDate = currentDate;
+                }
+            });
+
+            return {
+                start_date: startDate ? formatDate(startDate) : null,
+                end_date: endDate ? formatDate(endDate) : null,
+            };
+        }
+
+        // Fungsi untuk menampilkan data tanggal awal dan akhir di input date
+        function displayDateRange() {
+            var dateRange = getDateRangeFromColumn();
+            $('#start_date').val(dateRange.start_date);
+            $('#end_date').val(dateRange.end_date);
+        }
+
+        // Fungsi untuk mengubah format tanggal menjadi YYYY-MM-DD
+        function formatDate(date) {
+            var year = date.getFullYear();
+            var month = ('0' + (date.getMonth() + 1)).slice(-2);
+            var day = ('0' + date.getDate()).slice(-2);
+            return year + '-' + month + '-' + day;
+        }
+
+        // Event click pada tombol "Filter"
+        $('#filter-btn').on('click', function() {
+            table.ajax.reload();
+        });
+
+        // Event change pada input tanggal "start_date" dan "end_date"
+        $('#start_date, #end_date').on('change', function() {
+            table.ajax.reload();
+        });
+
+        // Tampilkan tanggal awal dan akhir di input date ketika halaman dimuat
+        displayDateRange();
     });
 </script>
 @endsection

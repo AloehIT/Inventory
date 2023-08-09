@@ -11,7 +11,7 @@ class DetailMasuk extends Model
 
     protected $table = 'detail_barang_masuk';
 
-    protected $fillable = ['id', 'id_bm_detail', 'id_bm', 'tgl_bm', 'id_barang', 'kode_barang', 'qty', 'nama_barang', 'tanggal'];
+    protected $fillable = ['id', 'id_bm_detail', 'id_bm', 'tgl_bm', 'id_barang', 'kode_barang', 'qty', 'satuan', 'nama_barang', 'tanggal'];
 
     protected $hidden = [];
 }

@@ -38,55 +38,46 @@
         <div class="col-12">
             <div class="card">
                 <div class="card-body">
-                    <div class="row mb-2">
-                        <div class="col-sm-12">
-                            <div class="d-flex flex-row">
-                                <div class="dropdown">
-                                    <a class="btn btn-sm btn-secondary dropdown-toggle btn-info" href="#" role="button" id="dropdownMenuLink" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                        <i class="mdi mdi-menu"></i> Manajemen Barang
-                                    </a>
-
-                                    <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
-                                        <a href="{{ route('create.barang') }}" class="dropdown-item" class="btn btn-primary"><i class="uil-plus"></i> Daftarkan Barang Baru</a>
-                                    </div>
-                                </div>
-                                <button id="refresh-btn" class="btn btn-sm mx-1 text-white" style="background: rgb(27, 96, 255);"><i class="bi bi-arrow-clockwise"></i> Refresh</button>
-                            </div>
-                        </div>
-                    </div>
-
                     <div class="tab-content">
                         <div class="card">
                             <div class="card-body p-4">
                                 <div class="table-responsive">
+                                    <div class="row mb-3 g-1 col-lg-12">
+                                        <div class="col-sm-2">
+                                            <label for="start_date">Dari :</label>
+                                            <input type="date" id="start_date" class="form-control form-control-sm">
+                                        </div>
+                                        <div class="col-sm-2">
+                                            <label for="end_date">Sampai :</label>
+                                            <input type="date" id="end_date" class="form-control form-control-sm">
+                                        </div>
+                                        <div class="col-sm-3">
+                                            <label></label><br>
+                                            <a href="{{ route('create.barang') }}" class="btn btn-sm btn-info"><i class="uil-plus"></i> Tambah</a>
+                                            <button id="refresh-btn" class="btn btn-sm text-white" style="background: rgb(27, 96, 255);"><i class="bi bi-arrow-clockwise"></i> Refresh</button>
+                                        </div>
+                                    </div>
+
                                     <table class="basic-datatable table dt-responsive nowrap w-100" style="font-size: 12px;">
                                         <thead>
                                             <tr>
-                                                <th>Kode Barang</th>
-                                                <th>Nama Barang</th>
-                                                <th>Barcode</th>
-                                                <th>Kategori</th>
-                                                <th>Didaftarkan</th>
-                                                <th style="width: 75px;">Action</th>
-                                            </tr>
-                                            <tr>
                                                 <th>
-                                                    <input type="text" class="form-control form-control-sm" placeholder="Kode Barang" />
+                                                    Kode Barang <br> <input type="text" class="form-control form-control-sm" placeholder="Kode Barang" />
                                                 </th>
                                                 <th>
-                                                    <input type="text" class="form-control form-control-sm" placeholder="Nama Barang" />
+                                                    Nama Barang <br> <input type="text" class="form-control form-control-sm" placeholder="Nama Barang" />
                                                 </th>
                                                 <th>
-                                                    <input type="text" class="form-control form-control-sm" placeholder="Barcode" />
+                                                    Barcode <br> <input type="text" class="form-control form-control-sm" placeholder="Barcode" />
                                                 </th>
                                                 <th>
-                                                    <input type="text" class="form-control form-control-sm" placeholder="Kategori" />
+                                                    Kategori <br> <input type="text" class="form-control form-control-sm" placeholder="Kategori" />
                                                 </th>
                                                 <th>
-                                                    <input type="date" class="form-control form-control-sm"/>
+                                                    Ditambahkan <br> <span><br></span>
                                                 </th>
-                                                <th>
-                                                    <input type="text" class="form-control form-control-sm" readonly>
+                                                <th style="width: 75px;">
+                                                    Action <br> <span><br></span>
                                                 </th>
                                             </tr>
                                         </thead>
@@ -172,13 +163,21 @@
             dom: '<"left"l>ftr<"right"ip>',
             serverSide: true,
             info: false,
-            ajax: '{!! route('data.barang') !!}',
+            // ajax: '{!! route('data.barang') !!}',
+            ajax: {
+                url: '{!! route('data.barang') !!}',
+                data: function(d) {
+                    // Mengambil nilai tanggal dari input
+                    d.start_date = $('#start_date').val();
+                    d.end_date = $('#end_date').val();
+                }
+            },
             columns: [
                 { data: 'kode_barang', name: 'kode_barang' },
                 { data: 'nama_barang', name: 'nama_barang' },
                 { data: 'barcode', name: 'barcode' },
                 { data: 'kategori', name: 'kategori' },
-                { data: 'created_at', name: 'created_at' },
+                { data: 'created_at', name: 'barangs.created_at' },
                 { data: 'action', name: 'action', orderable: false, searchable: false },
             ],
             language: {
@@ -204,6 +203,56 @@
                 .search(this.value)
                 .draw();
         });
+
+        // Fungsi untuk mengambil data tanggal awal dan akhir dari kolom "created_at"
+        function getDateRangeFromColumn() {
+            var startDate = null;
+            var endDate = null;
+
+            table.column(4, { search: 'applied' }).data().each(function(date) {
+                var currentDate = new Date(date);
+                if (!startDate || currentDate < startDate) {
+                    startDate = currentDate;
+                }
+                if (!endDate || currentDate > endDate) {
+                    endDate = currentDate;
+                }
+            });
+
+            return {
+                start_date: startDate ? formatDate(startDate) : null,
+                end_date: endDate ? formatDate(endDate) : null,
+            };
+        }
+
+        // Fungsi untuk menampilkan data tanggal awal dan akhir di input date
+        function displayDateRange() {
+            var dateRange = getDateRangeFromColumn();
+            $('#start_date').val(dateRange.start_date);
+            $('#end_date').val(dateRange.end_date);
+        }
+
+        // Fungsi untuk mengubah format tanggal menjadi YYYY-MM-DD
+        function formatDate(date) {
+            var year = date.getFullYear();
+            var month = ('0' + (date.getMonth() + 1)).slice(-2);
+            var day = ('0' + date.getDate()).slice(-2);
+            return year + '-' + month + '-' + day;
+        }
+
+        // Event click pada tombol "Filter"
+        $('#filter-btn').on('click', function() {
+            table.ajax.reload();
+        });
+
+        // Event change pada input tanggal "start_date" dan "end_date"
+        $('#start_date, #end_date').on('change', function() {
+            table.ajax.reload();
+        });
+
+        // Tampilkan tanggal awal dan akhir di input date ketika halaman dimuat
+        displayDateRange();
+
     });
 </script>
 @endsection

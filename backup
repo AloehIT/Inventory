@@ -151,3 +151,421 @@
                                                     </div>
                                                 </div>
                                             @endforeach
+
+                                            @foreach ($barangMasuk as $no => $data)
+                                                <tr>
+                                                    <div hidden>{{ $id = $data['id_bm'] }}</div>
+                                                    <td>
+                                                        {{ $no+1 }}
+                                                    </td>
+                                                    <td>
+                                                        <a data-bs-toggle="modal" data-bs-target="#detail{{ $id }}" class="text-body" style="cursor: pointer;"><i class="bi bi-info-circle-fill text-info"></i> {{ $data['id_bm'] ?? '' }}</a>
+                                                    </td>
+
+                                                    <td>
+                                                        {{ $data['deskripsi_barang_masuk'] ?? 'tidak ada' }}
+                                                    </td>
+
+                                                    <td>
+                                                        {{ $carbon::parse($data['tanggal_masuk'] ?? '')->isoFormat('dddd, D MMMM Y') }}
+                                                    </td>
+
+                                                    <td>
+                                                        {{ $data['total_qty'] ?? 'tidak ada' }} {{ $data['satuan'] ?? '' }}
+                                                    </td>
+
+                                                    <td>
+                                                        @if($data['status'] == 'draft')
+                                                            <span class="text-info"><i class="bi bi-bookmarks-fill"></i> Draft</span>
+                                                        @else
+                                                            <span class="text-success"><i class="bi bi-patch-check-fill"></i> Approve</span>
+                                                        @endif
+                                                    </td>
+
+                                                    <td>
+                                                        <a href="#" type="button" onclick="return confirm('Apakah anda yakin ingin menhapus Barang : {{ $data['nama_barang'] }} ?')" class="action-icon" style="outline: none; border: none; background: none;"> <i class="mdi mdi-delete text-danger"></i></a>
+                                                    </td>
+                                                </tr>
+                                            @endforeach
+
+
+
+                                            <div class="card p-4">
+                    <div class="row gy-4 g-2">
+                        <div class="form-group fieldGroup">
+                            <div class="row g-1">
+                                <table>
+                                    <tr>
+                                        <td class="col-sm-5 mb-0">
+                                            <div class="form-group form-group-default">
+                                                <label><span class="text-primary">!</span>Barcode</label>
+                                                <select class="form-control mb-0 barcode select2 select" data-toggle="select2">
+                                                    <option disabled selected>Cari..</option>
+                                                    @foreach ($barang as $item)
+                                                    <option value="{{ $item->barcode }}">{{ $item->barcode }} | {{ $item->nama_barang }}</option>
+                                                    @endforeach
+                                                </select>
+                                            </div>
+                                        </td>
+
+                                        <td class="col-sm-5 mb-0">
+                                            <div class="form-group form-group-default">
+                                                <label><span class="text-primary">!</span>Kode Barang</label>
+                                                <input name="kode_barang[]" type="text" min="0"
+                                                    class="form-control kodeBarang @error ('kode_barang[]') is-invalid @enderror mb-0"
+                                                    placeholder="Kode Barang">
+                                                @error('kode_barang[]')
+                                                <span class="invalid-feedback" role="alert" style="font-size: 11px;">
+                                                    <strong>{{ $message }}</strong>
+                                                </span>
+                                                @enderror
+                                            </div>
+                                        </td>
+
+                                        <td class="col-sm-3 mb-0" hidden>
+                                            <div class="form-group form-group-default">
+                                                <label><span class="text-primary">!</span>ID Barang</label>
+                                                <input name="id_barang[]" type="text" min="0"
+                                                    class="form-control idBarang @error ('id_barang[]') is-invalid @enderror mb-0"
+                                                    placeholder="ID Barang">
+                                                @error('id_barang[]')
+                                                <span class="invalid-feedback" role="alert" style="font-size: 11px;">
+                                                    <strong>{{ $message }}</strong>
+                                                </span>
+                                                @enderror
+                                            </div>
+                                        </td>
+
+                                        <td class="col-sm-4 mb-0" hidden>
+                                            <div class="form-group form-group-default">
+                                                <label><span class="text-primary">!</span>Nama Barang</label>
+                                                <input name="nama_barang[]" type="text" min="0"
+                                                    class="form-control namaBarang @error ('nama_barang[]') is-invalid @enderror mb-0"
+                                                    placeholder="Nama Barang Masuk">
+                                                @error('nama_barang[]')
+                                                <span class="invalid-feedback" role="alert" style="font-size: 11px;">
+                                                    <strong>{{ $message }}</strong>
+                                                </span>
+                                                @enderror
+                                            </div>
+                                        </td>
+
+                                        <td class="col-sm-1 mb-0">
+                                            <div class="form-group form-group-default">
+                                                <label><span class="text-primary">!</span>Stok</label>
+                                                <input name="qty[]" type="number" min="0"
+                                                    class="form-control @error ('qty[]') is-invalid @enderror mb-0"
+                                                    placeholder="0">
+                                                @error('qty[]')
+                                                <span class="invalid-feedback" role="alert" style="font-size: 11px;">
+                                                    <strong>{{ $message }}</strong>
+                                                </span>
+                                                @enderror
+                                            </div>
+                                        </td>
+
+                                        <td class="col-sm-1 mb-0">
+                                            <label><span class="text-primary"></span>Aksi</label><br>
+                                            <div class="d-flex">
+                                                <a data-bs-toggle="modal" data-bs-target="#daftarbarang"
+                                                    class="btn btn-sm btn-warning"><i class="bi bi-list-columns"></i></a>
+                                                <a href="javascript:void(0)"
+                                                    class="btn btn-sm btn-success addMore text-white"><i
+                                                        class="mdi mdi-playlist-plus"></i></a>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </table>
+                            </div>
+                        </div>
+
+
+                        <div class="col-md-12 text-end">
+                            <a href="{{ url('app/barang-masuk') }}" class="btn btn-sm text-white"
+                                style="background: red;">Kembali <i class="bi bi-x-lg"></i></a>
+                            <button type="submit" class="btn btn-sm btn-info">Simpan <i
+                                    class="bi bi-check-lg"></i></button>
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <div class="form-group fieldGroupCopy" style="display: none;">
+        <div class="row g-1">
+            <input name="id_bm[]" type="hidden" class="form-control mb-0" placeholder="ID Barang Masuk" value="{{ $edit['id_bm'] ?? $id_bm }}" readonly>
+            <div class="col-sm-5 mb-0">
+                <div class="form-group form-group-default">
+                    <select class="form-control mb-0 barcode select2" data-toggle="select2">
+                        <option disabled selected>Cari..</option>
+                        @foreach ($barang as $item)
+                        <option value="{{ $item->barcode }}">{{ $item->barcode }} | {{ $item->nama_barang }}</option>
+                        @endforeach
+                    </select>
+                </div>
+            </div>
+
+            <div class="col-sm-5 mb-0">
+                <div class="form-group form-group-default">
+                    <input name="kode_barang[]" type="text" min="0"
+                        class="form-control kodeBarang @error ('kode_barang[]') is-invalid @enderror mb-0"
+                        placeholder="Kode Barang">
+                    @error('kode_barang[]')
+                    <span class="invalid-feedback" role="alert" style="font-size: 11px;">
+                        <strong>{{ $message }}</strong>
+                    </span>
+                    @enderror
+                </div>
+            </div>
+
+            <div class="col-sm-5 mb-0" hidden>
+                <div class="form-group form-group-default">
+                    <input name="id_barang[]" type="text" min="0"
+                        class="form-control idBarang @error ('id_barang[]') is-invalid @enderror mb-0"
+                        placeholder="ID Barang">
+                    @error('id_barang')
+                    <span class="invalid-feedback" role="alert" style="font-size: 11px;">
+                        <strong>{{ $message }}</strong>
+                    </span>
+                    @enderror
+                </div>
+            </div>
+
+            <div class="col-sm-4 mb-0" hidden>
+                <div class="form-group form-group-default">
+                    <input name="nama_barang[]" type="text" min="0"
+                        class="form-control namaBarang @error ('nama_barang[]') is-invalid @enderror mb-0"
+                        placeholder="Nama Barang Masuk">
+                    @error('nama_barang[]')
+                    <span class="invalid-feedback" role="alert" style="font-size: 11px;">
+                        <strong>{{ $message }}</strong>
+                    </span>
+                    @enderror
+                </div>
+            </div>
+
+            <div class="col-sm-1 mb-0">
+                <div class="form-group form-group-default">
+                    <input name="qty[]" type="number" min="0"
+                        class="form-control @error ('qty[]') is-invalid @enderror mb-0" placeholder="0">
+                    @error('qty[]')
+                    <span class="invalid-feedback" role="alert" style="font-size: 11px;">
+                        <strong>{{ $message }}</strong>
+                    </span>
+                    @enderror
+                </div>
+            </div>
+
+            <div class="col-sm-1 mb-0">
+                <div class="d-flex flex-row">
+                    <a data-bs-toggle="modal" data-bs-target="#daftarbarang" class="btn btn-sm btn-warning"><i
+                            class="bi bi-list-columns"></i></a>
+                    <a href="javascript:void(0)" class="btn btn-sm btn-danger remove text-white"
+                        style="background: red;"><i class="mdi mdi-trash-can-outline"></i></a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <script>
+    $(document).ready(function() {
+        // membatasi jumlah inputan
+        var maxGroup = 100;
+
+        // In the beginning, initialize select2 on the original select element and hide it
+        $('.barcode').select2({
+            // Your select2 options (if any)
+        }).hide();
+
+
+        // melakukan proses multiple input
+        $(".addMore").click(function() {
+            if ($('body').find('.fieldGroup').length < maxGroup) {
+                var fieldHTML = '<div class="form-group fieldGroup">' + $(".fieldGroupCopy").html() + '</div>';
+
+                // Replace the select2 element in fieldHTML with a new select element to avoid duplication
+                var clonedSelect = $('<select class="form-control mb-0 barcode select2" data-toggle="select2">' + $(".fieldGroupCopy").find('.barcode').html() + '</select>');
+
+                // Append the new 'select' element to the last fieldGroup and initialize select2 on it
+                $('body').find('.fieldGroup:last').after(fieldHTML);
+                $('body').find('.fieldGroup:last .col-sm-5:first').html(clonedSelect);
+
+                // Initialize select2 on the cloned select element
+                clonedSelect.select2({
+                    // Your select2 options (if any)
+                });
+
+                // Disable selected option in other select2 elements, excluding the last one
+                updateSelect2DisabledOptions();
+            } else {
+                alert('Maximum ' + maxGroup + ' groups are allowed.');
+            }
+        });
+
+        // remove fields group
+        $("body").on("click", ".remove", function() {
+            $(this).parents(".fieldGroup").remove();
+
+            // Disable selected option in other select2 elements after removal
+            updateSelect2DisabledOptions();
+        });
+
+        $(document).on('input', '.barcode', function() {
+            var barcode = $(this).val();
+
+            if (barcode) {
+                var currentInput = $(this); // Store the reference to 'this'
+                $.ajax({
+                    url: '/caribarang/' + barcode,
+                    type: "GET",
+                    data: { "_token": "{{ csrf_token() }}" },
+                    dataType: "json",
+                    success: function(data) {
+                        if (data) {
+                            // Use the stored reference to 'this' inside the loop
+                            currentInput.closest('.fieldGroup').find('.idBarang').empty();
+                            currentInput.closest('.fieldGroup').find('.kodeBarang').empty();
+                            currentInput.closest('.fieldGroup').find('.nama_barang').empty();
+                            $.each(data, function(key, barang) {
+                                currentInput.closest('.fieldGroup').find('.kodeBarang').val(barang.kode_barang);
+                                currentInput.closest('.fieldGroup').find('.idBarang').val(barang.id_barang);
+                                currentInput.closest('.fieldGroup').find('.namaBarang').val(barang.nama_barang);
+                            });
+                        } else {
+                            // Use the stored reference to 'this'
+                            currentInput.closest('.fieldGroup').find('.kodeBarang').empty();
+                            currentInput.closest('.fieldGroup').find('.idBarang').empty();
+                            currentInput.closest('.fieldGroup').find('.namaBarang').empty();
+                        }
+                    }
+                });
+            } else {
+                // Use the stored reference to 'this'
+                $(this).closest('.fieldGroup').find('.idBarang').empty();
+                $(this).closest('.fieldGroup').find('.namaBarang').empty();
+            }
+
+            updateSelect2DisabledOptions();
+        });
+
+
+        function updateSelect2DisabledOptions() {
+            // Disable selected option in other select2 elements
+            var selectedValues = $('.selected-barcode').find('option:selected').map(function() {
+                return this.value;
+            }).get();
+
+            $('.barcode').not('.selected-barcode').find('option').each(function() {
+                var value = $(this).val();
+                if (selectedValues.includes(value)) {
+                    $(this).attr('disabled', true);
+                } else {
+                    $(this).attr('disabled', false);
+                }
+            });
+        }
+    });
+</script>
+
+
+<script>
+    $(document).ready(function() {
+        // membatasi jumlah inputan
+        var maxGroup = 100;
+
+        // In the beginning, initialize select2 on the original select element and hide it
+        $('.barcode').select2({
+            // Your select2 options (if any)
+        }).hide();
+
+
+        // melakukan proses multiple input
+        $(".addMore").click(function() {
+            if ($('body').find('.fieldGroup').length < maxGroup) {
+                var fieldHTML = '<div class="form-group fieldGroup">' + $(".fieldGroupCopy").html() + '</div>';
+
+                // Replace the select2 element in fieldHTML with a new select element to avoid duplication
+                var clonedSelect = $('<select class="form-control mb-0 barcode select2" data-toggle="select2">' + $(".fieldGroupCopy").find('.barcode').html() + '</select>');
+
+                // Append the new 'select' element to the last fieldGroup and initialize select2 on it
+                $('body').find('.fieldGroup:last').after(fieldHTML);
+                $('body').find('.fieldGroup:last .col-sm-5:first').html(clonedSelect);
+
+                // Initialize select2 on the cloned select element
+                clonedSelect.select2({
+                    // Your select2 options (if any)
+                });
+
+                // Disable selected option in other select2 elements, excluding the last one
+                updateSelect2DisabledOptions();
+            } else {
+                alert('Maximum ' + maxGroup + ' groups are allowed.');
+            }
+        });
+
+        // remove fields group
+        $("body").on("click", ".remove", function() {
+            $(this).parents(".fieldGroup").remove();
+
+            // Disable selected option in other select2 elements after removal
+            updateSelect2DisabledOptions();
+        });
+
+        $(document).on('input', '.barcode', function() {
+            var barcode = $(this).val();
+
+            if (barcode) {
+                var currentInput = $(this); // Store the reference to 'this'
+                $.ajax({
+                    url: '/caribarang/' + barcode,
+                    type: "GET",
+                    data: { "_token": "{{ csrf_token() }}" },
+                    dataType: "json",
+                    success: function(data) {
+                        if (data) {
+                            // Use the stored reference to 'this' inside the loop
+                            currentInput.closest('.fieldGroup').find('.idBarang').empty();
+                            currentInput.closest('.fieldGroup').find('.kodeBarang').empty();
+                            currentInput.closest('.fieldGroup').find('.nama_barang').empty();
+                            $.each(data, function(key, barang) {
+                                currentInput.closest('.fieldGroup').find('.kodeBarang').val(barang.kode_barang);
+                                currentInput.closest('.fieldGroup').find('.idBarang').val(barang.id_barang);
+                                currentInput.closest('.fieldGroup').find('.namaBarang').val(barang.nama_barang);
+                            });
+                        } else {
+                            // Use the stored reference to 'this'
+                            currentInput.closest('.fieldGroup').find('.kodeBarang').empty();
+                            currentInput.closest('.fieldGroup').find('.idBarang').empty();
+                            currentInput.closest('.fieldGroup').find('.namaBarang').empty();
+                        }
+                    }
+                });
+            } else {
+                // Use the stored reference to 'this'
+                $(this).closest('.fieldGroup').find('.idBarang').empty();
+                $(this).closest('.fieldGroup').find('.namaBarang').empty();
+            }
+
+            updateSelect2DisabledOptions();
+        });
+
+
+        function updateSelect2DisabledOptions() {
+            // Disable selected option in other select2 elements
+            var selectedValues = $('.selected-barcode').find('option:selected').map(function() {
+                return this.value;
+            }).get();
+
+            $('.barcode').not('.selected-barcode').find('option').each(function() {
+                var value = $(this).val();
+                if (selectedValues.includes(value)) {
+                    $(this).attr('disabled', true);
+                } else {
+                    $(this).attr('disabled', false);
+                }
+            });
+        }
+    });
+</script>

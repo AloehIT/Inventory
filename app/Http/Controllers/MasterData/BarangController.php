@@ -18,9 +18,21 @@ class BarangController extends Controller
 
     public function barangData(Request $request)
     {
+        $start_date = $request->input('start_date');
+        $end_date = $request->input('end_date');
+
         $barang = Barang::join('users', 'users.id', '=', 'barangs.user_id')
         ->join('satuans', 'satuans.id', '=', 'barangs.satuan_id')
         ->select('barangs.*', 'satuans.satuan', 'users.username');
+
+        // Filter berdasarkan tanggal awal dan akhir jika ada
+        if ($start_date && $end_date) {
+            $barang->whereBetween('barangs.created_at', [$start_date, $end_date]);
+        } elseif ($start_date) {
+            $barang->where('barangs.created_at', '>=', $start_date);
+        } elseif ($end_date) {
+            $barang->where('barangs.created_at', '<=', $end_date);
+        }
 
         return Datatables::of($barang)
             ->addColumn('action', function ($row) {

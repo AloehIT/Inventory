@@ -58,23 +58,17 @@
                                     <table class="basic-datatable table dt-responsive nowrap w-100" style="font-size: 12px;">
                                         <thead>
                                             <tr>
-                                                <th>Satuan Barang</th>
-                                                <th>Ditambahkan</th>
-                                                <th>Keterangan</th>
-                                                <th style="width: 75px;">Action</th>
-                                            </tr>
-                                            <tr>
                                                 <th>
-                                                    <input type="text" class="form-control form-control-sm" placeholder="Satuan" />
+                                                    Satuan Barang <br> <input type="text" class="form-control form-control-sm" placeholder="Satuan" />
                                                 </th>
                                                 <th>
-                                                    <input type="date" class="form-control form-control-sm" placeholder="Search Ditambahkan" />
+                                                    Ditambahkan <br> <input type="date" class="form-control form-control-sm"/>
                                                 </th>
                                                 <th>
-                                                    <input type="text" class="form-control form-control-sm" placeholder="Keterangan">
+                                                    Keterangan <br> <input type="text" class="form-control form-control-sm" placeholder="Keterangan">
                                                 </th>
-                                                <th>
-                                                    <input type="text" class="form-control form-control-sm" readonly>
+                                                <th style="width: 75px;">
+                                                    Action <br> <span><br></span>
                                                 </th>
                                             </tr>
                                         </thead>
