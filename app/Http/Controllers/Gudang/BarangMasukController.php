@@ -3,12 +3,12 @@
 namespace App\Http\Controllers\Gudang;
 
 use App\Http\Controllers\Controller;
-use App\Models\DetailMasuk;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Http\Request;
 use Yajra\DataTables\Facades\DataTables;
 use Str;
 
+use App\Models\DetailMasuk;
 use App\Models\Perusahaan;
 use App\Models\User;
 use App\Models\BarangMasuk;

@@ -2,7 +2,7 @@
 
 
 
-
+use App\Http\Controllers\Gudang\BarangKeluarController;
 use App\Http\Controllers\Gudang\BarangMasukController;
 use App\Http\Controllers\ManajemenUsers\RoleController;
 use App\Http\Controllers\ManajemenUsers\UsersController;
@@ -109,6 +109,20 @@ Route::middleware('auth')->group(function(){
     Route::post('app/barang-masuk/stok/posts', [BarangMasukController::class, 'poststok'])->name('stok.barangmasuk');
     Route::get('app/barang-masuk/delete/{id}', [BarangMasukController::class, 'deletebarangmasuk'])->name('delete.detail-barang-masuk');
     Route::get('app/barang-masuk/deleteall/{id_bm}', [BarangMasukController::class, 'delete'])->name('delete.barang-masuk');
+});
+
+
+// Master Daftar BarangKeluar
+Route::middleware('auth')->group(function(){
+    Route::get('barangkeluar/detaildata/{id_bm}', [BarangKeluarController::class, 'detailData'])->name('data.detail.barangkeluar');
+    Route::get('barangkeluar/data', [BarangKeluarController::class, 'barangkeluarData'])->name('data.barangkeluar');
+    Route::get('app/barang-keluar/detail/{id_bm}', [BarangKeluarController::class, 'update'])->name('update.barang-keluar');
+    Route::get('app/barang-keluar/tambah', [BarangKeluarController::class, 'create'])->name('create.barang-keluar');
+    Route::resource('app/barang-keluar', BarangKeluarController::class);
+    Route::post('app/barang-keluar/posts', [BarangKeluarController::class, 'posts'])->name('posts.barangkeluar');
+    Route::post('app/barang-keluar/stok/posts', [BarangKeluarController::class, 'poststok'])->name('stok.barangkeluar');
+    Route::get('app/barang-keluar/delete/{id}', [BarangKeluarController::class, 'deletebarangkeluar'])->name('delete.detail-barang-keluar');
+    Route::get('app/barang-keluar/deleteall/{id_bm}', [BarangKeluarController::class, 'delete'])->name('delete.barang-keluar');
 });
 
 
