@@ -13,6 +13,7 @@ use App\Models\Perusahaan;
 use App\Models\User;
 use App\Models\BarangMasuk;
 use App\Models\Barang;
+use App\Models\Stok;
 
 
 class BarangMasukController extends Controller
@@ -23,50 +24,36 @@ class BarangMasukController extends Controller
         $start_date = $request->input('start_date');
         $end_date = $request->input('end_date');
 
-        $barang = BarangMasuk::all();
+        $query = BarangMasuk::query(); // Menggunakan query builder untuk membangun query
 
         // Filter berdasarkan tanggal awal dan akhir jika ada
         if ($start_date && $end_date) {
-            $barang->whereBetween('tgl_bm', [$start_date, $end_date]);
+            $query->whereBetween('tgl_bm', [$start_date, $end_date]);
         } elseif ($start_date) {
-            $barang->where('tgl_bm', '>=', $start_date);
+            $query->where('tgl_bm', '>=', $start_date);
         } elseif ($end_date) {
-            $barang->where('tgl_bm', '<=', $end_date);
+            $query->where('tgl_bm', '<=', $end_date);
         }
+
+        $barang = $query->get();
 
         return Datatables::of($barang)
             ->addColumn('jenis', function ($row) {
-                // Add your action buttons here, similar to your Blade file
                 return 'Barang Masuk';
             })
             ->addColumn('action', function ($row) {
-                // Add your action buttons here, similar to your Blade file
                 return view('inventory.barang-masuk.actions', compact('row'))->render();
-            })
-            ->editColumn('created_at', function ($row) {
-                return $row->created_at->isoFormat('dddd, D MMMM Y');
             })
             ->rawColumns(['action'])
             ->toJson();
     }
 
+
     public function detailData(Request $request)
     {
-        $start_date = $request->input('start_date');
-        $end_date = $request->input('end_date');
-
         $barang = BarangMasuk::join('detail_barang_masuk', 'detail_barang_masuk.id_bm', '=', 'barang_masuks.id_bm')
         ->where('barang_masuks.id_bm', $request->id_bm);
 
-
-        // Filter berdasarkan tanggal awal dan akhir jika ada
-        if ($start_date && $end_date) {
-            $barang->whereBetween('tgl_bm', [$start_date, $end_date]);
-        } elseif ($start_date) {
-            $barang->where('tgl_bm', '>=', $start_date);
-        } elseif ($end_date) {
-            $barang->where('tgl_bm', '<=', $end_date);
-        }
 
         return Datatables::of($barang)
             ->addColumn('jenis', function ($row) {
@@ -77,11 +64,11 @@ class BarangMasukController extends Controller
                 // Add your action buttons here, similar to your Blade file
                 return view('inventory.barang-masuk.actionsdetail', compact('row'))->render();
             })
-            ->editColumn('created_at', function ($row) {
-                return $row->created_at->isoFormat('dddd, D MMMM Y');
-            })
             ->editColumn('qty', function ($row) {
                 return $row->qty.' '.$row->satuan;
+            })
+            ->editColumn('created_at', function ($row) {
+                return $row->created_at->isoFormat('dddd, D MMMM Y');
             })
             ->rawColumns(['action'])
             ->toJson();
@@ -115,6 +102,12 @@ class BarangMasukController extends Controller
             ->join('satuans', 'satuans.id', '=', 'barangs.satuan_id')
             ->select('barangs.*', 'satuans.satuan', 'users.username')
             ->get(),
+
+            'cardbarang' => Barang::join('users', 'users.id', '=', 'barangs.user_id')
+            ->join('satuans', 'satuans.id', '=', 'barangs.satuan_id')
+            ->join('detail_barang_masuk', 'detail_barang_masuk.id_barang', '=', 'barangs.id_barang')
+            ->select('barangs.*', 'satuans.satuan', 'users.username', 'detail_barang_masuk.tanggal', 'detail_barang_masuk.qty', 'detail_barang_masuk.satuan', 'detail_barang_masuk.id_bm_detail')
+            ->get(),
         ];
 
         return view('inventory.barang-masuk.cubarang-masuk', $data);
@@ -135,7 +128,15 @@ class BarangMasukController extends Controller
             ->select('barangs.*', 'satuans.satuan', 'users.username')
             ->get(),
 
+            'cardbarang' => Barang::join('users', 'users.id', '=', 'barangs.user_id')
+            ->join('satuans', 'satuans.id', '=', 'barangs.satuan_id')
+            ->join('detail_barang_masuk', 'detail_barang_masuk.id_barang', '=', 'barangs.id_barang')
+            ->select('barangs.*', 'satuans.satuan', 'users.username', 'detail_barang_masuk.tanggal', 'detail_barang_masuk.qty', 'detail_barang_masuk.satuan', 'detail_barang_masuk.id_bm_detail')
+            ->get(),
+
             'detail'  => BarangMasuk::Where('id_bm', $id_bm)->first(),
+            'barangstok' => BarangMasuk::join('detail_barang_masuk', 'detail_barang_masuk.id_bm', '=', 'barang_masuks.id_bm')
+            ->where('barang_masuks.id_bm', $id_bm)->get()
         ];
 
         return view('inventory.barang-masuk.cubarang-masuk', $data);
@@ -144,108 +145,192 @@ class BarangMasukController extends Controller
 
     public function posts(Request $request)
     {
-        // dd($request->all());
-        $validator = Validator::make($request->all(), [
-            'id_bm_transaksi' => 'required',
-            'tgl_bm' => 'required',
-            'id_barang' => 'required',
-            'kode_barang' => 'required',
-            'barcode' => 'required',
-            'nama_barang' => 'required',
-            'keterangan' => 'required',
-            'qty' => 'required|integer|min:1',
-            'satuan' => 'required',
-        ], [
-            'id_bm_transaksi.required' => 'Kode Transaksi harus diisi!',
-            'tgl_bm.required' => 'Tanggal Masuk harus diisi!',
-            'keterangan.required' => 'Keterangan Transaksi harus diisi',
-            'barcode.required' => 'Barang harus dipilih!',
-            'id_barang.required' => 'Barang harus dipilih!',
-            'kode_barang.required' => 'Kode Barang harus diisi!',
-            'nama_barang.required' => 'Nama Barang harus diisi!',
-            'satuan.required' => 'Nama Barang harus diisi!',
-            'qty.required' => 'Qty harus diisi!',
-            'qty.integer' => 'Qty harus berupa angka!',
-            'qty.min' => 'Qty minimal 1!',
-        ]);
+        $action = $request->input('action');
 
-        if ($validator->fails()) {
-            return redirect()->back()->withErrors($validator)->withInput();
-        }
+        if ($action === 'tambahBarang') {
+            $validator = Validator::make($request->all(), [
+                'id_bm_transaksi' => 'required',
+                'tgl_bm' => 'required',
+                'id_barang' => 'required',
+                'kode_barang' => 'required',
+                'barcode' => 'required',
+                'nama_barang' => 'required',
+                'keterangan' => 'required',
+                'qty' => 'required|integer|min:1',
+                'satuan' => 'required',
+            ], [
+                'id_bm_transaksi.required' => 'Kode Transaksi harus diisi!',
+                'tgl_bm.required' => 'Tanggal Masuk harus diisi!',
+                'keterangan.required' => 'Keterangan Transaksi harus diisi',
+                'barcode.required' => 'Barang harus dipilih!',
+                'id_barang.required' => 'Barang harus dipilih!',
+                'kode_barang.required' => 'Kode Barang harus diisi!',
+                'nama_barang.required' => 'Nama Barang harus diisi!',
+                'satuan.required' => 'Nama Barang harus diisi!',
+                'qty.required' => 'Qty harus diisi!',
+                'qty.integer' => 'Qty harus berupa angka!',
+                'qty.min' => 'Qty minimal 1!',
+            ]);
 
-        $lastId = $request->has('id') ? $request->input('id') : BarangMasuk::max('id') + 1;
+            if ($validator->fails()) {
+                toast('Oops terjadi kesalahan', 'warning');
+                return redirect()->back()->withErrors($validator)->withInput();
+            }
 
-        $nullqty = 0;
-        $nullsqn = 0;
-        $qty = $request->input('qty');
+            $lastId = $request->has('id') ? $request->input('id') : BarangMasuk::max('id') + 1;
 
-        $no = DetailMasuk::max('id') + 1;
-        $id_detail = sprintf("%04s", $no).rand();
-        $tanggal = $request->input('tgl_bm');
+            $nullqty = 0;
+            $nullsqn = 0;
+            $id_bm_transaksi = $request->input('id_bm_transaksi');
+            $kode_barang = $request->input('kode_barang');
+            $qty = $request->input('qty');
 
-        $existingItem = DetailMasuk::where('id_bm', $request->input('id_bm'))
-        ->where('kode_barang', $request->input('kode_barang'))
-        ->first();
 
-        $cekbarang = DetailMasuk::where('id_bm', $request->id_bm)->first();
-        if(!$cekbarang){
-            $totalQty = $nullqty += $qty;
-            $sequence = $nullsqn += 1;
+            $no = DetailMasuk::max('id') + 1;
+            $id_detail = sprintf("%04s", $no).rand();
+            $tanggal = $request->input('tgl_bm');
 
-        }else{
-            $barangMasuk = DetailMasuk::Where('id_bm', $request->id_bm)->first();
-            $barang = BarangMasuk::where('id_bm', $barangMasuk->id_bm)->first();
-            $totalQty = $barang->total_qty += $qty;
-            if($existingItem){
-                $sequence = $barang->sequenc += 0;
+            $existingItem = DetailMasuk::where('id_bm', $id_bm_transaksi)
+            ->where('kode_barang', $kode_barang)
+            ->first();
+
+            $cekbarang = DetailMasuk::where('id_bm', $request->id_bm)->first();
+            if(!$cekbarang){
+                $totalQty = $nullqty += $qty;
+                $sequence = $nullsqn += 1;
+
             }else{
-                $sequence = $barang->sequenc += 1;
+                $barangMasuk = DetailMasuk::Where('id_bm', $request->id_bm)->first();
+                $barang = BarangMasuk::where('id_bm', $barangMasuk->id_bm)->first();
+                $totalQty = $barang->total_qty += $qty;
+                if($existingItem){
+                    $sequence = $barang->sequenc += 0;
+                }else{
+                    $sequence = $barang->sequenc += 1;
+                }
+            }
+
+            if ($existingItem) {
+                $existingItem->update([
+                    'qty' => $existingItem->qty + $qty,
+                ]);
+
+            } else {
+                $barangMasuk = DetailMasuk::create([
+                    'id_bm_detail' => $id_detail,
+                    'id' => $no,
+                    'tanggal' => $tanggal,
+                    'id_bm' => $request->input('id_bm'),
+                    'id_barang' => $request->input('id_barang'),
+                    'kode_barang' => $request->input('kode_barang'),
+                    'qty' => $request->input('qty'),
+                    'satuan' => $request->input('satuan'),
+                    'nama_barang' => $request->input('nama_barang'),
+                ]);
+            }
+
+            $barangMasuk = BarangMasuk::updateOrCreate(['id_bm' => $request['id_bm_transaksi']], [
+                'id' => $lastId,
+                'id_bm' => $request->input('id_bm_transaksi'),
+                'kode_barang' => $request->input('kode_barang'),
+                'tgl_bm' => $request->input('tgl_bm'),
+                'total_qty' => $totalQty,
+                'sequenc' => $sequence,
+                'keterangan' => $request->input('keterangan'),
+                'user_id' => auth()->user()->id,
+                'status' => 'draft',
+            ]);
+
+            if ($barangMasuk) {
+                toast('Proses berhasil dilakukan', 'success');
+                return redirect('app/barang-masuk/detail/'. $request->id_bm_transaksi);
+            } else {
+                toast('Proses gagal dilakukan', 'error');
+                return redirect()->back();
+            }
+        } elseif ($action === 'simpan') {
+            $validator = Validator::make($request->all(), [
+                'id_bm_transaksi' => 'required',
+                'tgl_bm' => 'required',
+                'keterangan' => 'required',
+            ], [
+                'id_bm_transaksi.required' => 'Kode Transaksi harus diisi!',
+                'tgl_bm.required' => 'Tanggal Masuk harus diisi!',
+                'keterangan.required' => 'Keterangan Transaksi harus diisi',
+
+            ]);
+
+            if ($validator->fails()) {
+                return redirect()->back()->withErrors($validator)->withInput();
+            }
+
+            $lastId = $request->has('id') ? $request->input('id') : BarangMasuk::max('id') + 1;
+
+            $barangMasuk = BarangMasuk::updateOrCreate(['id_bm' => $request['id_bm_transaksi']], [
+                'id' => $lastId,
+                'id_bm' => $request->input('id_bm_transaksi'),
+                'kode_barang' => $request->input('kode_barang'),
+                'tgl_bm' => $request->input('tgl_bm'),
+                'keterangan' => $request->input('keterangan'),
+                'user_id' => auth()->user()->id,
+                'status' => 'draft',
+            ]);
+
+            if ($barangMasuk) {
+                toast('Proses berhasil dilakukan', 'success');
+                return redirect('app/barang-masuk/detail/'. $request->id_bm_transaksi);
+            } else {
+                toast('Proses gagal dilakukan', 'error');
+                return redirect()->back();
+            }
+        } elseif ($action === 'approveStok') {
+            $set = false;
+
+            if (is_array($request->sts_inout)) {
+                foreach ($request->sts_inout as $key => $sts_inout) {
+                    $newSet = Stok::create([
+                        $last = Stok::max('id'),
+                        $lastid = $last + 1,
+                        $id_stok = sprintf("%04s", $last).rand(),
+                        $kode_transaksi = 'TRX'.'-'.'IN'.'-'.sprintf("%04s", $last).rand(),
+
+                        'sts_inout' => $sts_inout,
+                        'id' => $lastid,
+                        'id_stok' => $id_stok,
+                        'kode_transaksi' => $kode_transaksi,
+
+                        'id_transaksi' => $request->id_transaksi[$key],
+                        'id_transaksi_detail' => $request->id_transaksi_detail[$key],
+                        'id_barang' => $request->id_barang_stok[$key],
+                        'kode_barang' => $request->kode_barang_stok[$key],
+                        'nama_barang' => $request->nama_barang_stok[$key],
+                        'tanggal' => $request->tanggal_stok[$key],
+                        'qty' => $request->qty_stok[$key],
+                    ]);
+
+                    if ($newSet) {
+                        $set = true; // Update the variable if a record is successfully created
+                    }
+                }
+            } else {
+                toast('Proses gagal dilakukan', 'error');
+                return redirect()->back();
+            }
+
+            $set = BarangMasuk::updateOrCreate(['id_bm' => $request['id_transaksi'] ], [
+                'status' => $request->status,
+            ]);
+
+            if ($set) {
+                toast('Proses berhasil dilakukan','success');
+                return redirect()->back();
+            } else {
+                toast('Proses gagal dilakukan', 'error');
+                return redirect()->back();
             }
         }
 
-        $existingItem = DetailMasuk::where('id_bm', $request->input('id_bm'))
-        ->where('kode_barang', $request->input('kode_barang'))
-        ->first();
 
-
-        if ($existingItem) {
-            $existingItem->update([
-                'qty' => $existingItem->qty + $qty,
-            ]);
-
-        } else {
-            $barangMasuk = DetailMasuk::create([
-                'id_bm_detail' => $id_detail,
-                'id' => $no,
-                'tanggal' => $tanggal,
-                'id_bm' => $request->input('id_bm'),
-                'id_barang' => $request->input('id_barang'),
-                'kode_barang' => $request->input('kode_barang'),
-                'qty' => $request->input('qty'),
-                'satuan' => $request->input('satuan'),
-                'nama_barang' => $request->input('nama_barang'),
-            ]);
-        }
-
-        $barangMasuk = BarangMasuk::updateOrCreate(['id_bm' => $request['id_bm_transaksi']], [
-            'id' => $lastId,
-            'id_bm' => $request->input('id_bm_transaksi'),
-            'kode_barang' => $request->input('kode_barang'),
-            'tgl_bm' => $request->input('tgl_bm'),
-            'total_qty' => $totalQty,
-            'sequenc' => $sequence,
-            'deskripsi_barang_masuk' => $request->input('deskripsi'),
-            'keterangan' => $request->input('keterangan'),
-            'user_id' => auth()->user()->id,
-        ]);
-
-        if ($barangMasuk) {
-            toast('Proses berhasil dilakukan', 'success');
-            return redirect('app/barang-masuk/detail/'. $request->id_bm_transaksi);
-        } else {
-            toast('Proses gagal dilakukan', 'error');
-            return redirect()->back();
-        }
     }
 
     public function poststok(Request $request)
@@ -258,8 +343,17 @@ class BarangMasukController extends Controller
         ]);
 
         $id_bm = $stok->id_bm;
+        $cekstok = DetailMasuk::where('id_bm', $id_bm)->select('qty')->get();
+
+        $total_qty = 0;
+
+        foreach ($cekstok as $item) {
+            $total_qty += $item->qty;
+        }
+
+
         $barangMasuk = BarangMasuk::updateOrCreate(['id_bm' => $id_bm], [
-            'total_qty' => $qty,
+            'total_qty' => $total_qty,
         ]);
 
         if ($barangMasuk) {
@@ -299,16 +393,21 @@ class BarangMasukController extends Controller
         $detailbarangMasuk = DetailMasuk::Where('id_bm', $id_bm)->first();
         $barangMasuk = BarangMasuk::Where('id_bm', $id_bm)->first();
 
-        if ($barangMasuk) {
+        if (!$detailbarangMasuk) {
+            $barangMasuk->delete();
+            toast('Hapus data berhasil dilakukan','success');
+            return redirect()->back();
+        } else if ($barangMasuk) {
             $detailbarangMasuk->delete();
             $barangMasuk->delete();
             toast('Hapus data berhasil dilakukan','success');
             return redirect()->back();
-        } else {
+        }else {
             toast('Hpaus data gagal dilakukan', 'error');
             return redirect()->back();
         }
     }
+
 }
 
 

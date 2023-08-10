@@ -11,7 +11,7 @@ class BarangKeluar extends Model
 
     protected $table = 'barang_keluars';
 
-    protected $fillable = ['id', 'id_bk', 'tgl_bk', 'total_qty', 'sequenc', 'keterangan', 'user_id'];
+    protected $fillable = ['id', 'id_bk', 'tgl_bk', 'total_qty', 'sequenc', 'status', 'keterangan', 'user_id'];
 
     protected $hidden = [];
 }

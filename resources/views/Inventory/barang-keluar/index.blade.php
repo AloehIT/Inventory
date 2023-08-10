@@ -51,7 +51,7 @@
                                         </div>
                                         <div class="col-sm-3">
                                             <label></label><br>
-                                            <a href="{{ route('create.barang-masuk') }}" class="btn btn-sm btn-info"><i class="uil-plus"></i> Tambah</a>
+                                            <a href="{{ route('create.barang-keluar') }}" class="btn btn-sm btn-info"><i class="uil-plus"></i> Tambah</a>
                                             <button id="refresh-btn" class="btn btn-sm text-white" style="background: rgb(27, 96, 255);"><i class="bi bi-arrow-clockwise"></i> Refresh</button>
                                         </div>
                                     </div>
@@ -117,8 +117,8 @@
             },
             columns: [
                 { data: 'jenis', name: 'jenis' },
-                { data: 'tgl_bm', name: 'barang_keluar.tgl_bk' },
-                { data: 'id_bm', name: 'barang_keluar.id_bk' },
+                { data: 'tgl_bk', name: 'tgl_bk' },
+                { data: 'id_bk', name: 'id_bk' },
                 { data: 'keterangan', name: 'keterangan' },
                 { data: 'total_qty', name: 'total_qty'},
                 { data: 'action', name: 'action', orderable: false, searchable: false },

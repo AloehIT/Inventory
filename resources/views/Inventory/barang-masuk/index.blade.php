@@ -97,7 +97,6 @@
 </div>
 
 
-{{-- @include('inventory.barang-masuk.tabletransaksi') --}}
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
 <script>
     $(document).ready(function() {
@@ -106,7 +105,6 @@
             dom: '<"left"l>ftr<"right"ip>',
             serverSide: true,
             info: false,
-            // ajax: '{!! route('data.barangmasuk') !!}',
             ajax: {
                 url: '{!! route('data.barangmasuk') !!}',
                 data: function(d) {
@@ -117,8 +115,8 @@
             },
             columns: [
                 { data: 'jenis', name: 'jenis' },
-                { data: 'tgl_bm', name: 'barang_masuks.tgl_bm' },
-                { data: 'id_bm', name: 'barang_masuks.id_bm' },
+                { data: 'tgl_bm', name: 'tgl_bm' },
+                { data: 'id_bm', name: 'id_bm' },
                 { data: 'keterangan', name: 'keterangan' },
                 { data: 'total_qty', name: 'total_qty'},
                 { data: 'action', name: 'action', orderable: false, searchable: false },
@@ -146,33 +144,10 @@
                 .draw();
         });
 
-        // Fungsi untuk mengambil data tanggal awal dan akhir dari kolom "tgl_bm"
-        function getDateRangeFromColumn() {
-            var startDate = null;
-            var endDate = null;
-
-            table.column(1, { search: 'applied' }).data().each(function(date) {
-                var currentDate = new Date(date);
-                if (!startDate || currentDate < startDate) {
-                    startDate = currentDate;
-                }
-                if (!endDate || currentDate > endDate) {
-                    endDate = currentDate;
-                }
-            });
-
-            return {
-                start_date: startDate ? formatDate(startDate) : null,
-                end_date: endDate ? formatDate(endDate) : null,
-            };
-        }
-
-        // Fungsi untuk menampilkan data tanggal awal dan akhir di input date
-        function displayDateRange() {
-            var dateRange = getDateRangeFromColumn();
-            $('#start_date').val(dateRange.start_date);
-            $('#end_date').val(dateRange.end_date);
-        }
+        // Event change pada input tanggal "start_date" dan "end_date"
+        $('#start_date, #end_date').on('change', function() {
+            table.ajax.reload();
+        });
 
         // Fungsi untuk mengubah format tanggal menjadi YYYY-MM-DD
         function formatDate(date) {
@@ -182,18 +157,27 @@
             return year + '-' + month + '-' + day;
         }
 
-        // Event click pada tombol "Filter"
-        $('#filter-btn').on('click', function() {
-            table.ajax.reload();
-        });
+        // Tampilkan tanggal awal dan akhir di input date ketika halaman dimuat
+        function displayDateRange() {
+            var dateRange = getDateRangeFromColumn();
+            $('#start_date').val(dateRange.start_date);
+            $('#end_date').val(dateRange.end_date);
+        }
 
-        // Event change pada input tanggal "start_date" dan "end_date"
-        $('#start_date, #end_date').on('change', function() {
-            table.ajax.reload();
-        });
+        // Fungsi untuk mengambil data tanggal awal dan akhir dari kolom "tgl_bm"
+        function getDateRangeFromColumn() {
+            var startDate = $('#start_date').val();
+            var endDate = $('#end_date').val();
+
+            return {
+                start_date: startDate,
+                end_date: endDate,
+            };
+        }
 
         // Tampilkan tanggal awal dan akhir di input date ketika halaman dimuat
         displayDateRange();
     });
+
 </script>
 @endsection

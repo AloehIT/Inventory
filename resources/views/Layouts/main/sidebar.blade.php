@@ -61,7 +61,7 @@
 
         <li class="side-nav-item">
             <a data-bs-toggle="collapse" href="#sidebarMasterData" aria-expanded="false" aria-controls="sidebarMasterData"
-                class="side-nav-link {{ Request::is('app/daftar-barang/*', 'app/lokasi-gudang/*', 'app/kategori-barang/*', 'app/satuans/*', 'app/perangkat/*', 'app/lokasi-perangkat/*', 'app/pelanggan/*', 'app/data-teknisi/*', 'app/data-paket/*') ? 'text-white' : '' }}">
+                class="side-nav-link {{ Request::is('app/daftar-barang/*', 'app/lokasi-gudang/*', 'app/kategori-barang/*', 'app/satuans/*', 'app/perangkat/*', 'app/lokasi-perangkat/*', 'app/pelanggan/*', 'app/data-teknisi/*', 'app/data-paket/*', 'app/kartu-stok/*') ? 'text-white' : '' }}">
                 <i class="uil-database-alt"></i>
                 <span> Mater Data </span>
                 <span class="menu-arrow"></span>
@@ -76,6 +76,10 @@
                     </li>
                     <li>
                         <a href="{{ url('app/daftar-barang') }}" class="{{ Request::is('app/daftar-barang/*') ? 'text-white' : '' }}">Daftar Barang</a>
+                    </li>
+
+                    <li>
+                        <a href="{{ url('app/kartu-stok') }}" class="{{ Request::is('app/kartu-stok/*') ? 'text-white' : '' }}">Kartu Stok</a>
                     </li>
                 </ul>
             </div>
@@ -98,7 +102,14 @@
                         <a href="{{ url('app/barang-masuk') }}" class="{{ Request::is('app/barang-masuk/*') ? 'text-white' : '' }}">Barang Masuk</a>
                     </li>
                     <li>
-                        <a href="{{ url('app/barang-keluar') }}" class="{{ Request::is('app/barang-keluar/*') ? 'text-white' : '' }}">Barang Keluar</a>
+                        @php
+                            $stokCount = \App\Models\Stok::where('sts_inout', '+1')->count();
+                        @endphp
+                        @if ($stokCount > 0)
+                            <a href="{{ url('app/barang-keluar') }}" class="{{ Request::is('app/barang-keluar/*') ? 'text-white' : '' }}">Barang Keluar</a>
+                        @else
+                            <a href="javascript:void(0)" class="text-secondary disabled" data-bs-toggle="modal" data-bs-target="#stokKosongModal">Barang Keluar</a>
+                        @endif
                     </li>
                     <li>
                         <a href="{{ url('app/opname') }}" class="{{ Request::is('app/opname/*') ? 'text-white' : '' }}">Opname</a>
@@ -142,3 +153,5 @@
 
     <div class="clearfix"></div>
 </div>
+
+
