@@ -5,6 +5,7 @@
 use App\Http\Controllers\Gudang\BarangKeluarController;
 use App\Http\Controllers\Gudang\BarangMasukController;
 use App\Http\Controllers\Gudang\OpnameController;
+use App\Http\Controllers\Laporan\LaporanStokController;
 use App\Http\Controllers\ManajemenUsers\RoleController;
 use App\Http\Controllers\ManajemenUsers\UsersController;
 use App\Http\Controllers\MasterData\BarangController;
@@ -136,6 +137,13 @@ Route::middleware('auth')->group(function(){
     Route::post('app/opname/posts', [OpnameController::class, 'posts'])->name('posts.opname');
     Route::post('app/opname/stok/posts', [OpnameController::class, 'poststok'])->name('stok.opname');
     Route::get('app/opname/deleteall/{id_opname}', [OpnameController::class, 'delete'])->name('delete.opname');
+});
+
+// Kartu Stok
+Route::middleware('auth')->group(function(){
+    Route::get('kartu-stok/data', [LaporanStokController::class, 'getData'])->name('data.daftarStok');
+    Route::get('kartu-stok/hitung', [LaporanStokController::class, 'calculate'])->name('data.calculate');
+    Route::resource('app/kartu-stok', LaporanStokController::class);
 });
 
 

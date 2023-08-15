@@ -5,80 +5,93 @@ namespace App\Http\Controllers\Laporan;
 use Dompdf\Dompdf;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
+use Yajra\DataTables\Facades\DataTables;
+use DB;
 
 use App\Models\Perusahaan;
 use App\Models\User;
+use App\Models\Stok;
 use App\Models\Barang;
+
 
 class LaporanStokController extends Controller
 {
-    public function __construct()
+
+    public function getData(Request $request)
     {
-        $this->middleware(['auth']);
+        $start_date = $request->input('start_date');
+        $end_date = $request->input('end_date');
+        $selected_barcode = $request->input('selected_barcode');
+
+        $barang = Stok::query();
+
+        if ($selected_barcode) {
+            $barang->where('id_barang', $selected_barcode);
+        } else {
+            $barang->where('id_barang', ''); // Filter kosong agar tidak tampil data pada awalnya
+        }
+
+        if ($start_date && $end_date) {
+            $barang->whereBetween('tanggal', [$start_date, $end_date]);
+        } elseif ($start_date) {
+            $barang->where('tanggal', '>=', $start_date);
+        } elseif ($end_date) {
+            $barang->where('tanggal', '<=', $end_date);
+        }
+
+        $data = $barang->get(); // Menggunakan ->get() untuk mengambil data
+
+        // Ubah data menjadi array asosiatif
+        $data = $data->map(function ($item) {
+            return [
+                'tanggal' => $item->tanggal,
+                'kode_transaksi' => $item->kode_transaksi,
+                'nama_barang' => $item->nama_barang,
+                'qty' => $item->qty,
+                'sts_inout' => $item->sts_inout == -1 ? 'Barang Keluar' : 'Barang Masuk',
+            ];
+        });
+
+        return response()->json(['data' => $data]); // Mengembalikan data dalam format JSON
     }
+
+    public function calculate(Request $request)
+    {
+        $id_barang = $request->input('id_barang');
+        $start_date = $request->input('start_date');
+        $end_date = $request->input('end_date');
+
+        $total = Stok::where('id_barang', $id_barang);
+
+        if ($start_date && $end_date) {
+            $total->whereBetween('tanggal', [$start_date, $end_date]);
+        } elseif ($start_date) {
+            $total->where('tanggal', '>=', $start_date);
+        } elseif ($end_date) {
+            $total->where('tanggal', '<=', $end_date);
+        }
+
+        $result = $total->sum(DB::raw('sts_inout * qty'));
+
+        return response()->json(['total' => $result]);
+    }
+
 
     public function index()
     {
         $data = [
             'auth' => User::join('detail_users', 'detail_users.id', '=', 'users.id')
-            ->leftjoin('detail_alamat', 'detail_alamat.id', '=', 'users.id')
             ->where('users.id', auth()->user()->id)
             ->first(),
-            'perusahaan' => Perusahaan::where('setting', 'Config')->where('name_config', 'conf_perusahaan')->where('owner_id', auth()->user()->group)->first(),
-
+            'perusahaan' => Perusahaan::where('setting', 'Config')->where('name_config', 'conf_perusahaan')->first(),
             'barang' => Barang::all(),
         ];
 
-        return view('laporan-stok.index', $data);
+        return view('inventory.laporan-stok.index', $data);
     }
 
-    public function getData(Request $request)
-    {
-        $selectedOption = $request->input('opsi');
-
-        if($selectedOption == 'semua'){
-             $barangs = Barang::all();
-        } elseif ($selectedOption == 'minimum'){
-             $barangs = Barang::where('stok', '<=', 10)->get();
-        } elseif ($selectedOption == 'stok-habis'){
-             $barangs = Barang::where('stok', 0)->get();
-        } else {
-             $barangs = Barang::all();
-        }
-
-        return response()->json($barangs);
-    }
-
-    public function printStok(Request $request)
-    {
-        $data = [
-            'auth' => User::join('detail_users', 'detail_users.id', '=', 'users.id')
-            ->leftjoin('detail_alamat', 'detail_alamat.id', '=', 'users.id')
-            ->where('users.id', auth()->user()->id)
-            ->first(),
-            'perusahaan' => Perusahaan::where('setting', 'Config')->where('name_config', 'conf_perusahaan')->where('owner_id', auth()->user()->group)->first(),
-        ];
-
-        $selectedOption = $request->input('opsi');
-
-        if ($selectedOption == 'semua') {
-            $barangs = Barang::all();
-        } elseif ($selectedOption == 'minimum') {
-            $barangs = Barang::where('stok', '<=', 10)->get();
-        } elseif ($selectedOption == 'stok-habis') {
-            $barangs = Barang::where('stok', 0)->get();
-        } else {
-            $barangs = Barang::all();
-        }
 
 
 
-        // Generate PDF
-        $dompdf = new Dompdf();
-        $html = view('/laporan-stok/print-stok', compact('barangs', 'selectedOption'), $data)->render();
-        $dompdf->loadHtml($html);
-        $dompdf->setPaper('A4', 'landscape');
-        $dompdf->render();
-        $dompdf->stream('print-stok.pdf', ['Attachment' => false]);
-    }
 }
