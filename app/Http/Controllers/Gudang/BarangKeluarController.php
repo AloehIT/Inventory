@@ -167,14 +167,13 @@ class BarangKeluarController extends Controller
                 'kode_barang' => 'required',
                 'barcode' => 'required',
                 'nama_barang' => 'required',
-                'keterangan' => 'required',
                 'qty' => [
                     'required',
                     function ($attribute, $value, $fail) use ($request) {
                         $kode_barang = $request->kode_barang;
                         $cekStok = Stok::where('kode_barang', $kode_barang)->where('sts_inout', '+1')->first();
 
-                        if ($value > $cekStok->qty) {
+                        if ($cekStok === null || $value > $cekStok->qty) {
                             toast('Oops stok tidak cukup !', 'warning');
                             $fail("Stok Tidak Cukup !");
                         }
@@ -185,7 +184,6 @@ class BarangKeluarController extends Controller
             ], [
                 'id_bk_transaksi.required' => 'Kode Transaksi harus diisi!',
                 'tgl_bk.required' => 'Tanggal Masuk harus diisi!',
-                'keterangan.required' => 'Keterangan Transaksi harus diisi',
                 'barcode.required' => 'Barang harus dipilih!',
                 'id_barang.required' => 'Barang harus dipilih!',
                 'kode_barang.required' => 'Kode Barang harus diisi!',
@@ -242,7 +240,7 @@ class BarangKeluarController extends Controller
 
             $cekStok = Stok::where('kode_barang', $kode_barang)->where('sts_inout', '+1')->first();
 
-            if ($totalQty > $cekStok->qty ) {
+            if ($cekStok === null || $totalQty > $cekStok->qty) {
                 toast('Oops stok tidak cukup !', 'warning');
                 return redirect()->back()->with('error', 'Stok Tidak Cukup !');
             }
@@ -275,7 +273,7 @@ class BarangKeluarController extends Controller
                 'total_qty' => $totalQty,
                 'sequenc' => $sequence,
                 'deskripsi_barang_masuk' => $request->input('deskripsi'),
-                'keterangan' => $request->input('keterangan'),
+                'keterangan' => $request->input('keterangan') ?? 'Tidak ada',
                 'user_id' => auth()->user()->id,
                 'status' => 'draft',
             ]);
@@ -292,11 +290,9 @@ class BarangKeluarController extends Controller
             $validator = Validator::make($request->all(), [
                 'id_bk_transaksi' => 'required',
                 'tgl_bk' => 'required',
-                'keterangan' => 'required',
             ], [
                 'id_bk_transaksi.required' => 'Kode Transaksi harus diisi!',
                 'tgl_bk.required' => 'Tanggal Masuk harus diisi!',
-                'keterangan.required' => 'Keterangan Transaksi harus diisi',
             ]);
 
             if ($validator->fails()) {
@@ -312,7 +308,7 @@ class BarangKeluarController extends Controller
                 'kode_barang' => $request->input('kode_barang'),
                 'tgl_bk' => $request->input('tgl_bk'),
                 'deskripsi_barang_masuk' => $request->input('deskripsi'),
-                'keterangan' => $request->input('keterangan'),
+                'keterangan' => $request->input('keterangan') ?? 'Tidak ada',
                 'user_id' => auth()->user()->id,
                 'status' => 'draft',
             ]);
@@ -433,12 +429,16 @@ class BarangKeluarController extends Controller
         $detailbarangKeluar = DetailKeluar::Where('id_bk', $id_bk)->first();
         $barangKeluar = BarangKeluar::Where('id_bk', $id_bk)->first();
 
-        if ($barangKeluar) {
+        if (!$detailbarangKeluar) {
+            $barangKeluar->delete();
+            toast('Hapus data berhasil dilakukan','success');
+            return redirect()->back();
+        } else if ($barangKeluar) {
             $detailbarangKeluar->delete();
             $barangKeluar->delete();
             toast('Hapus data berhasil dilakukan','success');
             return redirect()->back();
-        } else {
+        }else {
             toast('Hpaus data gagal dilakukan', 'error');
             return redirect()->back();
         }

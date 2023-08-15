@@ -51,10 +51,10 @@
         <div class="modal-content">
 
             <div class="modal-body">
-                <div class="text-start mt-4 mb-2 mx-3">
+                <div class="text-start mt-2 mb-2 mx-3">
                     <div class="d-flex justify-content-between mt-3">
                         <div>
-                            <h5 class="text-uppercase mb-0"><i class="uil-filter text-warning"></i> Stok Kosong</h5>
+                            <h5 class="text-uppercase mb-0"><i class="bi bi-database-slash text-danger"></i> Stok Kosong</h5>
                         </div>
 
                         <a type="button" data-bs-dismiss="modal" class="text-danger" style="font-size: 25px;"><i class="uil-multiply"></i></a>

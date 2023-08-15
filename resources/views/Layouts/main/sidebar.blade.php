@@ -112,7 +112,14 @@
                         @endif
                     </li>
                     <li>
-                        <a href="{{ url('app/opname') }}" class="{{ Request::is('app/opname/*') ? 'text-white' : '' }}">Opname</a>
+                        @php
+                            $stokCount = \App\Models\Stok::where('sts_inout', '+1')->count();
+                        @endphp
+                        @if ($stokCount > 0)
+                            <a href="{{ url('app/opname') }}" class="{{ Request::is('app/opname/*') ? 'text-white' : '' }}">Opname</a>
+                        @else
+                            <a href="javascript:void(0)" class="text-secondary disabled" data-bs-toggle="modal" data-bs-target="#stokKosongModal">Opname</a>
+                        @endif
                     </li>
                 </ul>
             </div>

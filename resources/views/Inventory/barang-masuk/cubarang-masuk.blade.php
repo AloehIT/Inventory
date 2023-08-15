@@ -418,8 +418,8 @@ $status = isset($detail['status']) ? ($detail['status'] == "approve" ? "approve"
                                 <a type="button" href="{{ url('app/barang-masuk') }}" class="btn btn-sm text-white" style="background: red;"><i class="bi bi-x-lg"></i> Tutup</a>
                                 @if($status === "approve")
                                 @else
-                                <button type="submit" name="action" value="approveStok" class="btn btn-sm text-white mx-1" style="background: blue;"><i class="bi bi-download"></i> Simpan ke stok</button>
-                                <button type="submit" name="action" value="simpan" class="btn btn-sm text-white" style="background: green;"><i class="bi bi-check-circle-fill"></i> Simpan</button>
+                                <button type="submit" name="action" value="simpan" class="btn btn-sm text-white mx-1" style="background: green;"><i class="bi bi-check-circle-fill"></i> Simpan</button>
+                                <button type="submit" name="action" value="approveStok" class="btn btn-sm text-white" style="background: blue;"><i class="bi bi-download"></i> Simpan ke stok</button>
                                 @endif
                             </div>
                         </div>

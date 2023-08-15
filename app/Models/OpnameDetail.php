@@ -11,7 +11,7 @@ class OpnameDetail extends Model
 
     protected $table = 'tbl_opname_detail';
 
-    protected $fillable = ['id', 'id_opname_detail', 'id_opname', 'tgl_bm', 'id_barang', 'kode_barang', 'qty', 'satuan', 'nama_barang', 'tanggal'];
+    protected $fillable = ['id', 'id_opname_detail', 'id_opname', 'tgl_bm', 'id_barang', 'kode_barang', 'qty', 'current_qty', 'satuan', 'nama_barang', 'tanggal'];
 
     protected $hidden = [];
 }

@@ -4,6 +4,7 @@
 
 use App\Http\Controllers\Gudang\BarangKeluarController;
 use App\Http\Controllers\Gudang\BarangMasukController;
+use App\Http\Controllers\Gudang\OpnameController;
 use App\Http\Controllers\ManajemenUsers\RoleController;
 use App\Http\Controllers\ManajemenUsers\UsersController;
 use App\Http\Controllers\MasterData\BarangController;
@@ -125,6 +126,18 @@ Route::middleware('auth')->group(function(){
     Route::get('app/barang-keluar/deleteall/{id_bk}', [BarangKeluarController::class, 'delete'])->name('delete.barang-keluar');
 });
 
+// Master Daftar BarangKeluar
+Route::middleware('auth')->group(function(){
+    Route::get('opname/detaildata/{id_opname}', [OpnameController::class, 'detailData'])->name('data.detail.opname');
+    Route::get('opname/data', [OpnameController::class, 'getData'])->name('data.opname');
+    Route::get('app/opname/detail/{id_opname}', [OpnameController::class, 'update'])->name('update.opname');
+    Route::get('app/opname/tambah', [OpnameController::class, 'create'])->name('create.opname');
+    Route::resource('app/opname', OpnameController::class);
+    Route::post('app/opname/posts', [OpnameController::class, 'posts'])->name('posts.opname');
+    Route::post('app/opname/stok/posts', [OpnameController::class, 'poststok'])->name('stok.opname');
+    Route::get('app/opname/deleteall/{id_opname}', [OpnameController::class, 'delete'])->name('delete.opname');
+});
+
 
 // API GET Barang
 Route::middleware('auth')->group(function(){
@@ -137,3 +150,6 @@ Route::middleware('auth')->group(function(){
 });
 
 
+Route::middleware('auth')->group(function(){
+    Route::get('/opnameBarang/{barcode}', [OpnameController::class, 'getOpnameBarang'])->name('opnameBarang');
+});

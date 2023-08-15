@@ -6,7 +6,7 @@
 $tanggal = date('Y-n-j');
 $no = $generate + 1;
 $random = sprintf("%04s", $no);
-$id_bm = 'BRG-IN-'. $tanggal.'-'.$random;
+$id_opname = 'OPM-'. $tanggal.'-'.$random;
 
 $status = isset($detail['status']) ? ($detail['status'] == "approve" ? "approve" : "") : "";
 @endphp
@@ -25,48 +25,45 @@ $status = isset($detail['status']) ? ($detail['status'] == "approve" ? "approve"
     @include('layouts.main.breadcrumb')
 
     <div class="row">
-        <div class="col-12">
-            <div class="card recent-sales overflow-auto">
-                <div class="card-body">
-                    <div class="row justify-content-between mx-3">
-                        <div class="col-lg-6 col-md-6  col-12 py-3">
-                            <h3 class="text-dark">@yield('title') <i class="bi bi-box-arrow-in-left text-success"></i>
-                            </h3>
-                            <p class="mb-0">Data Seluruh @yield('title') yang terdaftar pada system</p>
-                            <p>Akses saat ini : <b>{{ $auth['role'] ?? '' }}</b> <i
-                                    class="bi bi-key-fill text-warning"></i></p>
-                        </div>
-                        <div class="col-lg-6 col-md-6 col-12 text-end p-3">
-                            <img src="{{ asset('assets/icon/bg-barang.png') }}" class="img-fluid" width="110">
+        <form action="{{ route('posts.opname') }}" method="POST" enctype="multipart/form-data">
+            @csrf
+            <div class="col-12">
+                <div class="card recent-sales overflow-auto">
+                    <div class="card-body">
+                        <div class="row justify-content-between mx-3">
+                            <div class="col-lg-6 col-md-6  col-12 py-3">
+                                <h3 class="text-dark">@yield('title') <i class="bi bi-box-arrow-in-left text-success"></i>
+                                </h3>
+                                <p class="mb-0">@yield('title') barang pada system</p>
+                                <p>Akses saat ini : <b>{{ $auth['role'] ?? '' }}</b> <i
+                                        class="bi bi-key-fill text-warning"></i></p>
+                            </div>
+                            <div class="col-lg-6 col-md-6 col-12 text-end p-3">
+                                <img src="{{ asset('assets/icon/bg-barang.png') }}" class="img-fluid" width="110">
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
-        </div>
 
-
-        <form id="form1" action="{{ route('posts.barangmasuk') }}" method="POST" enctype="multipart/form-data">
-            @csrf
             <div class="col-xl-12">
                 <div class="card p-4">
                     <div class="row gy-4 g-2">
-                        <input type="hidden" name="id" value="{{ $detail['id'] ?? '' }}">
-
                         <div class="col-sm-4 mb-0">
                             <div class="form-group form-group-default">
-                                <label>Kode Transaksi</label>
-                                <input name="id_bm_transaksi" type="hidden" class="form-control mb-0"
-                                    placeholder="ID Barang Masuk" value="{{ $detail['id_bm'] ?? $id_bm }}" readonly>
-                                <input name="id_bm" type="text" class="form-control mb-0"
-                                    placeholder="ID Barang Masuk" value="{{ $detail['id_bm'] ?? $id_bm }}" readonly>
+                                <label>ID Opname</label>
+                                <input name="id_opname_set" type="hidden" class="form-control mb-0"
+                                    placeholder="ID Barang Masuk" value="{{ $detail['id_opname'] ?? $id_opname }}" readonly>
+                                <input name="id_opname" type="text" class="form-control mb-0"
+                                    placeholder="ID Barang Masuk" value="{{ $detail['id_opname'] ?? $id_opname }}" readonly>
                             </div>
                         </div>
 
                         <div class="col-sm-4 mb-0">
                             <div class="form-group form-group-default">
-                                <label>Tanggal Masuk</label>
-                                <input type="date" name="tgl_bm" id="tgl_bm" value="{{ $detail['tgl_bm'] ?? date('Y-m-d') }}"  class="form-control @error ('tgl_bm') is-invalid @enderror">
-                                @error('tgl_bm')
+                                <label>Tanggal Opname</label>
+                                <input type="date" name="tgl_opname" id="tgl_opname" value="{{ $detail['tgl_opname'] ?? date('Y-m-d') }}"  class="form-control @error ('tgl_opname') is-invalid @enderror">
+                                @error('tgl_opname')
                                 <span class="invalid-feedback" role="alert" style="font-size: 11px;">
                                     <strong>{{ $message }}</strong>
                                 </span>
@@ -98,8 +95,66 @@ $status = isset($detail['status']) ? ($detail['status'] == "approve" ? "approve"
                                 </div>
                             </div>
 
-                            @if($title === "Data Barang Masuk")
-                            <table class="basic-datatable table dt-responsive nowrap w-100" style="font-size: 12px;">
+                            @if($title === "Data Opname Masuk")
+                                @if($detail->status === "approve")
+                                <table class="basic-datatable table dt-responsive nowrap w-100" style="font-size: 12px;">
+                                    <thead>
+                                        <tr>
+                                            <th>
+                                                Kode Barang <br> <input type="text" class="form-control form-control-sm" placeholder="Kode Barang" />
+                                            </th>
+                                            <th>
+                                                Nama Barang <br> <input type="text" class="form-control form-control-sm" placeholder="Nama Brang" />
+                                            </th>
+                                            <th>
+                                                Qty <br> <input type="number" min="0" class="form-control form-control-sm" placeholder="Qty" />
+                                            </th>
+
+                                            <th>
+                                                Current Qty <br> <input type="number" min="0" class="form-control form-control-sm" placeholder="Qty" />
+                                            </th>
+
+                                            <th>
+                                                Total Qty <br> <input type="number" min="0" class="form-control form-control-sm" placeholder="Qty" />
+                                            </th>
+
+                                            <th>
+                                                Ditambahkan <br> <input type="date" class="form-control form-control-sm" placeholder="Search Ditambahkan" />
+                                            </th>
+                                            <th style="width: 75px;">Action <br> <span><br></span></th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+
+                                    </tbody>
+                                </table>
+                                @else
+                                <table class="noapprove-datatable table dt-responsive nowrap w-100" style="font-size: 12px;">
+                                    <thead>
+                                        <tr>
+                                            <th>
+                                                Kode Barang <br> <input type="text" class="form-control form-control-sm" placeholder="Kode Barang" />
+                                            </th>
+                                            <th>
+                                                Nama Barang <br> <input type="text" class="form-control form-control-sm" placeholder="Nama Brang" />
+                                            </th>
+                                            <th>
+                                                Qty <br> <input type="number" min="0" class="form-control form-control-sm" placeholder="Qty" />
+                                            </th>
+
+                                            <th>
+                                                Ditambahkan <br> <input type="date" class="form-control form-control-sm" placeholder="Search Ditambahkan" />
+                                            </th>
+                                            <th style="width: 75px;">Action <br> <span><br></span></th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+
+                                    </tbody>
+                                </table>
+                                @endif
+                            @else
+                            <table class="add-datatable table dt-responsive nowrap w-100" style="font-size: 12px;">
                                 <thead>
                                     <tr>
                                         <th>
@@ -121,35 +176,12 @@ $status = isset($detail['status']) ? ($detail['status'] == "approve" ? "approve"
 
                                 </tbody>
                             </table>
-                            @else
-                            <table class="add-datatable table dt-responsive nowrap w-100" style="font-size: 12px;">
-                                <thead>
-                                    <tr>
-                                        <th>
-                                            Kode Barang <br> <input type="text" class="form-control form-control-sm" placeholder="Kode Barang" />
-                                        </th>
-                                        <th>
-                                            Nama Barang <br> <input type="text" class="form-control form-control-sm" placeholder="Nama Brang" />
-                                        </th>
-                                        <th>
-                                            Qty <br> <input type="number" min="0" class="form-control form-control-sm" placeholder="Barcode" />
-                                        </th>
-                                        <th>
-                                            Ditambahkan <br> <input type="date" class="form-control form-control-sm" placeholder="Search Ditambahkan" />
-                                        </th>
-                                        <th style="width: 75px;">Action <br> <span><br></span></th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-
-                                </tbody>
-                            </table>
                             @endif
                         </div>
                     </div>
                 </div>
 
-                @if($title === "Data Barang Masuk")
+                @if($title === "Data Opname Masuk")
                     @if($status === "approve")
                     @else
                     <div class="card p-4">
@@ -175,9 +207,10 @@ $status = isset($detail['status']) ? ($detail['status'] == "approve" ? "approve"
                                                 </div>
                                             </td>
 
+
                                             <td class="col-sm-1 mb-0">
                                                 <div class="form-group form-group-default">
-                                                    <label>Stok</label>
+                                                    <label>Jumlah Fisik</label>
                                                     <input name="qty" type="number" min="0"
                                                         class="form-control @error ('qty') is-invalid @enderror mb-0"
                                                         placeholder="0">
@@ -189,7 +222,7 @@ $status = isset($detail['status']) ? ($detail['status'] == "approve" ? "approve"
                                                 </div>
                                             </td>
 
-                                            <td class="col-sm-2 mb-0">
+                                            <td class="col-sm-2 mb-0" hidden>
                                                 <div class="form-group form-group-default">
                                                     <label>Satuan</label>
                                                     <input name="satuan" type="text" min="0" class="form-control mb-0 satuan @error ('satuan') is-invalid @enderror" placeholder="Satuan" readonly>
@@ -201,7 +234,7 @@ $status = isset($detail['status']) ? ($detail['status'] == "approve" ? "approve"
                                                 </div>
                                             </td>
 
-                                            <td class="col-sm-3 mb-0">
+                                            <td class="col-sm-3 mb-0" hidden>
                                                 <div class="form-group form-group-default">
                                                     <label>Kode Barang</label>
                                                     <input name="kode_barang" type="text"
@@ -246,7 +279,7 @@ $status = isset($detail['status']) ? ($detail['status'] == "approve" ? "approve"
 
                                             <td class="col-sm-3 mb-0">
                                                 <label for="">Aksi</label><br>
-                                                <button type="submit" id="submitBtn" class="btn btn-sm btn-info col-12"><i class="bi bi-database-fill-add"></i> Tambah</button>
+                                                <button type="submit" name="action" value="tambahBarang" class="btn btn-sm btn-info col-12"><i class="bi bi-database-fill-add"></i> Tambah</button>
                                             </td>
                                         </tr>
                                     </table>
@@ -283,7 +316,7 @@ $status = isset($detail['status']) ? ($detail['status'] == "approve" ? "approve"
 
                                         <td class="col-sm-1 mb-0">
                                             <div class="form-group form-group-default">
-                                                <label>Stok</label>
+                                                <label>Jumlah Fisik</label>
                                                 <input name="qty" type="number" min="0"
                                                     class="form-control @error ('qty') is-invalid @enderror mb-0"
                                                     placeholder="0">
@@ -295,7 +328,7 @@ $status = isset($detail['status']) ? ($detail['status'] == "approve" ? "approve"
                                             </div>
                                         </td>
 
-                                        <td class="col-sm-2 mb-0">
+                                        <td class="col-sm-2 mb-0" >
                                             <div class="form-group form-group-default">
                                                 <label>Satuan</label>
                                                 <input name="satuan" type="text" min="0" class="form-control mb-0 satuan @error ('satuan') is-invalid @enderror" placeholder="Satuan" readonly>
@@ -307,7 +340,7 @@ $status = isset($detail['status']) ? ($detail['status'] == "approve" ? "approve"
                                             </div>
                                         </td>
 
-                                        <td class="col-sm-3 mb-0">
+                                        <td class="col-sm-3 mb-0" hidden>
                                             <div class="form-group form-group-default">
                                                 <label>Kode Barang</label>
                                                 <input name="kode_barang" type="text"
@@ -352,7 +385,7 @@ $status = isset($detail['status']) ? ($detail['status'] == "approve" ? "approve"
 
                                         <td class="col-sm-3 mb-0">
                                             <label for="">Aksi</label><br>
-                                            <button type="submit" id="submitBtn" class="btn btn-sm btn-info col-12"><i class="bi bi-database-fill-add"></i> Tambah</button>
+                                            <button type="submit" name="action" value="tambahBarang" class="btn btn-sm btn-info col-12"><i class="bi bi-database-fill-add"></i> Tambah</button>
                                         </td>
                                     </tr>
                                 </table>
@@ -362,89 +395,99 @@ $status = isset($detail['status']) ? ($detail['status'] == "approve" ? "approve"
                     </div>
                 </div>
                 @endif
-
             </div>
-        </form>
 
-        <div class="col-xl-12">
-            <div class="card">
-                <div class="card-body d-flex flex-row justify-content-between mt-0">
-                    @if($title === "Data Barang Masuk")
-                    <div class="col-lg-9">
-                        <label for="">Aksi</label>
-                        <form id="form2" action="{{ route('aprovestok.barang-masuk') }}" method="POST">
-                            @csrf
+
+            <div class="col-xl-12">
+                <div class="card">
+                    <div class="card-body d-flex flex-row justify-content-between mt-0">
+                        @if($title === "Data Opname Masuk")
+                        <div class="col-lg-9">
+                            <label for="">Aksi</label>
                             @foreach ($barangstok as $stok)
+                                @php
+                                    $opnameDetail = \App\Models\OpnameDetail::join('tbl_stok', 'tbl_stok.id_barang', '=', 'tbl_opname_detail.id_barang')
+                                    ->where('tbl_stok.id_barang', $stok->id_barang)
+                                    ->where('tbl_opname_detail.id_opname', $detail->id_opname)
+                                    ->select('tbl_stok.sts_inout','tbl_stok.qty')
+                                    ->get();
+
+                                    $totalQty = 0;
+                                    foreach ($opnameDetail as $data) {
+                                        $totalQty += $data->sts_inout*$data->qty;
+                                    }
+                                    $qtyinput = $stok->qty - $totalQty;
+
+                                @endphp
+
                                 <div class="row g-1" hidden>
                                     <div class="form-group col-lg-3">
                                         <label for="">ID Transaksi</label>
-                                        <input type="text" name="id_transaksi[]" class="form-control" value="{{ $stok['id_bm'] ?? '' }}">
+                                        <input type="text" name="id_transaksi[]" class="form-control" value="{{ $stok['id_opname'] ?? '' }}">
                                     </div>
                                     <div class="form-group col-lg-3">
                                         <label for="">ID Detail Transaksi</label>
-                                        <input type="text" name="id_transaksi_detail[]" class="form-control" value="{{ $stok['id_bm_detail'] ?? '' }}">
+                                        <input type="text" name="id_transaksi_detail[]" class="form-control" value="{{ $stok['id_opname_detail'] ?? '' }}">
                                     </div>
                                     <div class="form-group col-lg-3">
                                         <label for="">ID Barang</label>
-                                        <input type="text" name="id_barang[]" class="form-control" value="{{ $stok['id_barang'] ?? '' }}">
+                                        <input type="text" name="id_barang_stok[]" class="form-control" value="{{ $stok['id_barang'] ?? '' }}">
                                     </div>
                                     <div class="form-group col-lg-3">
                                         <label for="">Kode Barang</label>
-                                        <input type="text" name="kode_barang[]" class="form-control" value="{{ $stok['kode_barang'] ?? '' }}">
+                                        <input type="text" name="kode_barang_stok[]" class="form-control" value="{{ $stok['kode_barang'] ?? '' }}">
                                     </div>
 
                                     <div class="form-group col-lg-3">
                                         <label for="">Nama Barang</label>
-                                        <input type="text" name="nama_barang[]" class="form-control" value="{{ $stok['nama_barang'] ?? '' }}">
+                                        <input type="text" name="nama_barang_stok[]" class="form-control" value="{{ $stok['nama_barang'] ?? '' }}">
                                     </div>
 
                                     <div class="form-group col-lg-3">
                                         <label for="">Tanggal</label>
-                                        <input type="date" name="tanggal[]" class="form-control" value="{{ $stok['tanggal'] ?? '' }}">
+                                        <input type="date" name="tanggal_stok[]" class="form-control" value="{{ $stok['tanggal'] ?? '' }}">
+                                    </div>
+
+                                    <div class="form-group col-lg-3">
+                                        <label for="">Current QTY</label>
+                                        <input type="text" name="current_qty[]" class="form-control" value="{{ $totalQty ?? '' }}">
                                     </div>
 
                                     <div class="form-group col-lg-3">
                                         <label for="">QTY</label>
-                                        <input type="text" name="qty[]" class="form-control" value="{{ $stok['qty'] ?? '' }}">
-                                    </div>
-
-                                    <div class="form-group col-lg-3">
-                                        <label for="">INOUT</label>
-                                        <input type="text" name="sts_inout[]" class="form-control" value="+1">
+                                        <input type="text" name="qty_stok[]" class="form-control" value="{{ $qtyinput ?? '' }}">
                                     </div>
                                 </div>
                             @endforeach
                             <input type="hidden" name="status" value="approve">
                             <div class="d-flex">
-                                <a type="button" href="{{ url('app/barang-masuk') }}" class="btn btn-sm text-white" style="background: red;"><i class="bi bi-x-lg"></i> Tutup</a>
+                                <a type="button" href="{{ url('app/opname') }}" class="btn btn-sm text-white" style="background: red;"><i class="bi bi-x-lg"></i> Tutup</a>
                                 @if($status === "approve")
                                 @else
-                                <button type="button" id="saveToStockButton" class="btn btn-sm text-white mx-1" style="background: blue;"><i class="bi bi-download"></i> Simpan ke stok</button>
-                                {{-- <button type="button" id="recordButton" class="btn btn-sm text-white" style="background: green;"><i class="bi bi-check-circle-fill"></i> Rekam</button> --}}
+                                <button type="submit" name="action" value="simpan" class="btn btn-sm text-white mx-1" style="background: green;"><i class="bi bi-check-circle-fill"></i> Simpan</button>
+                                <button type="submit" name="action" value="approveStok" class="btn btn-sm text-white" style="background: blue;"><i class="bi bi-download"></i> Aplikasikan Opname</button>
                                 @endif
                             </div>
-                        </form>
-                    </div>
-                    @else
-                    <div class="col-lg-9">
-                        <label for="">Aksi</label>
-                        <div class="d-flex">
-                            <a type="button" href="{{ url('app/barang-masuk') }}" class="btn btn-sm text-white" style="background: red;"><i class="bi bi-x-lg"></i> Tutup</a>
                         </div>
-                    </div>
-                    @endif
-                    <div class="col-lg-3">
-                        <label for="">Total Qty : </label>
-                        <input type="text" class="form-control" value="{{ $detail['total_qty'] ?? 0 }}">
+                        @else
+                        <div class="col-lg-9">
+                            <label for="">Aksi</label>
+                            <div class="d-flex">
+                                <a href="{{ url('app/opname') }}" class="btn btn-sm text-white" style="background: red;"><i class="bi bi-x-lg"></i> Tutup</a>
+                                <button type="submit" name="action" value="simpan" class="btn btn-sm text-white mx-1" style="background: green;"><i class="bi bi-check-circle-fill"></i> Simpan</button>
+                            </div>
+                        </div>
+                        @endif
+                        <div class="col-lg-3">
+                            <label for="">Total Qty : </label>
+                            <input type="number"  class="form-control bg-transparent" value="{{ $detail['total_qty'] ?? 0 }}" readonly>
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
+        </form>
     </div>
 </div>
-
-
-
 
 
 
@@ -464,12 +507,12 @@ $status = isset($detail['status']) ? ($detail['status'] == "approve" ? "approve"
                    </div>
                 </div>
 
-                <form class="ps-3 pe-3" action="{{ route('stok.barangmasuk') }}" method="POST">
+                <form class="ps-3 pe-3" action="{{ route('stok.opname') }}" method="POST">
                     @csrf
                     <div>
                         <div class="mb-3">
-                            <input type="hidden" id="idbm" name="idbm">
-                            <input type="hidden" id="idbmdetail" name="id_bm_detail">
+                            <input type="hidden" id="idopname" name="id_opname">
+                            <input type="hidden" id="idopnamedetail" name="id_opname_detail">
                             <label for="name_kategori" class="form-label">Jumlah Stok</label>
                             <div class="input-group">
                                 <input class="form-control @error('qty') is-invalid @enderror" type="number" min="0" id="stoks" name="qty" placeholder="0">
@@ -496,8 +539,8 @@ $status = isset($detail['status']) ? ($detail['status'] == "approve" ? "approve"
 
 
 
-@foreach ($barang as $data)
-<div class="modal fade" id="detail{{ $data->id_bm_detail }}" tabindex="-1" role="dialog"
+@foreach ($cardbarang as $data)
+<div class="modal fade" id="detail{{ $data->id_opname_detail }}" tabindex="-1" role="dialog"
     aria-hidden="true">
     @php
         $gambar =  $data['gambar'] ?? 'upload.gif';
@@ -571,40 +614,33 @@ $status = isset($detail['status']) ? ($detail['status'] == "approve" ? "approve"
     $(document).ready(function() {
         $(document).on('input', '.barcode', function() {
             var barcode = $(this).val();
+            var currentRow = $(this).closest('.fieldGroup'); // Menyimpan referensi ke baris saat ini
 
             if (barcode) {
-                var currentInput = $(this); // Store the reference to 'this'
                 $.ajax({
-                    url: '/caribarang/' + barcode,
+                    url: '/opnameBarang/' + barcode,
                     type: "GET",
-                    data: { "_token": "{{ csrf_token() }}" },
                     dataType: "json",
                     success: function(data) {
-                        if (data) {
-                            // Use the stored reference to 'this' inside the loop
-                            currentInput.closest('.fieldGroup').find('.idBarang').empty();
-                            currentInput.closest('.fieldGroup').find('.kodeBarang').empty();
-                            currentInput.closest('.fieldGroup').find('.nama_barang').empty();
-                            currentInput.closest('.fieldGroup').find('.satuan').empty();
-                            $.each(data, function(key, barang) {
-                                currentInput.closest('.fieldGroup').find('.kodeBarang').val(barang.kode_barang);
-                                currentInput.closest('.fieldGroup').find('.idBarang').val(barang.id_barang);
-                                currentInput.closest('.fieldGroup').find('.namaBarang').val(barang.nama_barang);
-                                currentInput.closest('.fieldGroup').find('.satuan').val(barang.satuan);
-                            });
+                        if (data.opname_barang.length > 0) {
+                            var opnameBarang = data.opname_barang[0];
+                            currentRow.find('.kodeBarang').val(opnameBarang.kode_barang);
+                            currentRow.find('.idBarang').val(opnameBarang.id_barang);
+                            currentRow.find('.namaBarang').val(opnameBarang.nama_barang);
+                            currentRow.find('.satuan').val(opnameBarang.satuan);
                         } else {
-                            // Use the stored reference to 'this'
-                            currentInput.closest('.fieldGroup').find('.kodeBarang').empty();
-                            currentInput.closest('.fieldGroup').find('.idBarang').empty();
-                            currentInput.closest('.fieldGroup').find('.namaBarang').empty();
-                            currentInput.closest('.fieldGroup').find('.satuan').empty();
+                            currentRow.find('.kodeBarang').val('');
+                            currentRow.find('.idBarang').val('');
+                            currentRow.find('.namaBarang').val('');
+                            currentRow.find('.satuan').val('');
                         }
                     }
                 });
             } else {
-                // Use the stored reference to 'this'
-                $(this).closest('.fieldGroup').find('.idBarang').empty();
-                $(this).closest('.fieldGroup').find('.namaBarang').empty();
+                currentRow.find('.idBarang').val('');
+                currentRow.find('.namaBarang').val('');
+                currentRow.find('.kodeBarang').val('');
+                currentRow.find('.satuan').val('');
             }
         });
     });
@@ -616,12 +652,102 @@ $status = isset($detail['status']) ? ($detail['status'] == "approve" ? "approve"
             dom: '<"left"l>ftr<"right"ip>',
             serverSide: true,
             info: false,
-            ajax: '{!! route('data.detail.barangmasuk', $detail['id_bm'] ?? '') !!}',
+            ajax: '{!! route('data.detail.opname', $detail['id_opname'] ?? '') !!}',
             columns: [
-                { data: 'kode_barang', name: 'detail_barang_masuk.kode_barang' },
-                { data: 'nama_barang', name: 'detail_barang_masuk.nama_barang' },
-                { data: 'qty', name: 'detail_barang_masuk.qty' },
-                { data: 'created_at', name: 'detail_barang_masuk.created_at' },
+                { data: 'kode_barang', name: 'tbl_opname_detail.kode_barang' },
+                { data: 'nama_barang', name: 'tbl_opname_detail.nama_barang' },
+                { data: 'qty', name: 'qty' },
+                { data: 'current_qty', name: 'current_qty' },
+                { data: 'total_qty', name: 'total_qty' },
+                { data: 'created_at', name: 'created_at' },
+                { data: 'action', name: 'action', orderable: false, searchable: false },
+            ],
+            language: {
+                search: '',
+                searchPlaceholder: 'Search...',
+            }
+        });
+
+        // Fungsi untuk melakukan refresh data tabel
+        function refreshTable() {
+            table.ajax.reload(null, false);
+        }
+
+        // Event click pada tombol refresh
+        $('#refresh-btn').on('click', function() {
+            refreshTable();
+        });
+
+        // Apply search for each column
+        $('.basic-datatable thead th input').on('keyup change', function() {
+            table.column($(this).parent().index() + ':visible')
+                .search(this.value)
+                .draw();
+        });
+
+        // Fungsi untuk mengambil data tanggal awal dan akhir dari kolom "tgl_bm"
+        function getDateRangeFromColumn() {
+            var startDate = null;
+            var endDate = null;
+
+            table.column(1, { search: 'applied' }).data().each(function(date) {
+                var currentDate = new Date(date);
+                if (!startDate || currentDate < startDate) {
+                    startDate = currentDate;
+                }
+                if (!endDate || currentDate > endDate) {
+                    endDate = currentDate;
+                }
+            });
+
+            return {
+                start_date: startDate ? formatDate(startDate) : null,
+                end_date: endDate ? formatDate(endDate) : null,
+            };
+        }
+
+        // Fungsi untuk menampilkan data tanggal awal dan akhir di input date
+        function displayDateRange() {
+            var dateRange = getDateRangeFromColumn();
+            $('#start_date').val(dateRange.start_date);
+            $('#end_date').val(dateRange.end_date);
+        }
+
+        // Fungsi untuk mengubah format tanggal menjadi YYYY-MM-DD
+        function formatDate(date) {
+            var year = date.getFullYear();
+            var month = ('0' + (date.getMonth() + 1)).slice(-2);
+            var day = ('0' + date.getDate()).slice(-2);
+            return year + '-' + month + '-' + day;
+        }
+
+        // Event click pada tombol "Filter"
+        $('#filter-btn').on('click', function() {
+            table.ajax.reload();
+        });
+
+        // Event change pada input tanggal "start_date" dan "end_date"
+        $('#start_date, #end_date').on('change', function() {
+            table.ajax.reload();
+        });
+
+        // Tampilkan tanggal awal dan akhir di input date ketika halaman dimuat
+        displayDateRange();
+    });
+
+    $(document).ready(function() {
+        var table = $('.noapprove-datatable').DataTable({
+            lengthChange: false,
+            processing: true,
+            dom: '<"left"l>ftr<"right"ip>',
+            serverSide: true,
+            info: false,
+            ajax: '{!! route('data.detail.opname', $detail['id_opname'] ?? '') !!}',
+            columns: [
+                { data: 'kode_barang', name: 'tbl_opname_detail.kode_barang' },
+                { data: 'nama_barang', name: 'tbl_opname_detail.nama_barang' },
+                { data: 'qty', name: 'qty' },
+                { data: 'created_at', name: 'created_at' },
                 { data: 'action', name: 'action', orderable: false, searchable: false },
             ],
             language: {
@@ -704,10 +830,10 @@ $status = isset($detail['status']) ? ($detail['status'] == "approve" ? "approve"
             dom: '<"left"l>ftr<"right"ip>',
             serverSide: true,
             info: false,
-            ajax: '{!! route('data.detail.barangmasuk', $id_bm ?? '') !!}',
+            ajax: '{!! route('data.detail.opname', $id_opname ?? '') !!}',
             columns: [
-                { data: 'kode_barang', name: 'detail_barang_masuk.kode_barang' },
-                { data: 'nama_barang', name: 'detail_barang_masuk.nama_barang' },
+                { data: 'kode_barang', name: 'tbl_opname_detail.kode_barang' },
+                { data: 'nama_barang', name: 'tbl_opname_detail.nama_barang' },
                 { data: 'qty', name: 'qty' },
                 { data: 'created_at', name: 'created_at' },
                 { data: 'action', name: 'action', orderable: false, searchable: false },
@@ -791,134 +917,13 @@ $status = isset($detail['status']) ? ($detail['status'] == "approve" ? "approve"
     $(document).on("click", ".passStok", function () {
         var satuans = $(this).data('satuans');
         var stoks = $(this).data('stoks');
-        var idbm = $(this).data('idbm');
-        var idbmdetail = $(this).data('idbmdetail');
+        var idopname = $(this).data('idopname');
+        var idopnamedetail = $(this).data('idopnamedetail');
 
         $(".modal-body #satuans").val( satuans );
         $(".modal-body #stoks").val( stoks );
-        $(".modal-body #idbm").val( idbm );
-        $(".modal-body #idbmdetail").val( idbmdetail );
+        $(".modal-body #idopname").val( idopname );
+        $(".modal-body #idopnamedetail").val( idopnamedetail );
     });
 </script>
 @endsection
-
-
-
-$validator = Validator::make($request->all(), [
-            'id_bm_transaksi' => 'required',
-            'tgl_bm' => 'required',
-            'id_barang' => 'required',
-            'kode_barang' => 'required',
-            'barcode' => 'required',
-            'nama_barang' => 'required',
-            'keterangan' => 'required',
-            'qty' => 'required|integer|min:1',
-            'satuan' => 'required',
-        ], [
-            'id_bm_transaksi.required' => 'Kode Transaksi harus diisi!',
-            'tgl_bm.required' => 'Tanggal Masuk harus diisi!',
-            'keterangan.required' => 'Keterangan Transaksi harus diisi',
-            'barcode.required' => 'Barang harus dipilih!',
-            'id_barang.required' => 'Barang harus dipilih!',
-            'kode_barang.required' => 'Kode Barang harus diisi!',
-            'nama_barang.required' => 'Nama Barang harus diisi!',
-            'satuan.required' => 'Nama Barang harus diisi!',
-            'qty.required' => 'Qty harus diisi!',
-            'qty.integer' => 'Qty harus berupa angka!',
-            'qty.min' => 'Qty minimal 1!',
-        ]);
-
-        if ($validator->fails()) {
-            return redirect()->back()->withErrors($validator)->withInput();
-        }
-
-        $lastId = $request->has('id') ? $request->input('id') : BarangMasuk::max('id') + 1;
-
-        $nullqty = 0;
-        $nullsqn = 0;
-        $qty = $request->input('qty');
-
-        $no = DetailMasuk::max('id') + 1;
-        $id_detail = sprintf("%04s", $no).rand();
-        $tanggal = $request->input('tgl_bm');
-
-        $existingItem = DetailMasuk::where('id_bm', $request->input('id_bm'))
-        ->where('kode_barang', $request->input('kode_barang'))
-        ->first();
-
-        $cekbarang = DetailMasuk::where('id_bm', $request->id_bm)->first();
-        if(!$cekbarang){
-            $totalQty = $nullqty += $qty;
-            $sequence = $nullsqn += 1;
-
-        }else{
-            $barangMasuk = DetailMasuk::Where('id_bm', $request->id_bm)->first();
-            $barang = BarangMasuk::where('id_bm', $barangMasuk->id_bm)->first();
-            $totalQty = $barang->total_qty += $qty;
-            if($existingItem){
-                $sequence = $barang->sequenc += 0;
-            }else{
-                $sequence = $barang->sequenc += 1;
-            }
-        }
-
-        $existingItem = DetailMasuk::where('id_bm', $request->input('id_bm'))
-        ->where('kode_barang', $request->input('kode_barang'))
-        ->first();
-
-
-        if ($existingItem) {
-            $existingItem->update([
-                'qty' => $existingItem->qty + $qty,
-            ]);
-
-        } else {
-            $barangMasuk = DetailMasuk::create([
-                'id_bm_detail' => $id_detail,
-                'id' => $no,
-                'tanggal' => $tanggal,
-                'id_bm' => $request->input('id_bm'),
-                'id_barang' => $request->input('id_barang'),
-                'kode_barang' => $request->input('kode_barang'),
-                'qty' => $request->input('qty'),
-                'satuan' => $request->input('satuan'),
-                'nama_barang' => $request->input('nama_barang'),
-            ]);
-        }
-
-        $barangMasuk = BarangMasuk::updateOrCreate(['id_bm' => $request['id_bm_transaksi']], [
-            'id' => $lastId,
-            'id_bm' => $request->input('id_bm_transaksi'),
-            'kode_barang' => $request->input('kode_barang'),
-            'tgl_bm' => $request->input('tgl_bm'),
-            'total_qty' => $totalQty,
-            'sequenc' => $sequence,
-            'deskripsi_barang_masuk' => $request->input('deskripsi'),
-            'keterangan' => $request->input('keterangan'),
-            'user_id' => auth()->user()->id,
-            'status' => 'draft',
-        ]);
-
-        if ($barangMasuk) {
-            toast('Proses berhasil dilakukan', 'success');
-            return redirect('app/barang-masuk/detail/'. $request->id_bm_transaksi);
-        } else {
-            toast('Proses gagal dilakukan', 'error');
-            return redirect()->back();
-        }
-
-
-        $barang = Barang::join('tbl_stok', 'tbl_stok.id_barang', '=', 'barangs.id_barang')
-                    ->where('barangs.id_barang', $request->id_barang_stok[$key])
-                    ->first();
-
-                    $currentStock = $barang->qty;
-                    $qtyToAddOrSubtract = $request->qty_stok[$key];
-
-                    $newStock = $currentStock + ($sts_inout === 'IN' ? $qtyToAddOrSubtract : -$qtyToAddOrSubtract);
-
-                    if ($newStock < 0) {
-                        $sts_inout = -1;
-                    } else {
-                        $sts_inout = +1;
-                    }

@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\Validator;
 use Illuminate\Http\Request;
 use Yajra\DataTables\Facades\DataTables;
 use Str;
+use DB;
 
 use App\Models\DetailMasuk;
 use App\Models\Perusahaan;
@@ -155,13 +156,11 @@ class BarangMasukController extends Controller
                 'kode_barang' => 'required',
                 'barcode' => 'required',
                 'nama_barang' => 'required',
-                'keterangan' => 'required',
                 'qty' => 'required|integer|min:1',
                 'satuan' => 'required',
             ], [
                 'id_bm_transaksi.required' => 'Kode Transaksi harus diisi!',
                 'tgl_bm.required' => 'Tanggal Masuk harus diisi!',
-                'keterangan.required' => 'Keterangan Transaksi harus diisi',
                 'barcode.required' => 'Barang harus dipilih!',
                 'id_barang.required' => 'Barang harus dipilih!',
                 'kode_barang.required' => 'Kode Barang harus diisi!',
@@ -236,7 +235,7 @@ class BarangMasukController extends Controller
                 'tgl_bm' => $request->input('tgl_bm'),
                 'total_qty' => $totalQty,
                 'sequenc' => $sequence,
-                'keterangan' => $request->input('keterangan'),
+                'keterangan' => $request->input('keterangan') ?? 'Tidak ada',
                 'user_id' => auth()->user()->id,
                 'status' => 'draft',
             ]);
@@ -252,12 +251,9 @@ class BarangMasukController extends Controller
             $validator = Validator::make($request->all(), [
                 'id_bm_transaksi' => 'required',
                 'tgl_bm' => 'required',
-                'keterangan' => 'required',
             ], [
                 'id_bm_transaksi.required' => 'Kode Transaksi harus diisi!',
                 'tgl_bm.required' => 'Tanggal Masuk harus diisi!',
-                'keterangan.required' => 'Keterangan Transaksi harus diisi',
-
             ]);
 
             if ($validator->fails()) {
@@ -271,7 +267,7 @@ class BarangMasukController extends Controller
                 'id_bm' => $request->input('id_bm_transaksi'),
                 'kode_barang' => $request->input('kode_barang'),
                 'tgl_bm' => $request->input('tgl_bm'),
-                'keterangan' => $request->input('keterangan'),
+                'keterangan' => $request->input('keterangan') ?? 'Tidak ada',
                 'user_id' => auth()->user()->id,
                 'status' => 'draft',
             ]);
@@ -329,9 +325,8 @@ class BarangMasukController extends Controller
                 return redirect()->back();
             }
         }
-
-
     }
+
 
     public function poststok(Request $request)
     {
