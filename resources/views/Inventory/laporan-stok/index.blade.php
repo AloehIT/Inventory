@@ -100,8 +100,8 @@
                                     <div class="col-lg-5 ml-auto">
                                         <label for=""><br></label>
                                         <div class="">
-                                            <a href="javascript:void(0)" class="btn text-white" style="background: blue;" id="print-stok" target="_blank"><i class="uil-print"></i> Print PDF</a>
-                                            <a href="javascript:void(0)" class="btn text-white" style="background: green;" id="print-stok" target="_blank"><i class="uil-print"></i> Print Excel</a>
+                                            <a href="javascript:void(0)" class="btn text-white" style="background: blue;" id="print-pdf" target="_blank"><i class="uil-print"></i> Print PDF</a>
+                                            <a href="javascript:void(0)" class="btn text-white" style="background: green;" id="print-excel" target="_blank"><i class="uil-print"></i> Print Excel</a>
                                         </div>
                                     </div>
 
@@ -155,6 +155,46 @@ $(document).ready(function() {
             searchPlaceholder: 'Search...',
         }
     });
+
+    // Inisialisasi tombol cetak PDF
+    $('#print-pdf').on('click', function() {
+        var selectedBarcode = $('#opsi-laporan-stok').val();
+        var startDate = $('#start_date').val();
+        var endDate = $('#end_date').val();
+        var url = '{!! route('print.pdf') !!}'; // Ganti dengan URL yang sesuai untuk cetak PDF
+
+        if (selectedBarcode) {
+            url += '?id_barang=' + selectedBarcode;
+        }
+        if (startDate) {
+            url += '&start_date=' + startDate;
+        }
+        if (endDate) {
+            url += '&end_date=' + endDate;
+        }
+
+        window.open(url, '_blank');
+    });
+
+    // Inisialisasi tombol cetak Excel
+    // $('#print-excel').on('click', function() {
+    //     var selectedBarcode = $('#opsi-laporan-stok').val();
+    //     var startDate = $('#start_date').val();
+    //     var endDate = $('#end_date').val();
+    //     var url = '{!! route('data.excel') !!}'; // Ganti dengan URL yang sesuai untuk cetak Excel
+
+    //     if (selectedBarcode) {
+    //         url += '?id_barang=' + selectedBarcode;
+    //     }
+    //     if (startDate) {
+    //         url += '&start_date=' + startDate;
+    //     }
+    //     if (endDate) {
+    //         url += '&end_date=' + endDate;
+    //     }
+
+    //     window.open(url, '_blank');
+    // });
 
     function updateHasilPerhitungan() {
         var selectedBarcode = $('#opsi-laporan-stok').val();

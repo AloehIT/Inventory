@@ -46,7 +46,7 @@
             </tr>
         </thead>
         <tbody>
-            @foreach($barangs as $index => $barang)
+            @foreach($data as $index => $barang)
             <tr>
                 <td>{{ $index + 1 }}</td>
                 <td>{{ $barang->kode_barang }}</td>

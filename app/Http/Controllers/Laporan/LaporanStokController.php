@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Yajra\DataTables\Facades\DataTables;
 use DB;
+use Barryvdh\DomPDF\Facade as PDF;
 
 use App\Models\Perusahaan;
 use App\Models\User;
@@ -92,6 +93,33 @@ class LaporanStokController extends Controller
     }
 
 
+    public function printPDF(Request $request)
+    {
+        $start_date = $request->input('start_date');
+        $end_date = $request->input('end_date');
+        $selected_barcode = $request->input('selected_barcode');
 
+        $barang = Stok::query();
+
+        if ($selected_barcode) {
+            $barang->where('id_barang', $selected_barcode);
+        } else {
+            $barang->where('id_barang', ''); // Filter kosong agar tidak tampil data pada awalnya
+        }
+
+        if ($start_date && $end_date) {
+            $barang->whereBetween('tanggal', [$start_date, $end_date]);
+        } elseif ($start_date) {
+            $barang->where('tanggal', '>=', $start_date);
+        } elseif ($end_date) {
+            $barang->where('tanggal', '<=', $end_date);
+        }
+
+        $data = $barang->get();
+
+        $pdf = PDF::loadView('laporan-stok.print-stok', ['data' => $data]);
+
+        return $pdf->download('stok_report.pdf');
+    }
 
 }

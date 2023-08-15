@@ -20,6 +20,7 @@ use App\Http\Controllers\Auth\LogoutController;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
+use Barryvdh\DomPDF\Facade as PDF;
 
 
 
@@ -143,6 +144,7 @@ Route::middleware('auth')->group(function(){
 Route::middleware('auth')->group(function(){
     Route::get('kartu-stok/data', [LaporanStokController::class, 'getData'])->name('data.daftarStok');
     Route::get('kartu-stok/hitung', [LaporanStokController::class, 'calculate'])->name('data.calculate');
+    Route::get('kartu-stok/print-pdf', [StokController::class, 'printPDF'])->name('print.pdf');
     Route::resource('app/kartu-stok', LaporanStokController::class);
 });
 
