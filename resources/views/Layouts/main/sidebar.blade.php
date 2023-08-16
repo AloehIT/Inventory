@@ -127,15 +127,15 @@
 
         <li class="side-nav-item">
             <a data-bs-toggle="collapse" href="#laporanBarang" aria-expanded="false" aria-controls="laporanBarang"
-                class="side-nav-link {{ Request::is('#', '#', '#') ? 'text-white' : '' }}">
+                class="side-nav-link {{ Request::is('app/laporan/barang-masuk/*', '#', '#') ? 'text-white' : '' }}">
                 <i class="uil-clipboard-alt"></i>
                 <span> Laporan </span>
                 <span class="menu-arrow"></span>
             </a>
-            <div class="collapse {{ Request::is('#', '#', '#') ? 'show' : '' }}" id="laporanBarang">
+            <div class="collapse {{ Request::is('app/laporan/barang-masuk/*', '#', '#') ? 'show' : '' }}" id="laporanBarang">
                 <ul class="side-nav-second-level">
                     <li>
-                        <a href="{{ url('#') }}" class="{{ Request::is('#') ? 'text-white' : '' }}">Barang Masuk</a>
+                        <a href="{{ url('app/laporan/barang-masuk') }}" class="{{ Request::is('app/laporan/barang-masuk/*') ? 'text-white' : '' }}">Barang Masuk</a>
                     </li>
                     <li>
                         <a href="{{ url('#') }}" class="{{ Request::is('#') ? 'text-white' : '' }}">Barang Keluar</a>

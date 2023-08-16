@@ -19,7 +19,7 @@
                 <div class="card-body">
                     <div class="row justify-content-between mx-3">
                         <div class="col-lg-6 col-md-6  col-12 py-3">
-                            <h3 class="text-dark">@yield('title') ERP <i class="bi bi-archive text-warning"></i></h3>
+                            <h3 class="text-dark">@yield('title') <i class="bi bi-archive text-warning"></i></h3>
                             <p class="mb-0">Data Seluruh @yield('title') yang terdaftar pada system</p>
                             <p>Akses saat ini : <b>{{ $auth['role'] ?? '' }}</b> <i
                                     class="bi bi-key-fill text-warning"></i></p>
