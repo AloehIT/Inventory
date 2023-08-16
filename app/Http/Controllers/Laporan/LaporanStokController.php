@@ -8,7 +8,6 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Yajra\DataTables\Facades\DataTables;
 use DB;
-use Barryvdh\DomPDF\Facade as PDF;
 
 use App\Models\Perusahaan;
 use App\Models\User;
@@ -99,6 +98,11 @@ class LaporanStokController extends Controller
         $end_date = $request->input('end_date');
         $selected_barcode = $request->input('selected_barcode');
 
+        $auth = User::join('detail_users', 'detail_users.id', '=', 'users.id')
+            ->where('users.id', auth()->user()->id)
+            ->first();
+        $perusahaan = Perusahaan::where('setting', 'Config')->where('name_config', 'conf_perusahaan')->first();
+
         $barang = Stok::query();
 
         if ($selected_barcode) {
@@ -117,9 +121,12 @@ class LaporanStokController extends Controller
 
         $data = $barang->get();
 
-        $pdf = PDF::loadView('laporan-stok.print-stok', ['data' => $data]);
-
-        return $pdf->download('stok_report.pdf');
+        $dompdf = new Dompdf();
+        $html = view('inventory.laporan-stok.print-stok', ['data' => $data], compact('auth', 'perusahaan', 'start_date', 'end_date'))->render();
+        $dompdf->loadHtml($html);
+        $dompdf->setPaper('A4', 'landscape');
+        $dompdf->render();
+        $dompdf->stream('print-stok.pdf', ['Attachment' => false]);
     }
 
 }

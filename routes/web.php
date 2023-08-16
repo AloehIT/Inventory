@@ -144,7 +144,7 @@ Route::middleware('auth')->group(function(){
 Route::middleware('auth')->group(function(){
     Route::get('kartu-stok/data', [LaporanStokController::class, 'getData'])->name('data.daftarStok');
     Route::get('kartu-stok/hitung', [LaporanStokController::class, 'calculate'])->name('data.calculate');
-    Route::get('kartu-stok/print-pdf', [StokController::class, 'printPDF'])->name('print.pdf');
+    Route::get('/laporan-stok/print-stok', [LaporanStokController::class, 'printPDF'])->name('print.pdf');
     Route::resource('app/kartu-stok', LaporanStokController::class);
 });
 

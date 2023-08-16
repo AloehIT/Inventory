@@ -129,6 +129,7 @@
 $(document).ready(function() {
     var table = $('.basic-datatable').DataTable({
         processing: true,
+        paging: false,
         dom: '<"left"l>ftr<"right"ip>',
         serverSide: true,
         info: false,
@@ -155,46 +156,6 @@ $(document).ready(function() {
             searchPlaceholder: 'Search...',
         }
     });
-
-    // Inisialisasi tombol cetak PDF
-    $('#print-pdf').on('click', function() {
-        var selectedBarcode = $('#opsi-laporan-stok').val();
-        var startDate = $('#start_date').val();
-        var endDate = $('#end_date').val();
-        var url = '{!! route('print.pdf') !!}'; // Ganti dengan URL yang sesuai untuk cetak PDF
-
-        if (selectedBarcode) {
-            url += '?id_barang=' + selectedBarcode;
-        }
-        if (startDate) {
-            url += '&start_date=' + startDate;
-        }
-        if (endDate) {
-            url += '&end_date=' + endDate;
-        }
-
-        window.open(url, '_blank');
-    });
-
-    // Inisialisasi tombol cetak Excel
-    // $('#print-excel').on('click', function() {
-    //     var selectedBarcode = $('#opsi-laporan-stok').val();
-    //     var startDate = $('#start_date').val();
-    //     var endDate = $('#end_date').val();
-    //     var url = '{!! route('data.excel') !!}'; // Ganti dengan URL yang sesuai untuk cetak Excel
-
-    //     if (selectedBarcode) {
-    //         url += '?id_barang=' + selectedBarcode;
-    //     }
-    //     if (startDate) {
-    //         url += '&start_date=' + startDate;
-    //     }
-    //     if (endDate) {
-    //         url += '&end_date=' + endDate;
-    //     }
-
-    //     window.open(url, '_blank');
-    // });
 
     function updateHasilPerhitungan() {
         var selectedBarcode = $('#opsi-laporan-stok').val();
@@ -280,6 +241,13 @@ $(document).ready(function() {
         });
         table.ajax.reload(null, false);
         updateHasilPerhitungan(); // Perbarui hasil perhitungan saat dropdown berubah
+    });
+
+
+
+    $('#print-pdf').on('click', function(){
+        var selectedOption = $('#opsi-laporan-stok').val();
+        window.location.href = '/laporan-stok/print-stok?opsi=' + selectedOption;
     });
 
     displayDateRange();

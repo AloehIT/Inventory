@@ -31,7 +31,7 @@
     <div>
         <h2>{{ $perusahaan->value }}</h2>
         <p style="margin-bottom: 0;">Laporan Stok</p>
-        <p style="margin-bottom: 30px;">Keterangan : {{ $selectedOption }}</p>
+        <p style="margin-bottom: 30px;">Tanggal : {{ $start_date }} - {{ $end_date }}</p>
     </div>
 
 
@@ -46,13 +46,19 @@
             </tr>
         </thead>
         <tbody>
-            @foreach($data as $index => $barang)
+            @foreach ($data as $item)
             <tr>
-                <td>{{ $index + 1 }}</td>
-                <td>{{ $barang->kode_barang }}</td>
-                <td>{{ $barang->nama_barang }}</td>
-                <td>{{ $barang->stok}}  {{ $barang->satuan }}</td>
-                <td>{{ $barang->kategori}}</td>
+                <td>{{ $item->tanggal }}</td>
+                <td>{{ $item->kode_transaksi }}</td>
+                <td>{{ $item->nama_barang }}</td>
+                <td>{{ $item->qty }}</td>
+                <td>
+                    @if ($item->sts_inout == -1)
+                        Barang Keluar
+                    @elseif ($item->sts_inout == 1)
+                        Barang Masuk
+                    @endif
+                </td>
             </tr>
             @endforeach
         </tbody>
