@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\Validator;
 use Illuminate\Http\Request;
 use Yajra\DataTables\Facades\DataTables;
 use Str;
+use DB;
 
 use App\Models\DetailKeluar;
 use App\Models\Perusahaan;
@@ -167,19 +168,7 @@ class BarangKeluarController extends Controller
                 'kode_barang' => 'required',
                 'barcode' => 'required',
                 'nama_barang' => 'required',
-                'qty' => [
-                    'required',
-                    function ($attribute, $value, $fail) use ($request) {
-                        $kode_barang = $request->kode_barang;
-                        $cekStok = Stok::where('kode_barang', $kode_barang)->where('sts_inout', '+1')->first();
-
-                        if ($cekStok === null || $value > $cekStok->qty) {
-                            toast('Oops stok tidak cukup !', 'warning');
-                            $fail("Stok Tidak Cukup !");
-                        }
-                    },
-                ],
-
+                'qty' => 'required',
                 'satuan' => 'required',
             ], [
                 'id_bk_transaksi.required' => 'Kode Transaksi harus diisi!',
@@ -238,9 +227,10 @@ class BarangKeluarController extends Controller
                 }
             }
 
-            $cekStok = Stok::where('kode_barang', $kode_barang)->where('sts_inout', '+1')->first();
+            $cekStok = Stok::where('kode_barang', $kode_barang)->sum(DB::raw('sts_inout * qty'));
+            // $totalQty += $cekStok;
 
-            if ($cekStok === null || $totalQty > $cekStok->qty) {
+            if ($cekStok === null || $cekStok < $totalQty) {
                 toast('Oops stok tidak cukup !', 'warning');
                 return redirect()->back()->with('error', 'Stok Tidak Cukup !');
             }
@@ -263,7 +253,6 @@ class BarangKeluarController extends Controller
                     'nama_barang' => $request->input('nama_barang'),
                 ]);
             }
-
 
             $barangKeluar = BarangKeluar::updateOrCreate(['id_bk' => $request['id_bk_transaksi']], [
                 'id' => $lastId,
@@ -336,6 +325,7 @@ class BarangKeluarController extends Controller
                         'id' => $lastid,
                         'id_stok' => $id_stok,
                         'kode_transaksi' => $kode_transaksi,
+                        'keterangan' => $request->stok_keterangan[$key],
 
                         'id_transaksi' => $request->id_transaksi[$key],
                         'id_transaksi_detail' => $request->id_transaksi_detail[$key],
@@ -372,32 +362,43 @@ class BarangKeluarController extends Controller
     public function poststok(Request $request)
     {
         $id = $request['id_bk_detail'];
+        $id = $request['id_bk_detail'];
         $qty = $request->input('qty');
+        $detai = DetailKeluar::where('id_bk_detail', $id)->first();
+        $cekStok = Stok::where('kode_barang', $detai->kode_barang)->sum(DB::raw('sts_inout * qty'));
 
-        $stok = DetailKeluar::updateOrCreate(['id_bk_detail' => $id], [
-            'qty' => $qty,
-        ]);
+        $totalQty = 0;
+        $totalQty += $qty;
 
-        $id_bk = $stok->id_bk;
-        $cekstok = DetailKeluar::where('id_bk', $id_bk)->select('qty')->get();
-
-        $total_qty = 0;
-
-        foreach ($cekstok as $item) {
-            $total_qty += $item->qty;
+        if ($cekStok === null || $cekStok < $totalQty) {
+            toast('Oops stok tidak cukup !', 'warning');
+            return redirect()->back()->with('error', 'Stok Tidak Cukup !');
         }
+        else{
+            $stok = DetailKeluar::updateOrCreate(['id_bk_detail' => $id], [
+                'qty' => $qty,
+            ]);
+
+            $id_bk = $stok->id_bk;
+            $cekstok = DetailKeluar::where('id_bk', $id_bk)->select('qty')->get();
 
 
-        $barangKeluar = BarangKeluar::updateOrCreate(['id_bk' => $id_bk], [
-            'total_qty' => $total_qty,
-        ]);
+            $total_qty = 0;
+            foreach ($cekstok as $item) {
+                $total_qty += $item->qty;
+            }
 
-        if ($barangKeluar) {
-            toast('Proses berhasil dilakukan', 'success');
-            return redirect()->back();
-        } else {
-            toast('Proses gagal dilakukan', 'error');
-            return redirect()->back();
+            $barangKeluar = BarangKeluar::updateOrCreate(['id_bk' => $id_bk], [
+                'total_qty' => $total_qty,
+            ]);
+
+            if ($barangKeluar) {
+                toast('Proses berhasil dilakukan', 'success');
+                return redirect()->back();
+            } else {
+                toast('Proses gagal dilakukan', 'error');
+                return redirect()->back();
+            }
         }
     }
 

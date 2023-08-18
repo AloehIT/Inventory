@@ -85,6 +85,7 @@
                                                 <th>Nama Barang</th>
                                                 <th>Qty</th>
                                                 <th>Keterangan</th>
+                                                <th>Status</th>
                                             </tr>
                                         </thead>
                                         <tbody>
@@ -149,6 +150,7 @@ $(document).ready(function() {
             { data: 'kode_transaksi', name: 'kode_transaksi' },
             { data: 'nama_barang', name: 'nama_barang' },
             { data: 'qty', name: 'qty' },
+            { data: 'keterangan', name: 'keterangan'},
             { data: 'sts_inout', name: 'sts_inout'},
         ],
         language: {

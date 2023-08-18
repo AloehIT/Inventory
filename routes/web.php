@@ -5,6 +5,7 @@
 use App\Http\Controllers\Gudang\BarangKeluarController;
 use App\Http\Controllers\Gudang\BarangMasukController;
 use App\Http\Controllers\Gudang\OpnameController;
+use App\Http\Controllers\Laporan\LaporanBarangKeluarController;
 use App\Http\Controllers\Laporan\LaporanBarangMasukController;
 use App\Http\Controllers\Laporan\LaporanStokController;
 use App\Http\Controllers\ManajemenUsers\RoleController;
@@ -153,8 +154,17 @@ Route::middleware('auth')->group(function(){
 Route::middleware('auth')->group(function(){
     Route::get('laporan/barang-masuk/data', [LaporanBarangMasukController::class, 'getData'])->name('data.daftarMasuk');
     Route::get('laporan/barang-masuk/hitung', [LaporanBarangMasukController::class, 'calculate'])->name('data.calculateMasuk');
-    Route::get('/laporan-stok/print-stok', [LaporanBarangMasukController::class, 'printPDF'])->name('print.pdf');
+    Route::get('/laporan/barang-maasuk/print-stok', [LaporanBarangMasukController::class, 'printPDF'])->name('print.pdf');
     Route::resource('app/laporan/barang-masuk', LaporanBarangMasukController::class);
+});
+
+
+// Laporaan Barang Keluar
+Route::middleware('auth')->group(function(){
+    Route::get('laporan/barang-keluar/data', [LaporanBarangKeluarController::class, 'getData'])->name('data.daftarKeluar');
+    Route::get('laporan/barang-keluar/hitung', [LaporanBarangKeluarController::class, 'calculate'])->name('data.calculateKeluar');
+    Route::get('/laporan/barang-keluar/print-stok', [LaporanBarangKeluarController::class, 'printPDF'])->name('print.pdf');
+    Route::resource('app/laporan/barang-keluar', LaporanBarangKeluarController::class);
 });
 
 

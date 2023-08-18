@@ -955,3 +955,39 @@ $validator = Validator::make($request->all(), [
         $dompdf->render();
         $dompdf->stream('print-stok.pdf', ['Attachment' => false]);
     }
+
+    $id = $request['id_bk_detail'];
+        $id_barang = $request['id_barang_stok'];
+        $qty = $request->input('qty');
+        $cekStok = Stok::where('id_barang', $id_barang)->sum(DB::raw('sts_inout * qty'));
+
+
+
+        if ($cekStok === null || $cekStok < $qty) {
+            toast('Oops stok tidak cukup !', 'warning');
+            return redirect()->back()->with('error', 'Stok Tidak Cukup !');
+        }else{
+            $stok = DetailKeluar::updateOrCreate(['id_bk_detail' => $id], [
+                'qty' => $qty,
+            ]);
+
+            $id_bk = $stok->id_bk;
+            $cekstok = DetailKeluar::where('id_bk', $id_bk)->select('qty')->get();
+            $total_qty = 0;
+
+            foreach ($cekstok as $item) {
+                $total_qty += $item->qty;
+            }
+
+            $barangKeluar = BarangKeluar::updateOrCreate(['id_bk' => $id_bk], [
+                'total_qty' => $total_qty,
+            ]);
+        }
+
+        if ($barangKeluar) {
+            toast('Proses berhasil dilakukan', 'success');
+            return redirect()->back();
+        } else {
+            toast('Proses gagal dilakukan', 'error');
+            return redirect()->back();
+        }

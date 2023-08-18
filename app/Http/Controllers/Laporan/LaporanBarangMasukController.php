@@ -47,6 +47,7 @@ class LaporanBarangMasukController extends Controller
                 'kode_transaksi' => $item->kode_transaksi,
                 'nama_barang' => $item->nama_barang,
                 'qty' => $item->qty,
+                'keterangan' => $item->keterangan,
                 'sts_inout' => $item->sts_inout == -1 ? 'Barang Keluar' : 'Barang Masuk',
             ];
         });

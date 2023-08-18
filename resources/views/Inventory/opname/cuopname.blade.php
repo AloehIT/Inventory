@@ -659,7 +659,7 @@ $status = isset($detail['status']) ? ($detail['status'] == "approve" ? "approve"
                 { data: 'qty', name: 'qty' },
                 { data: 'current_qty', name: 'current_qty' },
                 { data: 'total_qty', name: 'total_qty' },
-                { data: 'created_at', name: 'created_at' },
+                { data: 'created_at', name: 'tbl_opname_detail.created_at' },
                 { data: 'action', name: 'action', orderable: false, searchable: false },
             ],
             language: {
@@ -747,7 +747,7 @@ $status = isset($detail['status']) ? ($detail['status'] == "approve" ? "approve"
                 { data: 'kode_barang', name: 'tbl_opname_detail.kode_barang' },
                 { data: 'nama_barang', name: 'tbl_opname_detail.nama_barang' },
                 { data: 'qty', name: 'qty' },
-                { data: 'created_at', name: 'created_at' },
+                { data: 'created_at', name: 'tbl_opname_detail.created_at' },
                 { data: 'action', name: 'action', orderable: false, searchable: false },
             ],
             language: {
@@ -835,7 +835,7 @@ $status = isset($detail['status']) ? ($detail['status'] == "approve" ? "approve"
                 { data: 'kode_barang', name: 'tbl_opname_detail.kode_barang' },
                 { data: 'nama_barang', name: 'tbl_opname_detail.nama_barang' },
                 { data: 'qty', name: 'qty' },
-                { data: 'created_at', name: 'created_at' },
+                { data: 'created_at', name: 'tbl_opname_detail.created_at' },
                 { data: 'action', name: 'action', orderable: false, searchable: false },
             ],
             language: {

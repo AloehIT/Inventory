@@ -76,6 +76,7 @@ $status = isset($detail['status']) ? ($detail['status'] == "approve" ? "approve"
                             <div class="form-group form-group-default">
                                 <label>Keterangan</label>
                                 <input type="text" name="keterangan" value="{{ $detail['keterangan'] ?? '' }}" class="form-control @error ('keterangan') is-invalid @enderror">
+                                <input type="hidden" name="stok_keterangan[]" value="{{ $detail['keterangan'] ?? '' }}">
                                 @error('keterangan')
                                 <span class="invalid-feedback" role="alert" style="font-size: 11px;">
                                     <strong>{{ $message }}</strong>
@@ -409,13 +410,21 @@ $status = isset($detail['status']) ? ($detail['status'] == "approve" ? "approve"
                                 </div>
                             </div>
                             @endforeach
+                            @php
+                                $stoks = \App\Models\BarangKeluar::join('detail_barang_keluar', 'detail_barang_keluar.id_bk', '=', 'barang_keluars.id_bk')
+                                ->where('barang_keluars.id_bk', $detail->id_bk)->count();
+                            @endphp
                             <input type="hidden" name="status" value="approve">
                             <div class="d-flex">
                                 <a type="button" href="{{ url('app/barang-keluar') }}" class="btn btn-sm text-white" style="background: red;"><i class="bi bi-x-lg"></i> Tutup</a>
                                 @if($status === "approve")
                                 @else
-                                <button type="submit" name="action" value="simpan" class="btn btn-sm text-white mx-1" style="background: green;"><i class="bi bi-check-circle-fill"></i> Simpan</button>
-                                <button type="submit" name="action" value="approveStok" class="btn btn-sm text-white" style="background: blue;"><i class="bi bi-download"></i> Rekam</button>
+                                    <button type="submit" name="action" value="simpan" class="btn btn-sm text-white mx-1" style="background: green;"><i class="bi bi-check-circle-fill"></i> Simpan</button>
+                                    @if ($stoks > 0)
+                                        <button type="submit" name="action" value="approveStok" class="btn btn-sm text-white" style="background: blue;"><i class="bi bi-download"></i> Rekam</button>
+                                    @else
+
+                                    @endif
                                 @endif
                             </div>
                         </div>

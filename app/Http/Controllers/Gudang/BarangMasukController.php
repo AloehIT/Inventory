@@ -294,6 +294,7 @@ class BarangMasukController extends Controller
                         'id' => $lastid,
                         'id_stok' => $id_stok,
                         'kode_transaksi' => $kode_transaksi,
+                        'keterangan' => $request->stok_keterangan[$key],
 
                         'id_transaksi' => $request->id_transaksi[$key],
                         'id_transaksi_detail' => $request->id_transaksi_detail[$key],
