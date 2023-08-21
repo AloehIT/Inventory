@@ -2,6 +2,7 @@
 
 
 
+use App\Http\Controllers\Auth\LogActivityController;
 use App\Http\Controllers\Gudang\BarangKeluarController;
 use App\Http\Controllers\Gudang\BarangMasukController;
 use App\Http\Controllers\Gudang\OpnameController;
@@ -16,6 +17,7 @@ use App\Http\Controllers\MasterData\GroupController;
 use App\Http\Controllers\MasterData\GudangController;
 use App\Http\Controllers\MasterData\KategoriBarangController;
 use App\Http\Controllers\MasterData\SatuanController;
+use App\Http\Controllers\PermissionController;
 use App\Http\Controllers\Setting\PengaturanController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\Auth\LoginController;
@@ -57,8 +59,19 @@ Route::middleware('auth')->group(function(){
     Route::post('app/pengaturan/posts', [PengaturanController::class, 'posts'])->name('umum.posts');
 });
 
+//log activity
+Route::middleware('auth')->group(function(){
+    Route::get('log/data', [LogActivityController::class, 'getData'])->name('data.log');
+    Route::resource('app/log', LogActivityController::class);
+});
+
 //Data Role Users
 Route::middleware('auth')->group(function(){
+    Route::get('permission/detaildata/{id}', [PermissionController::class, 'getData'])->name('data.detail.permission');
+    Route::get('app/roles/permission/{id}', [PermissionController::class, 'index'])->name('set.permission');
+    Route::post('app/permission/posts', [PermissionController::class, 'posts'])->name('posts.permission');
+
+
     Route::get('usersroles/data', [RoleController::class, 'rolesData'])->name('data.roles');
     Route::resource('app/usersroles', RoleController::class);
     Route::post('app/usersroles/posts', [RoleController::class, 'posts'])->name('posts.roles');
@@ -133,7 +146,7 @@ Route::middleware('auth')->group(function(){
     Route::get('app/barang-keluar/deleteall/{id_bk}', [BarangKeluarController::class, 'delete'])->name('delete.barang-keluar');
 });
 
-// Master Daftar BarangKeluar
+// Master Daftar Opname
 Route::middleware('auth')->group(function(){
     Route::get('opname/detaildata/{id_opname}', [OpnameController::class, 'detailData'])->name('data.detail.opname');
     Route::get('opname/data', [OpnameController::class, 'getData'])->name('data.opname');
@@ -142,6 +155,7 @@ Route::middleware('auth')->group(function(){
     Route::resource('app/opname', OpnameController::class);
     Route::post('app/opname/posts', [OpnameController::class, 'posts'])->name('posts.opname');
     Route::post('app/opname/stok/posts', [OpnameController::class, 'poststok'])->name('stok.opname');
+    Route::get('app/opname/delete/{id}', [OpnameController::class, 'deletebarangopname'])->name('delete.detail-opname');
     Route::get('app/opname/deleteall/{id_opname}', [OpnameController::class, 'delete'])->name('delete.opname');
 });
 

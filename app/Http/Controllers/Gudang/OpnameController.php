@@ -115,12 +115,11 @@ class OpnameController extends Controller
                 return ''; // Mengembalikan string kosong jika status bukan "approve"
             })
             ->editColumn('created_at', function ($row) {
-                return $row->created_at->isoFormat('dddd, D MMMM Y');
+                return $row->created_at->isoFormat('Y-MM-DD');
             })
             ->rawColumns(['action'])
             ->toJson();
     }
-
 
     public function index()
     {
@@ -148,12 +147,12 @@ class OpnameController extends Controller
             'perusahaan' => Perusahaan::where('setting', 'Config')->where('name_config', 'conf_perusahaan')->first(),
             'generate' => Opname::max('id'),
 
-            'barang' => Barang::join('users', 'users.id', '=', 'barangs.user_id')
+            'barang' => Barang::leftJoin('users', 'users.id', '=', 'barangs.user_id')
             ->join('satuans', 'satuans.id', '=', 'barangs.satuan_id')
             ->select('barangs.*', 'satuans.satuan', 'users.username')
             ->get(),
 
-            'cardbarang' => Barang::join('users', 'users.id', '=', 'barangs.user_id')
+            'cardbarang' => Barang::leftJoin('users', 'users.id', '=', 'barangs.user_id')
             ->join('satuans', 'satuans.id', '=', 'barangs.satuan_id')
             ->join('detail_barang_masuk', 'detail_barang_masuk.id_barang', '=', 'barangs.id_barang')
             ->select('barangs.*', 'satuans.satuan', 'users.username', 'detail_barang_masuk.tanggal', 'detail_barang_masuk.qty', 'detail_barang_masuk.satuan', 'detail_barang_masuk.id_bm_detail')
@@ -173,12 +172,12 @@ class OpnameController extends Controller
             'perusahaan' => Perusahaan::where('setting', 'Config')->where('name_config', 'conf_perusahaan')->first(),
             'generate' => Opname::max('id'),
 
-            'barang' => Barang::join('users', 'users.id', '=', 'barangs.user_id')
+            'barang' => Barang::leftJoin('users', 'users.id', '=', 'barangs.user_id')
             ->join('satuans', 'satuans.id', '=', 'barangs.satuan_id')
             ->select('barangs.*', 'satuans.satuan', 'users.username')
             ->get(),
 
-            'cardbarang' => Barang::join('users', 'users.id', '=', 'barangs.user_id')
+            'cardbarang' => Barang::leftJoin('users', 'users.id', '=', 'barangs.user_id')
             ->join('satuans', 'satuans.id', '=', 'barangs.satuan_id')
             ->join('tbl_opname_detail', 'tbl_opname_detail.id_barang', '=', 'barangs.id_barang')
             ->select('barangs.*', 'satuans.satuan', 'users.username', 'tbl_opname_detail.tanggal', 'tbl_opname_detail.qty', 'tbl_opname_detail.satuan', 'tbl_opname_detail.id_opname_detail')

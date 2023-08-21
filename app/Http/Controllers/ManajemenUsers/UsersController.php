@@ -39,44 +39,54 @@ class UsersController extends Controller
     public function index()
     {
         try {
-            $data = [
-                'auth' => User::join('detail_users', 'detail_users.id', '=', 'users.id')
-                ->where('users.id', auth()->user()->id)
-                ->first(),
+            if (auth()->user()->role === 'Super Admin' || auth()->user()->role === 'Admin Gudang') {
+                $data = [
+                    'auth' => User::join('detail_users', 'detail_users.id', '=', 'users.id')
+                    ->where('users.id', auth()->user()->id)
+                    ->first(),
 
-                'perusahaan' => Perusahaan::where('setting', 'Config')
-                ->where('name_config', 'conf_perusahaan')
-                ->first(),
+                    'perusahaan' => Perusahaan::where('setting', 'Config')
+                    ->where('name_config', 'conf_perusahaan')
+                    ->first(),
 
 
-                'users' => User::Where('users.status', 1)
-                ->get(),
-            ];
+                    'users' => User::Where('users.status', 1)
+                    ->get(),
+                ];
 
-            return view('usersmanager.users.index', $data);
+                return view('usersmanager.users.index', $data);
+            }else{
+                toast('Role user tidak mendapatkan akses !', 'warning');
+                return redirect('app/dashboard');
+            }
         } catch (\Throwable $e) {
-            // Redirect to the error page
-            return view('error.500');
+            toast('Terjadi kesalahan pada halaman users !', 'warning');
+            return redirect('app/dashboard');
         }
     }
 
     public function create()
     {
         try {
-            $data = [
-                'title' => 'Tambah Profil User Baru',
-                'auth' => User::join('detail_users', 'detail_users.id', '=', 'users.id')
-                ->where('users.id', auth()->user()->id)
-                ->first(),
+            if (auth()->user()->role === 'Super Admin' || auth()->user()->role === 'Admin Gudang') {
+                $data = [
+                    'title' => 'Tambah Profil User Baru',
+                    'auth' => User::join('detail_users', 'detail_users.id', '=', 'users.id')
+                    ->where('users.id', auth()->user()->id)
+                    ->first(),
 
-                'perusahaan' => Perusahaan::where('setting', 'Config')
-                ->where('name_config', 'conf_perusahaan')
-                ->first(),
+                    'perusahaan' => Perusahaan::where('setting', 'Config')
+                    ->where('name_config', 'conf_perusahaan')
+                    ->first(),
 
-                'role' => RoleModel::all(),
-            ];
+                    'role' => RoleModel::all(),
+                ];
 
-            return view('usersmanager.users.cuuser', $data);
+                return view('usersmanager.users.cuuser', $data);
+            }else{
+                toast('Tambah user tidak mendapatkan akses !', 'warning');
+                return redirect('app/dashboard');
+            }
         } catch (\Throwable $e) {
             // Redirect to the error page
             return view('maintenece.maintenece');

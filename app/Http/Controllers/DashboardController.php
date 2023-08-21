@@ -11,6 +11,7 @@ use App\Models\Transaksi;
 use App\Models\Stok;
 use App\Models\Barang;
 use DB;
+use Gate;
 
 class DashboardController extends Controller
 {
@@ -86,6 +87,7 @@ class DashboardController extends Controller
     public function index()
     {
         try {
+            $this->authorize('dashboard');
             $data = [
                 'auth' => User::join('detail_users', 'detail_users.id', '=', 'users.id')
                 ->where('users.id', auth()->user()->id)
@@ -104,7 +106,7 @@ class DashboardController extends Controller
             return view('dashboard.index', $data);
         } catch (\Throwable $e) {
             // Redirect to the error page
-            return view('error.500');
+            return view('dashboard.index');
         }
     }
 }

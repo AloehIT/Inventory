@@ -1,96 +1,94 @@
 <?php
 
-namespace App\Http\Controllers\ManajemenUsers;
+namespace App\Http\Controllers;
 
-use App\Http\Controllers\Controller;
+use App\Models\RoleModel;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Validator;
+use DB;
 use Yajra\DataTables\Facades\DataTables;
+use Illuminate\Support\Facades\Validator;
 
 use App\Models\Perusahaan;
 use App\Models\User;
-use App\Models\RoleModel;
-use App\Models\hasModelRole;
-use DB;
+use App\Models\roleHasPermission;
 
-class RoleController extends Controller
+class PermissionController extends Controller
 {
 
-    public function rolesData(Request $request)
+    public function getData(Request $request)
     {
-        $role = RoleModel::all();
+        $permission = roleHasPermission::join('permissions', 'permissions.id', '=', 'role_has_permissions.permission_id')
+        ->join('roles', 'roles.id', '=', 'role_has_permissions.role_id')
+        ->select('role_has_permissions.*', 'permissions.name as name_permission', 'permissions.set_permission', 'roles.name as name_role')
+        ->where('role_id', $request->id);
 
-        return Datatables::of($role)
+
+        return Datatables::of($permission)
             ->addColumn('action', function ($row) {
                 // Add your action buttons here, similar to your Blade file
-                return view('usersmanager.roles.actions', compact('row'))->render();
+                return view('Usersmanager.permissions.actions', compact('row'))->render();
             })
             ->editColumn('created_at', function ($row) {
                 return $row->created_at->isoFormat('Y-MM-DD');
             })
-            ->rawColumns(['action'])
+            // ->rawColumns(['action'])
             ->toJson();
     }
 
-    public function index()
+
+
+    public function index($id)
     {
-        try {
-            // if (auth()->user()->role === 'Super Admin') {
-                $data = [
-                    'auth' => User::join('detail_users', 'detail_users.id', '=', 'users.id')
-                    ->where('users.id', auth()->user()->id)
-                    ->first(),
+        $data = [
+            'auth' => User::join('detail_users', 'detail_users.id', '=', 'users.id')
+            ->where('users.id', auth()->user()->id)
+            ->first(),
 
-                    'perusahaan' => Perusahaan::where('setting', 'Config')->where('name_config', 'conf_perusahaan')->first(),
-                    'role' => RoleModel::orderBy('id', 'DESC')->get(),
-                ];
+            'perusahaan' => Perusahaan::where('setting', 'Config')
+            ->where('name_config', 'conf_perusahaan')
+            ->first(),
 
-                return view('usersmanager.roles.index', $data);
-            // }else{
-            //     toast('Role user tidak mendapatkan akses !', 'warning');
-            //     return redirect('app/dashboard');
-            // }
+            'detail' => RoleModel::find($id),
+            'permission' => DB::table('permissions')->get(),
+        ];
 
-        } catch (\Throwable $e) {
-            toast('Terjadi kesalahan pada halaman role user !', 'warning');
-            return redirect('app/dashboard');
-        }
+        return view('Usersmanager.permissions.index', $data);
     }
+
 
     public function posts(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'name'      => 'required|unique:roles,name,' . ($request['id'] ?? '') . ',id',
+            'permission_id' => 'required|unique:role_has_permissions,permission_id,NULL,id,role_id,' . ($request['role_id'] ?? ''),
         ], [
-            'name.required'  => 'Isi format input dengan benar !',
-            'name.unique'    => 'Role access sudah ada !',
+            'permission_id.required' => 'Permission harus dipilih!',
+            'permission_id.unique'   => 'Permission telah didaftarkan pada role ini!',
         ]);
 
         if ($validator->fails()) {
-            toast('Oops terjadi kesalahan', 'warning');
+            toast('Oops, permission telah didaftarkan pada role ini', 'warning');
             return redirect()->back()->withErrors($validator)->withInput();
         }
 
-        $lastid = $request['id'] ? $request['id'] : RoleModel::max('id') + 1;
 
-        $set = RoleModel::updateOrCreate(['id' => $request['id']], [
-            'id' => $lastid,
-            'name' => $request['name'] == '' ? '' : $request['name'],
-            'guard_name' => $request['guard'] == '' ? '' : $request['guard'],
+
+
+        $permission = roleHasPermission::create([
+            'permission_id' => $request->input('permission_id'),
+            'role_id' => $request->input('role_id'),
         ]);
 
-        $set = hasModelRole::updateOrCreate(['role_id' => $request['id']], [
-            'role_id' => $lastid,
-            'model_type' => $request['model'] == '' ? '' : $request['model'],
-            'model_id' => $lastid,
-        ]);
 
-        if ($set) {
+
+        $cekPermission = RoleModel::where('id', $request->role_id)->first();
+
+
+        if ($permission) {
             $ip2 = request()->getClientIp();
             $usersid = User::select('id')->where('status', 1)->where('username', auth()->user()->username)->get();
             foreach($usersid as $id);
             $setid = $id->id;
-            $aktifitas = auth()->user()->username.' '.'berhasil'.' '.$request->aksi.': '.$request->name;
+            $aktifitas = auth()->user()->username.' '.'berhasil mengatur permission :'.' '.$cekPermission->name;
             $lastid    = DB::table('log_activity')->max('id') + 1;
 
             // console LOG::START
@@ -103,14 +101,14 @@ class RoleController extends Controller
             ]);
             DB::table('log_activity')->insert($data);
 
-            toast('Proses berhasil dilakukan','success');
-            return redirect()->back();
+            toast('Proses berhasil dilakukan', 'success');
+            return redirect('app/roles/permission/'. $request->role_id);
         } else {
             $ip2 = request()->getClientIp();
             $usersid = User::select('id')->where('status', 1)->where('username', auth()->user()->username)->get();
             foreach($usersid as $id);
             $setid = $id->id;
-            $aktifitas = auth()->user()->username.' '.'gagal'.' '.$request->aksi.': '.$request->name;
+            $aktifitas = auth()->user()->username.' '.'gagal mengatur permission :'.' '.$cekPermission->name;
             $lastid    = DB::table('log_activity')->max('id') + 1;
 
             // console LOG::START
@@ -128,18 +126,18 @@ class RoleController extends Controller
         }
     }
 
-    public function delete(Request $request, $id)
+    public function deletPermission($role_id)
     {
-        $role = RoleModel::Where('id', $id)->first();
-        $delete = User::Where('role', $role->name)->first();
+        $roles = RoleModel::Where('id', $role_id)->first();
+        $permission = roleHasPermission::where('role_id', $roles->role_id)->first();
 
-        if($delete)
-        {
+        if ($permission) {
+            $permission->delete();
             $ip2 = request()->getClientIp();
             $usersid = User::select('id')->where('status', 1)->where('username', auth()->user()->username)->get();
             foreach($usersid as $id);
             $setid = $id->id;
-            $aktifitas = auth()->user()->username.' '.'gagal menghapus role'.': '.$role->name;
+            $aktifitas = auth()->user()->username.' '.'Berhasil menghapus permission role :'.' '. $roles->name;
             $lastid    = DB::table('log_activity')->max('id') + 1;
 
             // console LOG::START
@@ -150,19 +148,17 @@ class RoleController extends Controller
                 'keterangan' => $aktifitas,
                 'ip_address' => $ip2,
             ]);
+
             DB::table('log_activity')->insert($data);
 
-            toast('Maaf role gagal di hapus', 'error');
+            toast('Hapus data berhasil dilakukan','success');
             return redirect()->back();
-        }else{
-            RoleModel::Where('id', $id)->delete();
-            hasModelRole::Where('role_id', $id)->delete();
-
+        } else {
             $ip2 = request()->getClientIp();
             $usersid = User::select('id')->where('status', 1)->where('username', auth()->user()->username)->get();
             foreach($usersid as $id);
             $setid = $id->id;
-            $aktifitas = auth()->user()->username.' '.'berhasil menghapus role'.': '.$role->name;
+            $aktifitas = auth()->user()->username.' '.'Berhasil menghapus permission role :'.' '. $roles->name;
             $lastid    = DB::table('log_activity')->max('id') + 1;
 
             // console LOG::START
@@ -173,8 +169,8 @@ class RoleController extends Controller
                 'keterangan' => $aktifitas,
                 'ip_address' => $ip2,
             ]);
-            DB::table('log_activity')->insert($data);
-            toast('Role berhasil di hapus','success');
+
+            toast('Hpaus data gagal dilakukan', 'error');
             return redirect()->back();
         }
     }

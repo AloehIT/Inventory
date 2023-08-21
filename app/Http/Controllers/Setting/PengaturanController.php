@@ -16,22 +16,29 @@ class PengaturanController extends Controller
     public function index()
     {
         try {
-            $data = [
-                'auth' => User::join('detail_users', 'detail_users.id', '=', 'users.id')
-                ->where('users.id', auth()->user()->id)
-                ->first(),
+            if (auth()->user()->role === 'Super Admin') {
+                $data = [
+                    'auth' => User::join('detail_users', 'detail_users.id', '=', 'users.id')
+                    ->where('users.id', auth()->user()->id)
+                    ->first(),
 
-                'perusahaan' => Perusahaan::where('setting', 'Config')->where('name_config', 'conf_perusahaan')->first(),
-                'name' => Perusahaan::where('setting', 'Config')->where('name_config', 'conf_perusahaan')->first(),
-                'alamat' => Perusahaan::where('setting', 'Config')->where('name_config', 'conf_alamat')->first(),
-                'phone' => Perusahaan::where('setting', 'Config')->where('name_config', 'conf_phone')->first(),
-                'gambar' => Perusahaan::where('setting', 'Config')->where('name_config', 'conf_logo')->first(),
-            ];
+                    'perusahaan' => Perusahaan::where('setting', 'Config')->where('name_config', 'conf_perusahaan')->first(),
+                    'name' => Perusahaan::where('setting', 'Config')->where('name_config', 'conf_perusahaan')->first(),
+                    'alamat' => Perusahaan::where('setting', 'Config')->where('name_config', 'conf_alamat')->first(),
+                    'phone' => Perusahaan::where('setting', 'Config')->where('name_config', 'conf_phone')->first(),
+                    'gambar' => Perusahaan::where('setting', 'Config')->where('name_config', 'conf_logo')->first(),
+                ];
 
-            return view('Pengaturan.index', $data);
+                return view('pengaturan.index', $data);
+            }else{
+                toast('Role user tidak mendapatkan akses !', 'warning');
+                return redirect('app/dashboard');
+            }
+
+
         } catch (\Throwable $e) {
-            // Redirect to the error page
-            return view('error.500');
+            toast('Terjadi kesalahan pada halaman pengaturan !', 'warning');
+            return redirect('app/dashboard');
         }
     }
 

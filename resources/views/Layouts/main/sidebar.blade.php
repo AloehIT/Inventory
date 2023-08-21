@@ -25,12 +25,15 @@
 
         <li class="side-nav-title side-nav-item">Menu</li>
 
+        @can('dashboard')
         <li class="side-nav-item">
             <a href="{{ url('app/dashboard') }}" class="side-nav-link">
                 <i class="uil-home-alt"></i>
                 <span> Dashboards </span>
             </a>
         </li>
+        @endcan
+
 
         <li class="side-nav-item">
             <a href="{{ url('app/pengaturan') }}" class="side-nav-link {{ Request::is('app/pengaturan-invoice', 'app/akun-bank', 'app/whatsapp-api', 'app/payment-api') ? 'text-white' : '' }}">
@@ -46,11 +49,10 @@
                 <span> User Permission </span>
                 <span class="menu-arrow"></span>
             </a>
-            <div class="collapse {{ Request::is('app/group/*', 'app/usersroles/*', 'app/usermanager/*') ? 'show' : '' }}" id="sidebarUsers">
+            <div class="collapse {{ Request::is('app/group/*', 'app/usersroles/*', 'app/usermanager/*', 'app/roles/permission/*') ? 'show' : '' }}" id="sidebarUsers">
                 <ul class="side-nav-second-level">
-
                     <li>
-                        <a href="{{ url('app/usersroles') }}" class="{{ Request::is('app/usersroles/*') ? 'text-white' : '' }}">Role Access</a>
+                        <a href="{{ url('app/usersroles') }}" class="{{ Request::is('app/usersroles/*', 'app/roles/permission/*') ? 'text-white' : '' }}">Role Access</a>
                     </li>
                     <li>
                         <a href="{{ url('app/usermanager') }}" class="{{ Request::is('app/usermanager/*') ? 'text-white' : '' }}">User</a>
@@ -102,24 +104,10 @@
                         <a href="{{ url('app/barang-masuk') }}" class="{{ Request::is('app/barang-masuk/*') ? 'text-white' : '' }}">Barang Masuk</a>
                     </li>
                     <li>
-                        @php
-                            $stokCount = \App\Models\Stok::where('sts_inout', '+1')->count();
-                        @endphp
-                        @if ($stokCount > 0)
-                            <a href="{{ url('app/barang-keluar') }}" class="{{ Request::is('app/barang-keluar/*') ? 'text-white' : '' }}">Barang Keluar</a>
-                        @else
-                            <a href="javascript:void(0)" class="text-secondary disabled" data-bs-toggle="modal" data-bs-target="#stokKosongModal">Barang Keluar</a>
-                        @endif
+                        <a href="{{ url('app/barang-keluar') }}" class="{{ Request::is('app/barang-keluar/*') ? 'text-white' : '' }}">Barang Keluar</a>
                     </li>
                     <li>
-                        @php
-                            $stokCount = \App\Models\Stok::where('sts_inout', '+1')->count();
-                        @endphp
-                        @if ($stokCount > 0)
-                            <a href="{{ url('app/opname') }}" class="{{ Request::is('app/opname/*') ? 'text-white' : '' }}">Opname</a>
-                        @else
-                            <a href="javascript:void(0)" class="text-secondary disabled" data-bs-toggle="modal" data-bs-target="#stokKosongModal">Opname</a>
-                        @endif
+                        <a href="{{ url('app/opname') }}" class="{{ Request::is('app/opname/*') ? 'text-white' : '' }}">Opname</a>
                     </li>
                 </ul>
             </div>
@@ -149,7 +137,7 @@
 
 
         <li class="side-nav-item">
-            <a href="{{ url('app/pengaturan') }}" class="side-nav-link {{ Request::is('app/pengaturan-invoice', 'app/akun-bank', 'app/whatsapp-api', 'app/payment-api') ? 'text-white' : '' }}">
+            <a href="{{ url('app/log') }}" class="side-nav-link {{ Request::is('app/log/*') ? 'text-white' : '' }}">
                 <i class="uil-cog"></i>
                 <span> Log Activitas </span>
             </a>

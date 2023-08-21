@@ -79,7 +79,7 @@ class BarangKeluarController extends Controller
                 return view('inventory.barang-keluar.actionsdetail', compact('row'))->render();
             })
             ->editColumn('created_at', function ($row) {
-                return $row->created_at->isoFormat('dddd, D MMMM Y');
+                return $row->created_at->isoFormat('Y-MM-DD');
             })
             ->editColumn('qty', function ($row) {
                 return $row->qty.' '.$row->satuan;
@@ -90,16 +90,28 @@ class BarangKeluarController extends Controller
 
     public function index()
     {
-        $data = [
-            'auth' => User::join('detail_users', 'detail_users.id', '=', 'users.id')
-            ->where('users.id', auth()->user()->id)
-            ->first(),
-            'perusahaan'    => Perusahaan::where('setting', 'Config')->where('name_config', 'conf_perusahaan')->first(),
-            'barangKeluar'  => BarangKeluar::all(),
-            'daftarbarang'  => BarangKeluar::join('detail_barang_keluar', 'detail_barang_keluar.id_bk', '=', 'barang_keluars.id_bk')->get(),
-        ];
+        try {
+            $stokCount = Stok::count();
 
-        return view('inventory.barang-keluar.index', $data);
+            if ($stokCount === 0) {
+                toast('Oops stok masih kosong !', 'warning');
+                return redirect('app/barang-masuk');
+            }
+
+            $data = [
+                'auth' => User::join('detail_users', 'detail_users.id', '=', 'users.id')
+                ->where('users.id', auth()->user()->id)
+                ->first(),
+                'perusahaan'    => Perusahaan::where('setting', 'Config')->where('name_config', 'conf_perusahaan')->first(),
+                'barangKeluar'  => BarangKeluar::all(),
+                'daftarbarang'  => BarangKeluar::join('detail_barang_keluar', 'detail_barang_keluar.id_bk', '=', 'barang_keluars.id_bk')->get(),
+            ];
+
+            return view('inventory.barang-keluar.index', $data);
+        } catch (\Throwable $e) {
+            // Redirect to the error page
+            return view('dashboard.index');
+        }
     }
 
     public function create()
