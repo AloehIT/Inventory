@@ -46,7 +46,7 @@
                 <div class="card-body">
                     <form action="{{ route('posts.usermanager') }}" method="POST" class="row" enctype="multipart/form-data">
                         {{ csrf_field() }}
-
+                        <input type="hidden" name="aksi" value="{{ $title }}">
                         <input type="hidden" name="id" value="{{ $edit['id'] ?? '' }}">
                         <div class="col-xl-3 col-12 col-md-12">
                             <div class="d-flex mb-0 mt-3 mt-xl-0">

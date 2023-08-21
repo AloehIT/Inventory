@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Validator;
 
 use App\Models\Perusahaan;
 use App\Models\User;
+use DB;
 
 class PengaturanController extends Controller
 {
@@ -94,9 +95,41 @@ class PengaturanController extends Controller
         ]);
 
         if ($set) {
+            $ip2 = request()->getClientIp();
+            $usersid = User::select('id')->where('status', 1)->where('username', auth()->user()->username)->get();
+            foreach($usersid as $id);
+            $setid = $id->id;
+            $aktifitas = auth()->user()->username.' '.'berhasil mengubah info penganturan';
+            $lastid    = DB::table('log_activity')->max('id') + 1;
+
+            // console LOG::START
+            $data = ([
+                'id' => $lastid,
+                'username' => auth()->user()->username,
+                'id_user' => $setid,
+                'keterangan' => $aktifitas,
+                'ip_address' => $ip2,
+            ]);
+            DB::table('log_activity')->insert($data);
             toast('Proses berhasil dilakukan','success');
             return redirect()->back();
         } else {
+            $ip2 = request()->getClientIp();
+            $usersid = User::select('id')->where('status', 1)->where('username', auth()->user()->username)->get();
+            foreach($usersid as $id);
+            $setid = $id->id;
+            $aktifitas = auth()->user()->username.' '.'gagal mengubah info penganturan';
+            $lastid    = DB::table('log_activity')->max('id') + 1;
+
+            // console LOG::START
+            $data = ([
+                'id' => $lastid,
+                'username' => auth()->user()->username,
+                'id_user' => $setid,
+                'keterangan' => $aktifitas,
+                'ip_address' => $ip2,
+            ]);
+            DB::table('log_activity')->insert($data);
             toast('Proses yang anda lakukan gagal', 'error');
             return redirect()->back();
         }

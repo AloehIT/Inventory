@@ -79,7 +79,6 @@ $status = isset($detail['status']) ? ($detail['status'] == "approve" ? "approve"
                             <div class="form-group form-group-default">
                                 <label>Keterangan</label>
                                 <input type="text" name="keterangan" value="{{ $detail['keterangan'] ?? '' }}" class="form-control @error ('keterangan') is-invalid @enderror">
-                                <input type="hidden" name="stok_keterangan[]" value="{{ $detail['keterangan'] ?? '' }}">
                                 @error('keterangan')
                                 <span class="invalid-feedback" role="alert" style="font-size: 11px;">
                                     <strong>{{ $message }}</strong>
@@ -376,6 +375,7 @@ $status = isset($detail['status']) ? ($detail['status'] == "approve" ? "approve"
                             <label for="">Aksi</label>
                             @foreach ($barangstok as $stok)
                                 <div class="row g-1" hidden>
+                                    <input type="hidden" name="stok_keterangan[]" value="{{ $detail['keterangan'] ?? '' }}">
                                     <div class="form-group col-lg-3">
                                         <label for="">ID Transaksi</label>
                                         <input type="text" name="id_transaksi[]" class="form-control" value="{{ $stok['id_bm'] ?? '' }}">

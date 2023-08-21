@@ -196,38 +196,6 @@ class OpnameController extends Controller
         return view('inventory.opname.cuopname', $data, compact('row'));
     }
 
-    public function poststok(Request $request)
-    {
-        $id = $request['id_opname_detail'];
-        $qty = $request->input('qty');
-
-        $stok = OpnameDetail::updateOrCreate(['id_opname_detail' => $id], [
-            'qty' => $qty,
-        ]);
-
-        $id_opname = $stok->id_opname;
-        $cekstok = OpnameDetail::where('id_opname', $id_opname)->select('qty')->get();
-
-        $total_qty = 0;
-
-        foreach ($cekstok as $item) {
-            $total_qty += $item->qty;
-        }
-
-
-        $opname = Opname::updateOrCreate(['id_opname' => $id_opname], [
-            'total_qty' => $total_qty,
-        ]);
-
-        if ($opname) {
-            toast('Proses berhasil dilakukan', 'success');
-            return redirect()->back();
-        } else {
-            toast('Proses gagal dilakukan', 'error');
-            return redirect()->back();
-        }
-    }
-
 
     public function posts(Request $request)
     {
@@ -326,18 +294,52 @@ class OpnameController extends Controller
             ]);
 
             if ($opname) {
+                $ip2 = request()->getClientIp();
+                $usersid = User::select('id')->where('status', 1)->where('username', auth()->user()->username)->get();
+                foreach($usersid as $id);
+                $setid = $id->id;
+                $aktifitas = auth()->user()->username.' '.'berhasil menambahkan barang :'.' '.$request->nama_barang.', dengan jumlah stok : '.$request->qty.' kedalam transaksi barang opname'.' '. $request->id_opname;
+                $lastid    = DB::table('log_activity')->max('id') + 1;
+
+                // console LOG::START
+                $data = ([
+                    'id' => $lastid,
+                    'username' => auth()->user()->username,
+                    'id_user' => $setid,
+                    'keterangan' => $aktifitas,
+                    'ip_address' => $ip2,
+                ]);
+                DB::table('log_activity')->insert($data);
+
                 toast('Proses berhasil dilakukan', 'success');
                 return redirect('app/opname/detail/'. $request->id_opname_set);
             } else {
+                $ip2 = request()->getClientIp();
+                $usersid = User::select('id')->where('status', 1)->where('username', auth()->user()->username)->get();
+                foreach($usersid as $id);
+                $setid = $id->id;
+                $aktifitas = auth()->user()->username.' '.'gagal menambahkan barang :'.' '.$request->nama_barang.', dengan jumlah stok : '.$request->qty.' kedalam transaksi barang opname'.' '. $request->id_opname;
+                $lastid    = DB::table('log_activity')->max('id') + 1;
+
+                // console LOG::START
+                $data = ([
+                    'id' => $lastid,
+                    'username' => auth()->user()->username,
+                    'id_user' => $setid,
+                    'keterangan' => $aktifitas,
+                    'ip_address' => $ip2,
+                ]);
+                DB::table('log_activity')->insert($data);
+
                 toast('Proses gagal dilakukan', 'error');
                 return redirect()->back();
             }
         } elseif ($action === 'simpan') {
             $validator = Validator::make($request->all(), [
-                'id_opname_transaksi' => 'required',
+                'id_opname_set' => 'required',
                 'tgl_opname' => 'required',
             ], [
-                'id_opname_transaksi.required' => 'Kode Transaksi harus diisi!',
+                'id_opname_set.required' => 'Kode Transaksi harus diisi!',
                 'tgl_opname.required' => 'Tanggal Masuk harus diisi!',
 
             ]);
@@ -348,9 +350,9 @@ class OpnameController extends Controller
 
             $lastId = $request->has('id') ? $request->input('id') : Opname::max('id') + 1;
 
-            $opname = Opname::updateOrCreate(['id_opname' => $request['id_opname_transaksi']], [
+            $opname = Opname::updateOrCreate(['id_opname' => $request['id_opname_set']], [
                 'id' => $lastId,
-                'id_opname' => $request->input('id_opname_transaksi'),
+                'id_opname' => $request->input('id_opname_set'),
                 'kode_barang' => $request->input('kode_barang'),
                 'tgl_opname' => $request->input('tgl_opname'),
                 'keterangan' => $request->input('keterangan') ?? 'Tidak ada',
@@ -359,9 +361,43 @@ class OpnameController extends Controller
             ]);
 
             if ($opname) {
+                $ip2 = request()->getClientIp();
+                $usersid = User::select('id')->where('status', 1)->where('username', auth()->user()->username)->get();
+                foreach($usersid as $id);
+                $setid = $id->id;
+                $aktifitas = auth()->user()->username.' '.'berhasil menyimpan data transaksi barang opname'.' '. $request->id_opname_set;
+                $lastid    = DB::table('log_activity')->max('id') + 1;
+
+                // console LOG::START
+                $data = ([
+                    'id' => $lastid,
+                    'username' => auth()->user()->username,
+                    'id_user' => $setid,
+                    'keterangan' => $aktifitas,
+                    'ip_address' => $ip2,
+                ]);
+                DB::table('log_activity')->insert($data);
+
                 toast('Proses berhasil dilakukan', 'success');
-                return redirect('app/opname/detail/'. $request->id_opname_transaksi);
+                return redirect('app/opname/detail/'. $request->id_opname_set);
             } else {
+                $ip2 = request()->getClientIp();
+                $usersid = User::select('id')->where('status', 1)->where('username', auth()->user()->username)->get();
+                foreach($usersid as $id);
+                $setid = $id->id;
+                $aktifitas = auth()->user()->username.' '.'gagal menyimpan data transaksi barang opname'.' '. $request->id_opname_set;
+                $lastid    = DB::table('log_activity')->max('id') + 1;
+
+                // console LOG::START
+                $data = ([
+                    'id' => $lastid,
+                    'username' => auth()->user()->username,
+                    'id_user' => $setid,
+                    'keterangan' => $aktifitas,
+                    'ip_address' => $ip2,
+                ]);
+                DB::table('log_activity')->insert($data);
+
                 toast('Proses gagal dilakukan', 'error');
                 return redirect()->back();
             }
@@ -393,6 +429,7 @@ class OpnameController extends Controller
                             'id' => $lastid,
                             'id_stok' => $id_stok,
                             'kode_transaksi' => $kode_transaksi,
+                            'keterangan' => $request->stok_keterangan[$key],
 
                             'id_transaksi_detail' => $request->id_transaksi_detail[$key],
                             'id_barang' => $request->id_barang_stok[$key],
@@ -433,15 +470,177 @@ class OpnameController extends Controller
 
 
             if ($set) {
+                $ip2 = request()->getClientIp();
+                $usersid = User::select('id')->where('status', 1)->where('username', auth()->user()->username)->get();
+                foreach($usersid as $id);
+                $setid = $id->id;
+                $aktifitas = auth()->user()->username.' '.'Berhasil memasukan data transksi :'.' '. $request->id_opname.' '.'kedalam daftar stok';
+                $lastid    = DB::table('log_activity')->max('id') + 1;
+
+                // console LOG::START
+                $data = ([
+                    'id' => $lastid,
+                    'username' => auth()->user()->username,
+                    'id_user' => $setid,
+                    'keterangan' => $aktifitas,
+                    'ip_address' => $ip2,
+                ]);
+
+                DB::table('log_activity')->insert($data);
+
                 toast('Proses berhasil dilakukan','success');
                 return redirect()->back();
             } else {
+                $ip2 = request()->getClientIp();
+                $usersid = User::select('id')->where('status', 1)->where('username', auth()->user()->username)->get();
+                foreach($usersid as $id);
+                $setid = $id->id;
+                $aktifitas = auth()->user()->username.' '.'Gagal memasukan data transksi :'.' '. $request->id_opname.' '.'kedalam daftar stok';
+                $lastid    = DB::table('log_activity')->max('id') + 1;
+
+                // console LOG::START
+                $data = ([
+                    'id' => $lastid,
+                    'username' => auth()->user()->username,
+                    'id_user' => $setid,
+                    'keterangan' => $aktifitas,
+                    'ip_address' => $ip2,
+                ]);
+
+                DB::table('log_activity')->insert($data);
+
                 toast('Proses gagal dilakukan', 'error');
                 return redirect()->back();
             }
         }
+    }
 
 
+
+    public function poststok(Request $request)
+    {
+        $id = $request['id_opname_detail'];
+        $qty = $request->input('qty');
+
+        $stok = OpnameDetail::updateOrCreate(['id_opname_detail' => $id], [
+            'qty' => $qty,
+        ]);
+
+        $id_opname = $stok->id_opname;
+        $cekstok = OpnameDetail::where('id_opname', $id_opname)->select('qty')->get();
+        $barang = OpnameDetail::where('id_opname', $id_opname)->first();
+
+        $total_qty = 0;
+
+        foreach ($cekstok as $item) {
+            $total_qty += $item->qty;
+        }
+
+
+        $opname = Opname::updateOrCreate(['id_opname' => $id_opname], [
+            'total_qty' => $total_qty,
+        ]);
+
+        if ($opname) {
+            $ip2 = request()->getClientIp();
+            $usersid = User::select('id')->where('status', 1)->where('username', auth()->user()->username)->get();
+            foreach($usersid as $id);
+            $setid = $id->id;
+            $aktifitas = auth()->user()->username.' '.'Berhasil mengubah data stok barang :'.' '.$barang->nama_barang.', dengan jumlah stok : '.$qty.' pada transaksi : '. $id_opname;
+            $lastid    = DB::table('log_activity')->max('id') + 1;
+
+            // console LOG::START
+            $data = ([
+                'id' => $lastid,
+                'username' => auth()->user()->username,
+                'id_user' => $setid,
+                'keterangan' => $aktifitas,
+                'ip_address' => $ip2,
+            ]);
+
+            DB::table('log_activity')->insert($data);
+
+            toast('Proses berhasil dilakukan', 'success');
+            return redirect()->back();
+        } else {
+            $ip2 = request()->getClientIp();
+            $usersid = User::select('id')->where('status', 1)->where('username', auth()->user()->username)->get();
+            foreach($usersid as $id);
+            $setid = $id->id;
+            $aktifitas = auth()->user()->username.' '.'Berhasil mengubah data stok barang :'.' '.$barang->nama_barang.', dengan jumlah stok : '.$qty.' pada transaksi : '. $id_opname;
+            $lastid    = DB::table('log_activity')->max('id') + 1;
+
+            // console LOG::START
+            $data = ([
+                'id' => $lastid,
+                'username' => auth()->user()->username,
+                'id_user' => $setid,
+                'keterangan' => $aktifitas,
+                'ip_address' => $ip2,
+            ]);
+
+            DB::table('log_activity')->insert($data);
+
+            toast('Proses gagal dilakukan', 'error');
+            return redirect()->back();
+        }
+    }
+
+    public function deletebarangopname($id)
+    {
+        $barangOpname = OpnameDetail::Where('id', $id)->first();
+        $jumlah = $barangOpname->qty;
+
+        $barang = Opname::where('id_opname', $barangOpname->id_opname)->first();
+        if($barang){
+            $barang->total_qty -= $jumlah;
+            $barang->sequenc -= 1;
+            $barang->save();
+        }
+
+        if ($barangOpname) {
+            $barangOpname->delete();
+            $ip2 = request()->getClientIp();
+            $usersid = User::select('id')->where('status', 1)->where('username', auth()->user()->username)->get();
+            foreach($usersid as $id);
+            $setid = $id->id;
+            $aktifitas = auth()->user()->username.' '.'Berhasil menghapus data barang :'.' '. $barangOpname->nama_barang.' '.'pada transaksi : '. $barangOpname->id_opname;
+            $lastid    = DB::table('log_activity')->max('id') + 1;
+
+            // console LOG::START
+            $data = ([
+                'id' => $lastid,
+                'username' => auth()->user()->username,
+                'id_user' => $setid,
+                'keterangan' => $aktifitas,
+                'ip_address' => $ip2,
+            ]);
+
+            DB::table('log_activity')->insert($data);
+
+            toast('Hapus data berhasil dilakukan','success');
+            return redirect()->back();
+        } else {
+            $barangOpname->delete();
+            $ip2 = request()->getClientIp();
+            $usersid = User::select('id')->where('status', 1)->where('username', auth()->user()->username)->get();
+            foreach($usersid as $id);
+            $setid = $id->id;
+            $aktifitas = auth()->user()->username.' '.'gagal menghapus data barang :'.' '. $barangOpname->nama_barang.' '.'pada transaksi : '. $barangOpname->id_opname;
+            $lastid    = DB::table('log_activity')->max('id') + 1;
+
+            // console LOG::START
+            $data = ([
+                'id' => $lastid,
+                'username' => auth()->user()->username,
+                'id_user' => $setid,
+                'keterangan' => $aktifitas,
+                'ip_address' => $ip2,
+            ]);
+
+            toast('Hpaus data gagal dilakukan', 'error');
+            return redirect()->back();
+        }
     }
 
     public function delete($id_opname)
@@ -451,14 +650,68 @@ class OpnameController extends Controller
 
         if (!$opnameDetail) {
             $opname->delete();
+            $ip2 = request()->getClientIp();
+            $usersid = User::select('id')->where('status', 1)->where('username', auth()->user()->username)->get();
+            foreach($usersid as $id);
+            $setid = $id->id;
+            $aktifitas = auth()->user()->username.' '.'Berhasil menghapus data transaksi : '. $opname->id_opname;
+            $lastid    = DB::table('log_activity')->max('id') + 1;
+
+            // console LOG::START
+            $data = ([
+                'id' => $lastid,
+                'username' => auth()->user()->username,
+                'id_user' => $setid,
+                'keterangan' => $aktifitas,
+                'ip_address' => $ip2,
+            ]);
+
+            DB::table('log_activity')->insert($data);
+
             toast('Hapus data berhasil dilakukan','success');
             return redirect()->back();
         } else if ($opname) {
             $opnameDetail->delete();
             $opname->delete();
+            $ip2 = request()->getClientIp();
+            $usersid = User::select('id')->where('status', 1)->where('username', auth()->user()->username)->get();
+            foreach($usersid as $id);
+            $setid = $id->id;
+            $aktifitas = auth()->user()->username.' '.'Berhasil menghapus data transaksi : '. $opname->id_opname;
+            $lastid    = DB::table('log_activity')->max('id') + 1;
+
+            // console LOG::START
+            $data = ([
+                'id' => $lastid,
+                'username' => auth()->user()->username,
+                'id_user' => $setid,
+                'keterangan' => $aktifitas,
+                'ip_address' => $ip2,
+            ]);
+
+            DB::table('log_activity')->insert($data);
+
             toast('Hapus data berhasil dilakukan','success');
             return redirect()->back();
         }else {
+            $ip2 = request()->getClientIp();
+            $usersid = User::select('id')->where('status', 1)->where('username', auth()->user()->username)->get();
+            foreach($usersid as $id);
+            $setid = $id->id;
+            $aktifitas = auth()->user()->username.' '.'Berhasil menghapus data transaksi : '. $opname->id_opname;
+            $lastid    = DB::table('log_activity')->max('id') + 1;
+
+            // console LOG::START
+            $data = ([
+                'id' => $lastid,
+                'username' => auth()->user()->username,
+                'id_user' => $setid,
+                'keterangan' => $aktifitas,
+                'ip_address' => $ip2,
+            ]);
+
+            DB::table('log_activity')->insert($data);
+
             toast('Hpaus data gagal dilakukan', 'error');
             return redirect()->back();
         }

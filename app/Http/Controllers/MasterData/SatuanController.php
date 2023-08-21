@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Yajra\DataTables\Facades\DataTables;
+use DB;
 
 use App\Models\Perusahaan;
 use App\Models\User;
@@ -23,7 +24,7 @@ class SatuanController extends Controller
                 return view('inventory.satuan-barang.actions', compact('row'))->render();
             })
             ->editColumn('created_at', function ($row) {
-                return $row->created_at->isoFormat('dddd, D MMMM Y');
+                return $row->created_at->isoFormat('Y-MM-DD');
             })
             ->rawColumns(['action'])
             ->toJson();
@@ -73,14 +74,48 @@ class SatuanController extends Controller
         $set = Satuan::updateOrCreate(['id' => $request['id']], [
             'id' => $lastid,
             'satuan' => $request['satuan'] == '' ? '' : $request['satuan'],
-            'keterangan_satuan' => $request['keterangan'] == '' ? null : $request['keterangan'],
+            'keterangan_satuan' => $request['keterangan'] == '' ? 'Tidak terisi' : $request['keterangan'],
             'user_id' => auth()->user()->id,
         ]);
 
         if ($set) {
+            $ip2 = request()->getClientIp();
+            $usersid = User::select('id')->where('status', 1)->where('username', auth()->user()->username)->get();
+            foreach($usersid as $id);
+            $setid = $id->id;
+            $aktifitas = auth()->user()->username.' '.'berhasil'.' '.$request->aksi.' '.$request->satuan;
+            $lastid    = DB::table('log_activity')->max('id') + 1;
+
+            // console LOG::START
+            $data = ([
+                'id' => $lastid,
+                'username' => auth()->user()->username,
+                'id_user' => $setid,
+                'keterangan' => $aktifitas,
+                'ip_address' => $ip2,
+            ]);
+            DB::table('log_activity')->insert($data);
+
             toast('Proses berhasil dilakukan','success');
             return redirect('app/satuans');
         } else {
+            $ip2 = request()->getClientIp();
+            $usersid = User::select('id')->where('status', 1)->where('username', auth()->user()->username)->get();
+            foreach($usersid as $id);
+            $setid = $id->id;
+            $aktifitas = auth()->user()->username.' '.'gagal'.' '.$request->aksi.' '.$request->satuan;
+            $lastid    = DB::table('log_activity')->max('id') + 1;
+
+            // console LOG::START
+            $data = ([
+                'id' => $lastid,
+                'username' => auth()->user()->username,
+                'id_user' => $setid,
+                'keterangan' => $aktifitas,
+                'ip_address' => $ip2,
+            ]);
+            DB::table('log_activity')->insert($data);
+
             toast('Proses gagal dilakukan', 'error');
             return redirect()->back();
         }
@@ -88,13 +123,50 @@ class SatuanController extends Controller
 
     public function delete(Request $request, $id)
     {
+        $cek = Satuan::Where('id', $id)->first();
+        $status = auth()->user()->username.' '.'berhasil menghapus satuan :'.' '.$cek->satuan;
+        $status1 = auth()->user()->username.' '.'berhasil menghapus satuan :'.' '.$cek->satuan;
         $delete = Satuan::Where('id', $id)->delete();
 
         if($delete)
         {
+            $ip2 = request()->getClientIp();
+            $usersid = User::select('id')->where('status', 1)->where('username', auth()->user()->username)->get();
+            foreach($usersid as $id);
+            $setid = $id->id;
+            $aktifitas = $status;
+            $lastid    = DB::table('log_activity')->max('id') + 1;
+
+            // console LOG::START
+            $data = ([
+                'id' => $lastid,
+                'username' => auth()->user()->username,
+                'id_user' => $setid,
+                'keterangan' => $aktifitas,
+                'ip_address' => $ip2,
+            ]);
+            DB::table('log_activity')->insert($data);
+
             toast('Satuan Barang berhasil di hapus','success');
             return redirect()->back();
         }else{
+            $ip2 = request()->getClientIp();
+            $usersid = User::select('id')->where('status', 1)->where('username', auth()->user()->username)->get();
+            foreach($usersid as $id);
+            $setid = $id->id;
+            $aktifitas = $status1;
+            $lastid    = DB::table('log_activity')->max('id') + 1;
+
+            // console LOG::START
+            $data = ([
+                'id' => $lastid,
+                'username' => auth()->user()->username,
+                'id_user' => $setid,
+                'keterangan' => $aktifitas,
+                'ip_address' => $ip2,
+            ]);
+            DB::table('log_activity')->insert($data);
+
             toast('Maaf Satuan Barang gagal di hapus', 'error');
             return redirect()->back();
         }

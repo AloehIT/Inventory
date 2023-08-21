@@ -160,8 +160,9 @@
         var table = $('.basic-datatable').DataTable({
             processing: true,
             dom: '<"left"l>ftr<"right"ip>',
-            serverSide: true,
+            serverSide: false,
             info: false,
+            order: [[2, 'desc']],
             ajax: '{!! route('data.users') !!}',
             columns: [
                 { data: 'nama_users', name: 'nama_users' },

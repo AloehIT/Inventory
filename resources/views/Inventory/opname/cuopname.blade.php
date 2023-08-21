@@ -421,6 +421,7 @@ $status = isset($detail['status']) ? ($detail['status'] == "approve" ? "approve"
                                 @endphp
 
                                 <div class="row g-1" hidden>
+                                    <input type="hidden" name="stok_keterangan[]" value="{{ $detail['keterangan'] ?? '' }}">
                                     <div class="form-group col-lg-3">
                                         <label for="">ID Transaksi</label>
                                         <input type="text" name="id_transaksi[]" class="form-control" value="{{ $stok['id_opname'] ?? '' }}">
@@ -650,8 +651,9 @@ $status = isset($detail['status']) ? ($detail['status'] == "approve" ? "approve"
             lengthChange: false,
             processing: true,
             dom: '<"left"l>ftr<"right"ip>',
-            serverSide: true,
+            serverSide: false,
             info: false,
+            order: [[1, 'desc']],
             ajax: '{!! route('data.detail.opname', $detail['id_opname'] ?? '') !!}',
             columns: [
                 { data: 'kode_barang', name: 'tbl_opname_detail.kode_barang' },

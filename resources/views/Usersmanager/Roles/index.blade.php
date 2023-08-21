@@ -99,6 +99,7 @@
 
                 <form class="ps-3 pe-3" action="{{ route('posts.roles') }}" method="POST">
                     @csrf
+                    <input type="hidden" name="aksi" value="manambahkan role user baru">
                     <div class="mb-3">
                         <label for="role" class="form-label">Nama Role</label>
                         <input class="form-control @error('name') is-invalid @enderror" type="text" id="role" name="name" placeholder="Nama Role" autocomplete="off">
@@ -144,6 +145,7 @@
 
                 <form class="ps-3 pe-3" action="{{ route('posts.roles') }}" method="POST">
                     @csrf
+                    <input type="hidden" name="aksi" value="mengubah role user">
                     <div>
                         <div class="mb-3">
                             <input type="hidden" name="id" value="{{ $data->id }}">
@@ -180,8 +182,9 @@
         var table = $('.basic-datatable').DataTable({
             processing: true,
             dom: '<"left"l>ftr<"right"ip>',
-            serverSide: true,
+            serverSide: false,
             info: false,
+            order: [[1, 'desc']],
             ajax: '{!! route('data.roles') !!}',
             columns: [
                 { data: 'name', name: 'name' },

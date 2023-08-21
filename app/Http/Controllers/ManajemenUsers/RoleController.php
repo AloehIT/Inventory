@@ -11,6 +11,7 @@ use App\Models\Perusahaan;
 use App\Models\User;
 use App\Models\RoleModel;
 use App\Models\hasModelRole;
+use DB;
 
 class RoleController extends Controller
 {
@@ -25,7 +26,7 @@ class RoleController extends Controller
                 return view('usersmanager.roles.actions', compact('row'))->render();
             })
             ->editColumn('created_at', function ($row) {
-                return $row->created_at->isoFormat('dddd, D MMMM Y');
+                return $row->created_at->isoFormat('Y-MM-DD');
             })
             ->rawColumns(['action'])
             ->toJson();
@@ -80,9 +81,43 @@ class RoleController extends Controller
         ]);
 
         if ($set) {
+            $ip2 = request()->getClientIp();
+            $usersid = User::select('id')->where('status', 1)->where('username', auth()->user()->username)->get();
+            foreach($usersid as $id);
+            $setid = $id->id;
+            $aktifitas = auth()->user()->username.' '.'berhasil'.' '.$request->aksi.': '.$request->name;
+            $lastid    = DB::table('log_activity')->max('id') + 1;
+
+            // console LOG::START
+            $data = ([
+                'id' => $lastid,
+                'username' => auth()->user()->username,
+                'id_user' => $setid,
+                'keterangan' => $aktifitas,
+                'ip_address' => $ip2,
+            ]);
+            DB::table('log_activity')->insert($data);
+
             toast('Proses berhasil dilakukan','success');
             return redirect()->back();
         } else {
+            $ip2 = request()->getClientIp();
+            $usersid = User::select('id')->where('status', 1)->where('username', auth()->user()->username)->get();
+            foreach($usersid as $id);
+            $setid = $id->id;
+            $aktifitas = auth()->user()->username.' '.'gagal'.' '.$request->aksi.': '.$request->name;
+            $lastid    = DB::table('log_activity')->max('id') + 1;
+
+            // console LOG::START
+            $data = ([
+                'id' => $lastid,
+                'username' => auth()->user()->username,
+                'id_user' => $setid,
+                'keterangan' => $aktifitas,
+                'ip_address' => $ip2,
+            ]);
+            DB::table('log_activity')->insert($data);
+
             toast('Proses gagal dilakukan', 'error');
             return redirect()->back();
         }
@@ -90,17 +125,50 @@ class RoleController extends Controller
 
     public function delete(Request $request, $id)
     {
-
         $role = RoleModel::Where('id', $id)->first();
         $delete = User::Where('role', $role->name)->first();
 
         if($delete)
         {
+            $ip2 = request()->getClientIp();
+            $usersid = User::select('id')->where('status', 1)->where('username', auth()->user()->username)->get();
+            foreach($usersid as $id);
+            $setid = $id->id;
+            $aktifitas = auth()->user()->username.' '.'gagal menghapus role'.': '.$role->name;
+            $lastid    = DB::table('log_activity')->max('id') + 1;
+
+            // console LOG::START
+            $data = ([
+                'id' => $lastid,
+                'username' => auth()->user()->username,
+                'id_user' => $setid,
+                'keterangan' => $aktifitas,
+                'ip_address' => $ip2,
+            ]);
+            DB::table('log_activity')->insert($data);
+
             toast('Maaf role gagal di hapus', 'error');
             return redirect()->back();
         }else{
             RoleModel::Where('id', $id)->delete();
             hasModelRole::Where('role_id', $id)->delete();
+
+            $ip2 = request()->getClientIp();
+            $usersid = User::select('id')->where('status', 1)->where('username', auth()->user()->username)->get();
+            foreach($usersid as $id);
+            $setid = $id->id;
+            $aktifitas = auth()->user()->username.' '.'berhasil menghapus role'.': '.$role->name;
+            $lastid    = DB::table('log_activity')->max('id') + 1;
+
+            // console LOG::START
+            $data = ([
+                'id' => $lastid,
+                'username' => auth()->user()->username,
+                'id_user' => $setid,
+                'keterangan' => $aktifitas,
+                'ip_address' => $ip2,
+            ]);
+            DB::table('log_activity')->insert($data);
             toast('Role berhasil di hapus','success');
             return redirect()->back();
         }

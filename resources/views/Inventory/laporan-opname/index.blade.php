@@ -1,5 +1,5 @@
 @extends('layouts.app')
-@section('title', 'Laporan Stok')
+@section('title', 'Laporan Opname')
 @section('content-page')
 <style>
     .dataTables_filter {
@@ -44,11 +44,11 @@
                                 <div class="row justify-content-between">
                                     <div class="col-lg-6">
                                         <div class="form-group">
-                                            <label for="opsi-laporan-stok">Nama Item :</label>
+                                            <label for="opsi-laporan-stok">ID Opname :</label>
                                             <select class="form-control select2" data-toggle="select2" name="opsi-laporan-stok" id="opsi-laporan-stok">
-                                                <option disabled selected>Pilih Barang</option>
-                                                @foreach ($barang as $data)
-                                                <option value="{{ $data['id_barang'] }}">{{ $data['id_barang'] }} | {{ $data['nama_barang'] }}</option>
+                                                <option disabled selected>Pilih</option>
+                                                @foreach ($opname as $data)
+                                                <option value="{{ $data['id_opname'] }}">{{ $data['id_opname'] }} | {{ $data['keterangan'] }}</option>
                                                 @endforeach
                                             </select>
                                         </div>
@@ -84,7 +84,11 @@
                                                 <th>Kode Transaksi</th>
                                                 <th>Nama Barang</th>
                                                 <th>Qty</th>
+                                                <th>Current Qty</th>
+                                                <th>Total Qty</th>
+                                                <th>Jumalah Stok</th>
                                                 <th>Keterangan</th>
+                                                <th>Status</th>
                                             </tr>
                                         </thead>
                                         <tbody>
@@ -104,11 +108,6 @@
                                             <a href="javascript:void(0)" class="btn text-white" style="background: green;" id="print-excel" target="_blank"><i class="uil-print"></i> Print Excel</a>
                                         </div>
                                     </div>
-
-                                    <div class="col-lg-3">
-                                        <label for="">Jumlah Stok</label>
-                                        <input type="text" id="hasil-perhitungan" class="form-control" readonly>
-                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -117,7 +116,7 @@
 
                 </div> <!-- end card-body-->
             </div> <!-- end card-->
-        </div>
+        </div> <!-- end col -->
     </div>
     <!-- end row -->
 </div>
@@ -135,22 +134,27 @@ $(document).ready(function() {
         info: false,
         order: [[0, 'desc']],
         ajax: {
-            url: '{!! route('data.daftarStok') !!}',
+            url: '{!! route('data.daftarOpname') !!}',
             data: function(d) {
                 d.start_date = $('#start_date').val();
                 d.end_date = $('#end_date').val();
                 d.selected_barcode = $('#opsi-laporan-stok').val();
             },
             dataSrc: function(json) {
-                return json.data; // Ambil data dari respons JSON
+                // Data sudah dikelompokkan di sisi server
+                return json.data;
             }
         },
         columns: [
             { data: 'tanggal', name: 'tanggal' },
             { data: 'kode_transaksi', name: 'kode_transaksi' },
             { data: 'nama_barang', name: 'nama_barang' },
-            { data: 'qty', name: 'qty' },
-            { data: 'sts_inout', name: 'sts_inout'},
+            { data: 'detail_qty', name: 'detail_qty' },
+            { data: 'current_qty', name: 'current_qty' },
+            { data: 'total_qty', name: 'total_qty' },
+            { data: 'stok', name: 'stok' },
+            { data: 'keterangan', name: 'keterangan' },
+            { data: 'sts_inout', name: 'sts_inout' },
         ],
         language: {
             search: '',
@@ -158,39 +162,13 @@ $(document).ready(function() {
         }
     });
 
-    function updateHasilPerhitungan() {
-        var selectedBarcode = $('#opsi-laporan-stok').val();
-        var startDate = $('#start_date').val();
-        var endDate = $('#end_date').val();
-
-        if (selectedBarcode) {
-            $.ajax({
-                url: '{!! route('data.calculate') !!}',
-                type: 'GET',
-                data: {
-                    id_barang: selectedBarcode,
-                    start_date: startDate,
-                    end_date: endDate,
-                },
-                success: function(response) {
-                    var hasil = response.total;
-                    $('#hasil-perhitungan').val(hasil);
-                },
-                error: function() {
-                    console.error('Terjadi kesalahan dalam mengambil data.');
-                }
-            });
-        } else {
-            $('#hasil-perhitungan').val('');
-        }
-    }
 
 
-    // Event change pada dropdown
     $('#opsi-laporan-stok').on('change', function () {
         table.ajax.reload();
         updateHasilPerhitungan();
     });
+
 
     // Fungsi untuk melakukan refresh data tabel
     function refreshTable() {
@@ -244,16 +222,8 @@ $(document).ready(function() {
         updateHasilPerhitungan(); // Perbarui hasil perhitungan saat dropdown berubah
     });
 
-
-
-    $('#print-pdf').on('click', function(){
-        var selectedOption = $('#opsi-laporan-stok').val();
-        window.location.href = '/laporan-stok/print-stok?opsi=' + selectedOption;
-    });
-
     displayDateRange();
     updateHasilPerhitungan();
 });
-
 </script>
 @endsection

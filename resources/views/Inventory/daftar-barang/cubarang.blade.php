@@ -40,6 +40,11 @@
             </div>
 
             @csrf
+            @if ($title === 'Tambah Daftar Barang')
+            <input type="hidden" name="aksi" value="menambahkan daftar barang :">
+            @else
+            <input type="hidden" name="aksi" value="mengubah daftar barang :">
+            @endif
             <div class="col-xl-3">
 
                 <div class="row">

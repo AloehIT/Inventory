@@ -132,7 +132,7 @@
                 <span> Laporan </span>
                 <span class="menu-arrow"></span>
             </a>
-            <div class="collapse {{ Request::is('app/laporan/barang-masuk/*', 'app/laporan/barang-keluar/*', '#') ? 'show' : '' }}" id="laporanBarang">
+            <div class="collapse {{ Request::is('app/laporan/barang-masuk/*', 'app/laporan/barang-keluar/*', 'app/laporan/opname/*') ? 'show' : '' }}" id="laporanBarang">
                 <ul class="side-nav-second-level">
                     <li>
                         <a href="{{ url('app/laporan/barang-masuk') }}" class="{{ Request::is('app/laporan/barang-masuk/*') ? 'text-white' : '' }}">Barang Masuk</a>
@@ -141,7 +141,7 @@
                         <a href="{{ url('app/laporan/barang-keluar') }}" class="{{ Request::is('app/laporan/barang-keluar/*') ? 'text-white' : '' }}">Barang Keluar</a>
                     </li>
                     <li>
-                        <a href="{{ url('#') }}" class="{{ Request::is('#') ? 'text-white' : '' }}">Opname</a>
+                        <a href="{{ url('app/laporan/opname') }}" class="{{ Request::is('app/laporan/opname') ? 'text-white' : '' }}">Opname</a>
                     </li>
                 </ul>
             </div>

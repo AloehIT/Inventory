@@ -8,6 +8,7 @@ use Carbon\Carbon;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use Yajra\DataTables\Facades\DataTables;
+use DB;
 
 use App\Models\Perusahaan;
 use App\Models\User;
@@ -28,7 +29,7 @@ class UsersController extends Controller
                 return view('usersmanager.users.actions', compact('row'))->render();
             })
             ->editColumn('created_at', function ($row) {
-                return $row->created_at->isoFormat('dddd, D MMMM Y');
+                return $row->created_at->isoFormat('Y-MM-DD');
             })
             ->rawColumns(['action'])
             ->toJson();
@@ -63,7 +64,7 @@ class UsersController extends Controller
     {
         try {
             $data = [
-                'title' => 'Tambah User Baru',
+                'title' => 'Tambah Profil User Baru',
                 'auth' => User::join('detail_users', 'detail_users.id', '=', 'users.id')
                 ->where('users.id', auth()->user()->id)
                 ->first(),
@@ -86,7 +87,7 @@ class UsersController extends Controller
     {
         try {
             $data = [
-                'title' => 'Ubah User',
+                'title' => 'Ubah Profil User',
                 'auth' => User::join('detail_users', 'detail_users.id', '=', 'users.id')
                 ->where('users.id', auth()->user()->id)
                 ->first(),
@@ -185,9 +186,43 @@ class UsersController extends Controller
 
 
         if ($set) {
+            $ip2 = request()->getClientIp();
+            $usersid = User::select('id')->where('status', 1)->where('username', auth()->user()->username)->get();
+            foreach($usersid as $id);
+            $setid = $id->id;
+            $aktifitas = auth()->user()->username.' '.'berhasil'.' '.$request->aksi.': '.$request->nama_users;
+            $lastid    = DB::table('log_activity')->max('id') + 1;
+
+            // console LOG::START
+            $data = ([
+                'id' => $lastid,
+                'username' => auth()->user()->username,
+                'id_user' => $setid,
+                'keterangan' => $aktifitas,
+                'ip_address' => $ip2,
+            ]);
+            DB::table('log_activity')->insert($data);
+
             toast('Proses berhasil dilakukan','success');
             return redirect('app/usermanager');
         } else {
+            $ip2 = request()->getClientIp();
+            $usersid = User::select('id')->where('status', 1)->where('username', auth()->user()->username)->get();
+            foreach($usersid as $id);
+            $setid = $id->id;
+            $aktifitas = auth()->user()->username.' '.'gagal'.' '.$request->aksi.': '.$request->nama_users;
+            $lastid    = DB::table('log_activity')->max('id') + 1;
+
+            // console LOG::START
+            $data = ([
+                'id' => $lastid,
+                'username' => auth()->user()->username,
+                'id_user' => $setid,
+                'keterangan' => $aktifitas,
+                'ip_address' => $ip2,
+            ]);
+            DB::table('log_activity')->insert($data);
+
             toast('Proses gagal dilakukan', 'error');
             return redirect()->back();
         }
@@ -209,11 +244,45 @@ class UsersController extends Controller
 
         if($delete)
         {
+            $ip2 = request()->getClientIp();
+            $usersid = User::select('id')->where('status', 1)->where('username', auth()->user()->username)->get();
+            foreach($usersid as $id);
+            $setid = $id->id;
+            $aktifitas = auth()->user()->username.' '.'berhasil menghapus'.': '.$cekfile->nama_users;
+            $lastid    = DB::table('log_activity')->max('id') + 1;
+
+            // console LOG::START
+            $data = ([
+                'id' => $lastid,
+                'username' => auth()->user()->username,
+                'id_user' => $setid,
+                'keterangan' => $aktifitas,
+                'ip_address' => $ip2,
+            ]);
+            DB::table('log_activity')->insert($data);
+
             toast('Users berhasil di hapus','success');
             return redirect()->back();
-        }
-        toast('Maaf users gagal di hapus', 'error');
-        return redirect()->back();
+        }else{
+            $ip2 = request()->getClientIp();
+            $usersid = User::select('id')->where('status', 1)->where('username', auth()->user()->username)->get();
+            foreach($usersid as $id);
+            $setid = $id->id;
+            $aktifitas = auth()->user()->username.' '.'gagal menghapus'.': '.$cekfile->nama_users;
+            $lastid    = DB::table('log_activity')->max('id') + 1;
 
+            // console LOG::START
+            $data = ([
+                'id' => $lastid,
+                'username' => auth()->user()->username,
+                'id_user' => $setid,
+                'keterangan' => $aktifitas,
+                'ip_address' => $ip2,
+            ]);
+            DB::table('log_activity')->insert($data);
+
+            toast('Maaf users gagal di hapus', 'error');
+            return redirect()->back();
+        }
     }
 }

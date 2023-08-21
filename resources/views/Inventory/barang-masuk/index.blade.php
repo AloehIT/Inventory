@@ -103,7 +103,8 @@
         var table = $('.basic-datatable').DataTable({
             processing: true,
             dom: '<"left"l>ftr<"right"ip>',
-            serverSide: true,
+            serverSide: false,
+            order: [[1, 'desc']],
             info: false,
             ajax: {
                 url: '{!! route('data.barangmasuk') !!}',

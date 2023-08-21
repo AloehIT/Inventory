@@ -32,7 +32,7 @@
                                 @csrf
                                 <div class="form-group">
                                     <label for="user" class="sr-only">User</label>
-                                    <input type="text" name="username" id="user" class="mb-0 form-control  @error ('username') is-invalid @enderror" value="{{ old('user') }}" placeholder="User Router">
+                                    <input type="text" name="username" id="user" class="mb-0 form-control  @error ('username') is-invalid @enderror" value="{{ old('user') }}" placeholder="User Router" autocomplete="off">
                                     @error('username')
                                         <span class="invalid-feedback" role="alert">
                                             <strong>{{ $message }}</strong>
@@ -41,7 +41,7 @@
                                 </div>
                                 <div class="form-group mb-4">
                                     <label for="password" class="sr-only">Password</label>
-                                    <input type="password" name="password" id="pass" class="form-control @error ('password') is-invalid @enderror" placeholder="***********">
+                                    <input type="password" name="password" id="pass" class="form-control @error ('password') is-invalid @enderror" placeholder="***********" autocomplete="off">
                                     @error('password')
                                         <span class="invalid-feedback" role="alert">
                                             <strong>{{ $message }}</strong>

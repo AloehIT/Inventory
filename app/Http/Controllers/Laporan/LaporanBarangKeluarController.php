@@ -42,13 +42,14 @@ class LaporanBarangKeluarController extends Controller
 
         // Ubah data menjadi array asosiatif
         $data = $data->map(function ($item) {
+            $sts_inout = $item->sts_inout == -1 ? '<span style="color: red;"><i class="bi bi-folder-minus"></i> Barang Keluar</span>' : '<span style="color: green;"><i class="bi bi-folder-plus"></i> Barang Masuk</span>';
             return [
                 'tanggal' => $item->tanggal,
                 'kode_transaksi' => $item->kode_transaksi,
                 'nama_barang' => $item->nama_barang,
-                'qty' => $item->qty,
+                'qty' => '-'.$item->qty,
                 'keterangan' => $item->keterangan,
-                'sts_inout' => $item->sts_inout == -1 ? 'Barang Keluar' : 'Barang Masuk',
+                'sts_inout' => $sts_inout,
             ];
         });
 

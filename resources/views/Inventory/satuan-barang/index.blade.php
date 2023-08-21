@@ -90,7 +90,7 @@
 </div>
 
 
-{{-- <div id="add" class="modal fade" tabindex="-1" role="dialog" aria-hidden="true">
+<div id="add" class="modal fade" tabindex="-1" role="dialog" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
 
@@ -98,7 +98,7 @@
                 <div class="text-start mt-4 mb-2 mx-3">
                     <div class="d-flex justify-content-between mt-3">
                         <div>
-                            <h5 class="text-uppercase mb-0"><i class="uil-balance-scale text-info"></i> Tambah @yield('title')</h5>
+                            <h5 class="text-uppercase mb-0"><i class="uil-balance-scale text-warning"></i> Tambah @yield('title')</h5>
                             <p class="">{{ $perusahaan['value'] ?? '' }}</p>
                         </div>
 
@@ -108,6 +108,7 @@
 
                 <form class="ps-3 pe-3" action="{{ route('posts.satuanbarang') }}" method="POST">
                     @csrf
+                    <input type="hidden" name="aksi" value="menambahkan satuan :">
                     <div class="mb-3">
                         <label for="satuan" class="form-label">Satuan Barang</label>
                         <input class="form-control @error('satuan') is-invalid @enderror" type="text" id="satuan" name="satuan" placeholder="Satuan Barang" value="{{ old('satuan') }}">
@@ -135,7 +136,9 @@
     </div>
 </div>
 
-<div id="edit{{ $id }}" class="modal fade" tabindex="-1" role="dialog" aria-hidden="true">
+
+@foreach ($satuan as $edit)
+<div id="edit{{ $edit->id }}" class="modal fade" tabindex="-1" role="dialog" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
 
@@ -153,11 +156,12 @@
 
                 <form class="ps-3 pe-3" action="{{ route('posts.satuanbarang') }}" method="POST">
                     @csrf
+                    <input type="hidden" name="aksi" value="mengubah satuan :">
                     <div class="mx-3">
                         <div class="mb-3">
-                            <input type="hidden" name="id" value="{{ $id }}">
+                            <input type="hidden" name="id" value="{{ $edit->id }}">
                             <label for="satuan" class="form-label">Satuan Barang</label>
-                            <input class="form-control @error('satuan') is-invalid @enderror" type="text" id="satuan" name="satuan" placeholder="Satuan" value="{{ $item['satuan'] ?? old('satuan') }}">
+                            <input class="form-control @error('satuan') is-invalid @enderror" type="text" id="satuan" name="satuan" placeholder="Satuan" value="{{ $edit['satuan'] ?? old('satuan') }}">
                             @error('satuan')
                             <span class="invalid-feedback" role="alert" style="font-size: 11px;">
                                 <strong>{{ $message }}</strong>
@@ -167,7 +171,7 @@
 
                         <div class="mb-3">
                             <label for="keterangan" class="form-label">Keterangan</label>
-                            <textarea name="keterangan" class="form-control" id="keterangan" cols="30" rows="5" placeholder="Ketikan teks disini...">{{ $item['keterangan_satuan'] ?? old('keterangan') }}</textarea>
+                            <textarea name="keterangan" class="form-control" id="keterangan" cols="30" rows="5" placeholder="Ketikan teks disini...">{{ $edit['keterangan_satuan'] ?? old('keterangan') }}</textarea>
                         </div>
 
                         <div class="mb-3 text-end">
@@ -181,7 +185,9 @@
             </div>
         </div>
     </div>
-</div> --}}
+</div>
+@endforeach
+
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
 <script>
@@ -189,8 +195,9 @@
         var table = $('.basic-datatable').DataTable({
             processing: true,
             dom: '<"left"l>ftr<"right"ip>',
-            serverSide: true,
+            serverSide: false,
             info: false,
+            order: [[1, 'desc']],
             ajax: '{!! route('data.satuan') !!}',
             columns: [
                 { data: 'satuan', name: 'satuan' },

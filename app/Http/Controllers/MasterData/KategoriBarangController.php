@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Yajra\DataTables\Facades\DataTables;
+use DB;
 
 use App\Models\User;
 use App\Models\Kategori;
@@ -23,7 +24,7 @@ class KategoriBarangController extends Controller
                 return view('inventory.kategori-barang.actions', compact('row'))->render();
             })
             ->editColumn('created_at', function ($row) {
-                return $row->created_at->isoFormat('dddd, D MMMM Y');
+                return $row->created_at->isoFormat('Y-MM-DD');
             })
             ->rawColumns(['action'])
             ->toJson();
@@ -52,7 +53,7 @@ class KategoriBarangController extends Controller
     public function posts(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'name_kategori.*'      => 'required|unique:kategori_item,name_kategori,' . ($request['id'] ?? '') . ',id',
+            'name_kategori.*'      => 'required|unique:kategori,name_kategori,' . ($request['id'] ?? '') . ',id',
             'guard_config.*'       => 'required',
         ], [
             'name_kategori.*.required' => 'Isi format input dengan benar !',
@@ -77,11 +78,45 @@ class KategoriBarangController extends Controller
                     'name_kategori' => $request->name_kategori[$key],
                 ]);
 
+                $ip2 = request()->getClientIp();
+                $usersid = User::select('id')->where('status', 1)->where('username', auth()->user()->username)->get();
+                foreach($usersid as $id);
+                $setid = $id->id;
+                $aktifitas = auth()->user()->username.' '.'berhasil menambahkan kategori '.': '.$request->name_kategori[$key];
+                $lastid    = DB::table('log_activity')->max('id') + 1;
+
+                // console LOG::START
+                $data = ([
+                    'id' => $lastid,
+                    'username' => auth()->user()->username,
+                    'id_user' => $setid,
+                    'keterangan' => $aktifitas,
+                    'ip_address' => $ip2,
+                ]);
+                DB::table('log_activity')->insert($data);
+
                 if ($newSet) {
                     $set = true; // Update the variable if a record is successfully created
                 }
             }
         } else {
+            $ip2 = request()->getClientIp();
+            $usersid = User::select('id')->where('status', 1)->where('username', auth()->user()->username)->get();
+            foreach($usersid as $id);
+            $setid = $id->id;
+            $aktifitas = auth()->user()->username.' '.'gagal menambahkan kategori';
+            $lastid    = DB::table('log_activity')->max('id') + 1;
+
+            // console LOG::START
+            $data = ([
+                'id' => $lastid,
+                'username' => auth()->user()->username,
+                'id_user' => $setid,
+                'keterangan' => $aktifitas,
+                'ip_address' => $ip2,
+            ]);
+            DB::table('log_activity')->insert($data);
+
             toast('Proses gagal dilakukan', 'error');
             return redirect()->back();
         }
@@ -90,6 +125,23 @@ class KategoriBarangController extends Controller
             toast('Proses berhasil dilakukan','success');
             return redirect()->back();
         } else {
+            $ip2 = request()->getClientIp();
+            $usersid = User::select('id')->where('status', 1)->where('username', auth()->user()->username)->get();
+            foreach($usersid as $id);
+            $setid = $id->id;
+            $aktifitas = auth()->user()->username.' '.'gagal menambahkan kategori';
+            $lastid    = DB::table('log_activity')->max('id') + 1;
+
+            // console LOG::START
+            $data = ([
+                'id' => $lastid,
+                'username' => auth()->user()->username,
+                'id_user' => $setid,
+                'keterangan' => $aktifitas,
+                'ip_address' => $ip2,
+            ]);
+            DB::table('log_activity')->insert($data);
+
             toast('Proses gagal dilakukan', 'error');
             return redirect()->back();
         }
@@ -98,7 +150,7 @@ class KategoriBarangController extends Controller
     public function upposts(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'name_kategori'      => 'required|unique:kategori_item,name_kategori,' . ($request['id'] ?? '') . ',id',
+            'name_kategori'      => 'required|unique:kategori,name_kategori,' . ($request['id'] ?? '') . ',id',
             'guard_config'       => 'required',
         ], [
             'name_kategori.required' => 'Isi format input dengan benar !',
@@ -120,9 +172,43 @@ class KategoriBarangController extends Controller
         ]);
 
         if ($set) {
+            $ip2 = request()->getClientIp();
+            $usersid = User::select('id')->where('status', 1)->where('username', auth()->user()->username)->get();
+            foreach($usersid as $id);
+            $setid = $id->id;
+            $aktifitas = auth()->user()->username.' '.'Berhasil mengubah kategori :'.' '.$request->name_kategori;
+            $lastid    = DB::table('log_activity')->max('id') + 1;
+
+            // console LOG::START
+            $data = ([
+                'id' => $lastid,
+                'username' => auth()->user()->username,
+                'id_user' => $setid,
+                'keterangan' => $aktifitas,
+                'ip_address' => $ip2,
+            ]);
+            DB::table('log_activity')->insert($data);
+
             toast('Proses berhasil dilakukan','success');
             return redirect()->back();
         } else {
+            $ip2 = request()->getClientIp();
+            $usersid = User::select('id')->where('status', 1)->where('username', auth()->user()->username)->get();
+            foreach($usersid as $id);
+            $setid = $id->id;
+            $aktifitas = auth()->user()->username.' '.'gagal mengubah kategori :'.' '.$request->name_kategori;
+            $lastid    = DB::table('log_activity')->max('id') + 1;
+
+            // console LOG::START
+            $data = ([
+                'id' => $lastid,
+                'username' => auth()->user()->username,
+                'id_user' => $setid,
+                'keterangan' => $aktifitas,
+                'ip_address' => $ip2,
+            ]);
+            DB::table('log_activity')->insert($data);
+
             toast('Proses gagal dilakukan', 'error');
             return redirect()->back();
         }
@@ -131,6 +217,22 @@ class KategoriBarangController extends Controller
     public function delete(Request $request, $id)
     {
         Kategori::Where('id', $id)->delete();
+        $ip2 = request()->getClientIp();
+        $usersid = User::select('id')->where('status', 1)->where('username', auth()->user()->username)->get();
+        foreach($usersid as $id);
+        $setid = $id->id;
+        $aktifitas = auth()->user()->username.' '.'gagal menghapus kategori :'.' '.$request->name_kategori;
+        $lastid    = DB::table('log_activity')->max('id') + 1;
+
+            // console LOG::START
+        $data = ([
+            'id' => $lastid,
+            'username' => auth()->user()->username,
+            'id_user' => $setid,
+            'keterangan' => $aktifitas,
+            'ip_address' => $ip2,
+        ]);
+        DB::table('log_activity')->insert($data);
         toast('Kategori berhasil di hapus','success');
         return redirect()->back();
     }

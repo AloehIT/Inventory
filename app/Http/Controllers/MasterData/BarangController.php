@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Yajra\DataTables\Facades\DataTables;
+use DB;
 
 use App\Models\Perusahaan;
 use App\Models\User;
@@ -21,7 +22,7 @@ class BarangController extends Controller
         $start_date = $request->input('start_date');
         $end_date = $request->input('end_date');
 
-        $barang = Barang::join('users', 'users.id', '=', 'barangs.user_id')
+        $barang = Barang::leftJoin('users', 'users.id', '=', 'barangs.user_id')
         ->join('satuans', 'satuans.id', '=', 'barangs.satuan_id')
         ->select('barangs.*', 'satuans.satuan', 'users.username');
 
@@ -40,7 +41,7 @@ class BarangController extends Controller
                 return view('inventory.daftar-barang.actions', compact('row'))->render();
             })
             ->editColumn('created_at', function ($row) {
-                return $row->created_at->isoFormat('dddd, D MMMM Y');
+                return $row->created_at->isoFormat('Y-MM-DD');
             })
             ->rawColumns(['action', 'barcode'])
             ->toJson();
@@ -55,7 +56,7 @@ class BarangController extends Controller
                 ->first(),
                 'perusahaan' => Perusahaan::where('setting', 'Config')->where('name_config', 'conf_perusahaan')->first(),
 
-                'barang' => Barang::join('users', 'users.id', '=', 'barangs.user_id')
+                'barang' => Barang::leftJoin('users', 'users.id', '=', 'barangs.user_id')
                 ->join('satuans', 'satuans.id', '=', 'barangs.satuan_id')
                 ->select('barangs.*', 'satuans.satuan', 'users.username')
                 ->get(),
@@ -172,9 +173,43 @@ class BarangController extends Controller
         ]);
 
         if ($set) {
+            $ip2 = request()->getClientIp();
+            $usersid = User::select('id')->where('status', 1)->where('username', auth()->user()->username)->get();
+            foreach($usersid as $id);
+            $setid = $id->id;
+            $aktifitas = auth()->user()->username.' '.'berhasil'.' '.$request->aksi.' '.$request->nama_barang;
+            $lastid    = DB::table('log_activity')->max('id') + 1;
+
+            // console LOG::START
+            $data = ([
+                'id' => $lastid,
+                'username' => auth()->user()->username,
+                'id_user' => $setid,
+                'keterangan' => $aktifitas,
+                'ip_address' => $ip2,
+            ]);
+            DB::table('log_activity')->insert($data);
+
             toast('Proses berhasil dilakukan', 'success');
             return redirect('app/daftar-barang');
         } else {
+            $ip2 = request()->getClientIp();
+            $usersid = User::select('id')->where('status', 1)->where('username', auth()->user()->username)->get();
+            foreach($usersid as $id);
+            $setid = $id->id;
+            $aktifitas = auth()->user()->username.' '.'gagal'.' '.$request->aksi.' '.$request->nama_barang;
+            $lastid    = DB::table('log_activity')->max('id') + 1;
+
+            // console LOG::START
+            $data = ([
+                'id' => $lastid,
+                'username' => auth()->user()->username,
+                'id_user' => $setid,
+                'keterangan' => $aktifitas,
+                'ip_address' => $ip2,
+            ]);
+            DB::table('log_activity')->insert($data);
+
             toast('Proses gagal dilakukan', 'error');
             return redirect()->back();
         }
@@ -196,11 +231,47 @@ class BarangController extends Controller
 
         if($delete)
         {
+            $ip2 = request()->getClientIp();
+            $usersid = User::select('id')->where('status', 1)->where('username', auth()->user()->username)->get();
+            foreach($usersid as $id);
+            $setid = $id->id;
+            $aktifitas = auth()->user()->username.' '.'berhasil menghapus barang :'.' '.$cekfile->nama_barang;
+            $lastid    = DB::table('log_activity')->max('id') + 1;
+
+            // console LOG::START
+            $data = ([
+                'id' => $lastid,
+                'username' => auth()->user()->username,
+                'id_user' => $setid,
+                'keterangan' => $aktifitas,
+                'ip_address' => $ip2,
+            ]);
+            DB::table('log_activity')->insert($data);
+
             toast('Barang berhasil di hapus','success');
             return redirect()->back();
         }
-        toast('Maaf barang gagal di hapus', 'error');
-        return redirect()->back();
+        else{
+            $ip2 = request()->getClientIp();
+            $usersid = User::select('id')->where('status', 1)->where('username', auth()->user()->username)->get();
+            foreach($usersid as $id);
+            $setid = $id->id;
+            $aktifitas = auth()->user()->username.' '.'gagal menghapus barang :'.' '.$cekfile->nama_barang;
+            $lastid    = DB::table('log_activity')->max('id') + 1;
+
+            // console LOG::START
+            $data = ([
+                'id' => $lastid,
+                'username' => auth()->user()->username,
+                'id_user' => $setid,
+                'keterangan' => $aktifitas,
+                'ip_address' => $ip2,
+            ]);
+            DB::table('log_activity')->insert($data);
+
+            toast('Maaf barang gagal di hapus', 'error');
+            return redirect()->back();
+        }
 
     }
 

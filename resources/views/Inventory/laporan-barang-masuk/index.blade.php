@@ -132,8 +132,9 @@ $(document).ready(function() {
         processing: true,
         paging: false,
         dom: '<"left"l>ftr<"right"ip>',
-        serverSide: true,
+        serverSide: false,
         info: false,
+        order: [[0, 'desc']],
         ajax: {
             url: '{!! route('data.daftarMasuk') !!}',
             data: function(d) {

@@ -112,12 +112,12 @@ class BarangKeluarController extends Controller
             'perusahaan' => Perusahaan::where('setting', 'Config')->where('name_config', 'conf_perusahaan')->first(),
             'generate' => BarangKeluar::max('id'),
 
-            'barang' => Barang::join('users', 'users.id', '=', 'barangs.user_id')
+            'barang' => Barang::leftJoin('users', 'users.id', '=', 'barangs.user_id')
             ->join('satuans', 'satuans.id', '=', 'barangs.satuan_id')
             ->select('barangs.*', 'satuans.satuan', 'users.username')
             ->get(),
 
-            'cardbarang' => Barang::join('users', 'users.id', '=', 'barangs.user_id')
+            'cardbarang' => Barang::leftJoin('users', 'users.id', '=', 'barangs.user_id')
             ->join('satuans', 'satuans.id', '=', 'barangs.satuan_id')
             ->join('detail_barang_keluar', 'detail_barang_keluar.id_barang', '=', 'barangs.id_barang')
             ->select('barangs.*', 'satuans.satuan', 'users.username', 'detail_barang_keluar.tanggal', 'detail_barang_keluar.qty', 'detail_barang_keluar.satuan', 'detail_barang_keluar.id_bk_detail')
@@ -137,12 +137,12 @@ class BarangKeluarController extends Controller
             'perusahaan' => Perusahaan::where('setting', 'Config')->where('name_config', 'conf_perusahaan')->first(),
             'generate' => BarangKeluar::max('id'),
 
-            'barang' => Barang::join('users', 'users.id', '=', 'barangs.user_id')
+            'barang' => Barang::leftJoin('users', 'users.id', '=', 'barangs.user_id')
             ->join('satuans', 'satuans.id', '=', 'barangs.satuan_id')
             ->select('barangs.*', 'satuans.satuan', 'users.username')
             ->get(),
 
-            'cardbarang' => Barang::join('users', 'users.id', '=', 'barangs.user_id')
+            'cardbarang' => Barang::leftJoin('users', 'users.id', '=', 'barangs.user_id')
             ->join('satuans', 'satuans.id', '=', 'barangs.satuan_id')
             ->join('detail_barang_keluar', 'detail_barang_keluar.id_barang', '=', 'barangs.id_barang')
             ->select('barangs.*', 'satuans.satuan', 'users.username', 'detail_barang_keluar.tanggal', 'detail_barang_keluar.qty', 'detail_barang_keluar.satuan', 'detail_barang_keluar.id_bk_detail')
@@ -269,9 +269,43 @@ class BarangKeluarController extends Controller
 
 
             if ($barangKeluar) {
+                $ip2 = request()->getClientIp();
+                $usersid = User::select('id')->where('status', 1)->where('username', auth()->user()->username)->get();
+                foreach($usersid as $id);
+                $setid = $id->id;
+                $aktifitas = auth()->user()->username.' '.'berhasil menambahkan barang :'.' '.$request->nama_barang.', dengan jumlah stok : '.$request->qty.' kedalam transaksi barang keluar'.' '. $request->id_bk_transaksi;
+                $lastid    = DB::table('log_activity')->max('id') + 1;
+
+                // console LOG::START
+                $data = ([
+                    'id' => $lastid,
+                    'username' => auth()->user()->username,
+                    'id_user' => $setid,
+                    'keterangan' => $aktifitas,
+                    'ip_address' => $ip2,
+                ]);
+                DB::table('log_activity')->insert($data);
+
                 toast('Proses berhasil dilakukan', 'success');
                 return redirect('app/barang-keluar/detail/'. $request->id_bk_transaksi);
             } else {
+                $ip2 = request()->getClientIp();
+                $usersid = User::select('id')->where('status', 1)->where('username', auth()->user()->username)->get();
+                foreach($usersid as $id);
+                $setid = $id->id;
+                $aktifitas = auth()->user()->username.' '.'berhasil menambahkan barang :'.' '.$request->nama_barang.', dengan jumlah stok : '.$request->qty.' kedalam transaksi barang keluar'.' '. $request->id_bk_transaksi;
+                $lastid    = DB::table('log_activity')->max('id') + 1;
+
+                // console LOG::START
+                $data = ([
+                    'id' => $lastid,
+                    'username' => auth()->user()->username,
+                    'id_user' => $setid,
+                    'keterangan' => $aktifitas,
+                    'ip_address' => $ip2,
+                ]);
+                DB::table('log_activity')->insert($data);
+
                 toast('Proses gagal dilakukan', 'error');
                 return redirect()->back();
             }
@@ -304,9 +338,43 @@ class BarangKeluarController extends Controller
 
 
             if ($barangKeluar) {
+                $ip2 = request()->getClientIp();
+                $usersid = User::select('id')->where('status', 1)->where('username', auth()->user()->username)->get();
+                foreach($usersid as $id);
+                $setid = $id->id;
+                $aktifitas = auth()->user()->username.' '.'berhasil menyimpan data transaksi barang keluar'.' '. $request->id_bk_transaksi;
+                $lastid    = DB::table('log_activity')->max('id') + 1;
+
+                // console LOG::START
+                $data = ([
+                    'id' => $lastid,
+                    'username' => auth()->user()->username,
+                    'id_user' => $setid,
+                    'keterangan' => $aktifitas,
+                    'ip_address' => $ip2,
+                ]);
+                DB::table('log_activity')->insert($data);
+
                 toast('Proses berhasil dilakukan', 'success');
                 return redirect('app/barang-keluar/detail/'. $request->id_bk_transaksi);
             } else {
+                $ip2 = request()->getClientIp();
+                $usersid = User::select('id')->where('status', 1)->where('username', auth()->user()->username)->get();
+                foreach($usersid as $id);
+                $setid = $id->id;
+                $aktifitas = auth()->user()->username.' '.'gagal menyimpan data transaksi barang masuk'.' '. $request->id_bk_transaksi;
+                $lastid    = DB::table('log_activity')->max('id') + 1;
+
+                // console LOG::START
+                $data = ([
+                    'id' => $lastid,
+                    'username' => auth()->user()->username,
+                    'id_user' => $setid,
+                    'keterangan' => $aktifitas,
+                    'ip_address' => $ip2,
+                ]);
+                DB::table('log_activity')->insert($data);
+
                 toast('Proses gagal dilakukan', 'error');
                 return redirect()->back();
             }
@@ -350,9 +418,45 @@ class BarangKeluarController extends Controller
             ]);
 
             if ($set) {
+                $ip2 = request()->getClientIp();
+                $usersid = User::select('id')->where('status', 1)->where('username', auth()->user()->username)->get();
+                foreach($usersid as $id);
+                $setid = $id->id;
+                $aktifitas = auth()->user()->username.' '.'Berhasil memasukan data transksi :'.' '. $request->id_bk_transaksi.' '.'kedalam daftar stok';
+                $lastid    = DB::table('log_activity')->max('id') + 1;
+
+                // console LOG::START
+                $data = ([
+                    'id' => $lastid,
+                    'username' => auth()->user()->username,
+                    'id_user' => $setid,
+                    'keterangan' => $aktifitas,
+                    'ip_address' => $ip2,
+                ]);
+
+                DB::table('log_activity')->insert($data);
+
                 toast('Proses berhasil dilakukan','success');
                 return redirect()->back();
             } else {
+                $ip2 = request()->getClientIp();
+                $usersid = User::select('id')->where('status', 1)->where('username', auth()->user()->username)->get();
+                foreach($usersid as $id);
+                $setid = $id->id;
+                $aktifitas = auth()->user()->username.' '.'Berhasil memasukan data transksi :'.' '. $request->id_bk_transaksi.' '.'kedalam daftar stok';
+                $lastid    = DB::table('log_activity')->max('id') + 1;
+
+                // console LOG::START
+                $data = ([
+                    'id' => $lastid,
+                    'username' => auth()->user()->username,
+                    'id_user' => $setid,
+                    'keterangan' => $aktifitas,
+                    'ip_address' => $ip2,
+                ]);
+
+                DB::table('log_activity')->insert($data);
+
                 toast('Proses gagal dilakukan', 'error');
                 return redirect()->back();
             }
@@ -381,6 +485,7 @@ class BarangKeluarController extends Controller
 
             $id_bk = $stok->id_bk;
             $cekstok = DetailKeluar::where('id_bk', $id_bk)->select('qty')->get();
+            $barang = DetailKeluar::where('id_bk', $id_bk)->first();
 
 
             $total_qty = 0;
@@ -393,9 +498,45 @@ class BarangKeluarController extends Controller
             ]);
 
             if ($barangKeluar) {
+                $ip2 = request()->getClientIp();
+                $usersid = User::select('id')->where('status', 1)->where('username', auth()->user()->username)->get();
+                foreach($usersid as $id);
+                $setid = $id->id;
+                $aktifitas = auth()->user()->username.' '.'Berhasil mengubah data stok barang :'.' '.$barang->nama_barang.', dengan jumlah stok : '.$qty.' pada transaksi : '. $request->id_bk_transaksi;
+                $lastid    = DB::table('log_activity')->max('id') + 1;
+
+                // console LOG::START
+                $data = ([
+                    'id' => $lastid,
+                    'username' => auth()->user()->username,
+                    'id_user' => $setid,
+                    'keterangan' => $aktifitas,
+                    'ip_address' => $ip2,
+                ]);
+
+                DB::table('log_activity')->insert($data);
+
                 toast('Proses berhasil dilakukan', 'success');
                 return redirect()->back();
             } else {
+                $ip2 = request()->getClientIp();
+                $usersid = User::select('id')->where('status', 1)->where('username', auth()->user()->username)->get();
+                foreach($usersid as $id);
+                $setid = $id->id;
+                $aktifitas = auth()->user()->username.' '.'Gagal mengubah data stok barang :'.' '.$barang->nama_barang.', dengan jumlah stok : '.$qty.' pada transaksi : '. $request->id_bk_transaksi;
+                $lastid    = DB::table('log_activity')->max('id') + 1;
+
+                // console LOG::START
+                $data = ([
+                    'id' => $lastid,
+                    'username' => auth()->user()->username,
+                    'id_user' => $setid,
+                    'keterangan' => $aktifitas,
+                    'ip_address' => $ip2,
+                ]);
+
+                DB::table('log_activity')->insert($data);
+
                 toast('Proses gagal dilakukan', 'error');
                 return redirect()->back();
             }
@@ -416,9 +557,46 @@ class BarangKeluarController extends Controller
 
         if ($barangKeluar) {
             $barangKeluar->delete();
+            $ip2 = request()->getClientIp();
+            $usersid = User::select('id')->where('status', 1)->where('username', auth()->user()->username)->get();
+            foreach($usersid as $id);
+            $setid = $id->id;
+            $aktifitas = auth()->user()->username.' '.'Berhasil menghapus data barang :'.' '. $barangKeluar->nama_barang.' '.'pada transaksi : '. $barangKeluar->id_bk;
+            $lastid    = DB::table('log_activity')->max('id') + 1;
+
+            // console LOG::START
+            $data = ([
+                'id' => $lastid,
+                'username' => auth()->user()->username,
+                'id_user' => $setid,
+                'keterangan' => $aktifitas,
+                'ip_address' => $ip2,
+            ]);
+
+            DB::table('log_activity')->insert($data);
+
             toast('Hapus data berhasil dilakukan','success');
             return redirect()->back();
         } else {
+            $barangKeluar->delete();
+            $ip2 = request()->getClientIp();
+            $usersid = User::select('id')->where('status', 1)->where('username', auth()->user()->username)->get();
+            foreach($usersid as $id);
+            $setid = $id->id;
+            $aktifitas = auth()->user()->username.' '.'Gagal menghapus data barang :'.' '. $barangKeluar->nama_barang.' '.'pada transaksi : '. $barangKeluar->id_bk;
+            $lastid    = DB::table('log_activity')->max('id') + 1;
+
+            // console LOG::START
+            $data = ([
+                'id' => $lastid,
+                'username' => auth()->user()->username,
+                'id_user' => $setid,
+                'keterangan' => $aktifitas,
+                'ip_address' => $ip2,
+            ]);
+
+            DB::table('log_activity')->insert($data);
+
             toast('Hpaus data gagal dilakukan', 'error');
             return redirect()->back();
         }
@@ -432,14 +610,68 @@ class BarangKeluarController extends Controller
 
         if (!$detailbarangKeluar) {
             $barangKeluar->delete();
+            $ip2 = request()->getClientIp();
+            $usersid = User::select('id')->where('status', 1)->where('username', auth()->user()->username)->get();
+            foreach($usersid as $id);
+            $setid = $id->id;
+            $aktifitas = auth()->user()->username.' '.'Berhasil menghapus data transaksi : '. $barangKeluar->id_bm;
+            $lastid    = DB::table('log_activity')->max('id') + 1;
+
+            // console LOG::START
+            $data = ([
+                'id' => $lastid,
+                'username' => auth()->user()->username,
+                'id_user' => $setid,
+                'keterangan' => $aktifitas,
+                'ip_address' => $ip2,
+            ]);
+
+            DB::table('log_activity')->insert($data);
+
             toast('Hapus data berhasil dilakukan','success');
             return redirect()->back();
         } else if ($barangKeluar) {
             $detailbarangKeluar->delete();
             $barangKeluar->delete();
+            $ip2 = request()->getClientIp();
+            $usersid = User::select('id')->where('status', 1)->where('username', auth()->user()->username)->get();
+            foreach($usersid as $id);
+            $setid = $id->id;
+            $aktifitas = auth()->user()->username.' '.'Berhasil menghapus data transaksi : '. $barangKeluar->id_bm;
+            $lastid    = DB::table('log_activity')->max('id') + 1;
+
+            // console LOG::START
+            $data = ([
+                'id' => $lastid,
+                'username' => auth()->user()->username,
+                'id_user' => $setid,
+                'keterangan' => $aktifitas,
+                'ip_address' => $ip2,
+            ]);
+
+            DB::table('log_activity')->insert($data);
+
             toast('Hapus data berhasil dilakukan','success');
             return redirect()->back();
         }else {
+            $ip2 = request()->getClientIp();
+            $usersid = User::select('id')->where('status', 1)->where('username', auth()->user()->username)->get();
+            foreach($usersid as $id);
+            $setid = $id->id;
+            $aktifitas = auth()->user()->username.' '.'Gagal menghapus data transaksi : '. $barangKeluar->id_bm;
+            $lastid    = DB::table('log_activity')->max('id') + 1;
+
+            // console LOG::START
+            $data = ([
+                'id' => $lastid,
+                'username' => auth()->user()->username,
+                'id_user' => $setid,
+                'keterangan' => $aktifitas,
+                'ip_address' => $ip2,
+            ]);
+
+            DB::table('log_activity')->insert($data);
+
             toast('Hpaus data gagal dilakukan', 'error');
             return redirect()->back();
         }

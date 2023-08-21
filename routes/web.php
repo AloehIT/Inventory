@@ -7,6 +7,7 @@ use App\Http\Controllers\Gudang\BarangMasukController;
 use App\Http\Controllers\Gudang\OpnameController;
 use App\Http\Controllers\Laporan\LaporanBarangKeluarController;
 use App\Http\Controllers\Laporan\LaporanBarangMasukController;
+use App\Http\Controllers\Laporan\LaporanOpnameController;
 use App\Http\Controllers\Laporan\LaporanStokController;
 use App\Http\Controllers\ManajemenUsers\RoleController;
 use App\Http\Controllers\ManajemenUsers\UsersController;
@@ -44,6 +45,8 @@ Route::get('/logout', [LogoutController::class, 'logout'])->name('logout.access'
 
 // Dashboard Controller
 Route::middleware('auth')->group(function(){
+    Route::get('dashboard/data', [DashboardController::class, 'getData'])->name('data.dashboard');
+    Route::get('dashboard/hitung', [DashboardController::class, 'calculate'])->name('data.calculateDashboard');
     Route::resource('app/dashboard', DashboardController::class);
 });
 
@@ -165,6 +168,14 @@ Route::middleware('auth')->group(function(){
     Route::get('laporan/barang-keluar/hitung', [LaporanBarangKeluarController::class, 'calculate'])->name('data.calculateKeluar');
     Route::get('/laporan/barang-keluar/print-stok', [LaporanBarangKeluarController::class, 'printPDF'])->name('print.pdf');
     Route::resource('app/laporan/barang-keluar', LaporanBarangKeluarController::class);
+});
+
+// Laporaan Opname
+Route::middleware('auth')->group(function(){
+    Route::get('laporan/opname/data', [LaporanOpnameController::class, 'getData'])->name('data.daftarOpname');
+    Route::get('laporan/opname/hitung', [LaporanOpnameController::class, 'calculate'])->name('data.calculateOpname');
+    Route::get('/laporan/opname/print-stok', [LaporanOpnameController::class, 'printPDF'])->name('print.pdf');
+    Route::resource('app/laporan/opname', LaporanOpnameController::class);
 });
 
 

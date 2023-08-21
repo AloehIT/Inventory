@@ -219,8 +219,9 @@
         var table = $('.basic-datatable').DataTable({
             processing: true,
             dom: '<"left"l>ftr<"right"ip>',
-            serverSide: true,
+            serverSide: false,
             info: false,
+            order: [[1, 'desc']],
             ajax: '{!! route('data.kategori') !!}',
             columns: [
                 { data: 'name_kategori', name: 'name_kategori' },
