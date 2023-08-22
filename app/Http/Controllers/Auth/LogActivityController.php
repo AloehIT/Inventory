@@ -61,11 +61,10 @@ class LogActivityController extends Controller
                 'user' => User::all()
 
             ];
-
             return view('log', $data);
         } catch (\Throwable $e) {
-            // Redirect to the error page
-            return view('dashboard.index');
+            toast('Terjadi kesalahan pada halaman log activity !', 'warning');
+            return redirect('app/dashboard');
         }
     }
 }

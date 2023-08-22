@@ -48,6 +48,10 @@ class UsersController extends Controller
                 ->where('name_config', 'conf_perusahaan')
                 ->first(),
 
+                'access' => DB::table('role_has_permissions')->join('permissions', 'permissions.id', '=', 'role_has_permissions.permission_id')
+                ->select('role_has_permissions.*', 'permissions.name as name_permission')
+                ->where('role_id', auth()->user()->id)
+                ->first(),
 
                 'users' => User::Where('users.status', 1)
                 ->get(),
@@ -63,25 +67,25 @@ class UsersController extends Controller
     public function create()
     {
         try {
-            if (auth()->user()->role === 'Super Admin' || auth()->user()->role === 'Admin Gudang') {
-                $data = [
-                    'title' => 'Tambah Profil User Baru',
-                    'auth' => User::join('detail_users', 'detail_users.id', '=', 'users.id')
-                    ->where('users.id', auth()->user()->id)
-                    ->first(),
+            $data = [
+                'title' => 'Tambah Profil User Baru',
+                'auth' => User::join('detail_users', 'detail_users.id', '=', 'users.id')
+                ->where('users.id', auth()->user()->id)
+                ->first(),
 
-                    'perusahaan' => Perusahaan::where('setting', 'Config')
-                    ->where('name_config', 'conf_perusahaan')
-                    ->first(),
+                'access' => DB::table('role_has_permissions')->join('permissions', 'permissions.id', '=', 'role_has_permissions.permission_id')
+                ->select('role_has_permissions.*', 'permissions.name as name_permission')
+                ->where('role_id', auth()->user()->id)
+                ->first(),
 
-                    'role' => RoleModel::all(),
-                ];
+                'perusahaan' => Perusahaan::where('setting', 'Config')
+                ->where('name_config', 'conf_perusahaan')
+                ->first(),
 
-                return view('usersmanager.users.cuuser', $data);
-            }else{
-                toast('Tambah user tidak mendapatkan akses !', 'warning');
-                return redirect('app/usermanager');
-            }
+                'role' => RoleModel::all(),
+            ];
+
+            return view('usersmanager.users.cuuser', $data);
         } catch (\Throwable $e) {
             toast('Terjadi kesalahan pada halaman tambah user !', 'warning');
             return redirect('app/usermanager');
@@ -95,6 +99,11 @@ class UsersController extends Controller
                 'title' => 'Ubah Profil User',
                 'auth' => User::join('detail_users', 'detail_users.id', '=', 'users.id')
                 ->where('users.id', auth()->user()->id)
+                ->first(),
+
+                'access' => DB::table('role_has_permissions')->join('permissions', 'permissions.id', '=', 'role_has_permissions.permission_id')
+                ->select('role_has_permissions.*', 'permissions.name as name_permission')
+                ->where('role_id', auth()->user()->id)
                 ->first(),
 
                 'perusahaan' => Perusahaan::where('setting', 'Config')

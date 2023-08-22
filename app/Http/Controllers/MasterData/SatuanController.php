@@ -38,6 +38,12 @@ class SatuanController extends Controller
                 'auth' => User::join('detail_users', 'detail_users.id', '=', 'users.id')
                 ->where('users.id', auth()->user()->id)
                 ->first(),
+
+                'access' => DB::table('role_has_permissions')->join('permissions', 'permissions.id', '=', 'role_has_permissions.permission_id')
+                ->select('role_has_permissions.*', 'permissions.name as name_permission')
+                ->where('role_id', auth()->user()->id)
+                ->first(),
+
                 'perusahaan' => Perusahaan::where('setting', 'Config')->where('name_config', 'conf_perusahaan')->first(),
 
                 'satuan' => Satuan::get(),
