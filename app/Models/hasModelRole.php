@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use DB;
 
 class hasModelRole extends Model
 {
@@ -16,4 +17,5 @@ class hasModelRole extends Model
     protected $fillable = ['role_id', 'model_type', 'model_id'];
 
     protected $hidden = [];
+
 }

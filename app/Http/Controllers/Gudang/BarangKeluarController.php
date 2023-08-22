@@ -102,6 +102,12 @@ class BarangKeluarController extends Controller
                 'auth' => User::join('detail_users', 'detail_users.id', '=', 'users.id')
                 ->where('users.id', auth()->user()->id)
                 ->first(),
+
+                'access' => DB::table('role_has_permissions')->join('permissions', 'permissions.id', '=', 'role_has_permissions.permission_id')
+                ->select('role_has_permissions.*', 'permissions.name as name_permission')
+                ->where('role_id', auth()->user()->id)
+                ->first(),
+
                 'perusahaan'    => Perusahaan::where('setting', 'Config')->where('name_config', 'conf_perusahaan')->first(),
                 'barangKeluar'  => BarangKeluar::all(),
                 'daftarbarang'  => BarangKeluar::join('detail_barang_keluar', 'detail_barang_keluar.id_bk', '=', 'barang_keluars.id_bk')->get(),
@@ -116,56 +122,80 @@ class BarangKeluarController extends Controller
 
     public function create()
     {
-        $data = [
-            'title' => 'Tambah Barang Keluar',
-            'auth' => User::join('detail_users', 'detail_users.id', '=', 'users.id')
-            ->where('users.id', auth()->user()->id)
-            ->first(),
-            'perusahaan' => Perusahaan::where('setting', 'Config')->where('name_config', 'conf_perusahaan')->first(),
-            'generate' => BarangKeluar::max('id'),
+        try {
+            $data = [
+                'title' => 'Tambah Barang Keluar',
 
-            'barang' => Barang::leftJoin('users', 'users.id', '=', 'barangs.user_id')
-            ->join('satuans', 'satuans.id', '=', 'barangs.satuan_id')
-            ->select('barangs.*', 'satuans.satuan', 'users.username')
-            ->get(),
+                'auth' => User::join('detail_users', 'detail_users.id', '=', 'users.id')
+                ->where('users.id', auth()->user()->id)
+                ->first(),
 
-            'cardbarang' => Barang::leftJoin('users', 'users.id', '=', 'barangs.user_id')
-            ->join('satuans', 'satuans.id', '=', 'barangs.satuan_id')
-            ->join('detail_barang_keluar', 'detail_barang_keluar.id_barang', '=', 'barangs.id_barang')
-            ->select('barangs.*', 'satuans.satuan', 'users.username', 'detail_barang_keluar.tanggal', 'detail_barang_keluar.qty', 'detail_barang_keluar.satuan', 'detail_barang_keluar.id_bk_detail')
-            ->get(),
-        ];
+                'access' => DB::table('role_has_permissions')->join('permissions', 'permissions.id', '=', 'role_has_permissions.permission_id')
+                ->select('role_has_permissions.*', 'permissions.name as name_permission')
+                ->where('role_id', auth()->user()->id)
+                ->first(),
 
-        return view('inventory.barang-keluar.cubarang-keluar', $data);
+                'perusahaan' => Perusahaan::where('setting', 'Config')->where('name_config', 'conf_perusahaan')->first(),
+                'generate' => BarangKeluar::max('id'),
+
+                'barang' => Barang::leftJoin('users', 'users.id', '=', 'barangs.user_id')
+                ->join('satuans', 'satuans.id', '=', 'barangs.satuan_id')
+                ->select('barangs.*', 'satuans.satuan', 'users.username')
+                ->get(),
+
+                'cardbarang' => Barang::leftJoin('users', 'users.id', '=', 'barangs.user_id')
+                ->join('satuans', 'satuans.id', '=', 'barangs.satuan_id')
+                ->join('detail_barang_keluar', 'detail_barang_keluar.id_barang', '=', 'barangs.id_barang')
+                ->select('barangs.*', 'satuans.satuan', 'users.username', 'detail_barang_keluar.tanggal', 'detail_barang_keluar.qty', 'detail_barang_keluar.satuan', 'detail_barang_keluar.id_bk_detail')
+                ->get(),
+            ];
+
+            return view('inventory.barang-keluar.cubarang-keluar', $data);
+        } catch (\Throwable $e) {
+            toast('Terjadi kesalahan pada halaman barang masuk !', 'warning');
+            return redirect('app/dashboard');
+        }
     }
 
     public function update($id_bk)
     {
-        $data = [
-            'title' => 'Data Barang Keluar',
-            'auth' => User::join('detail_users', 'detail_users.id', '=', 'users.id')
-            ->where('users.id', auth()->user()->id)
-            ->first(),
-            'perusahaan' => Perusahaan::where('setting', 'Config')->where('name_config', 'conf_perusahaan')->first(),
-            'generate' => BarangKeluar::max('id'),
+        try {
+            $data = [
+                'title' => 'Data Barang Keluar',
+                'auth' => User::join('detail_users', 'detail_users.id', '=', 'users.id')
+                ->where('users.id', auth()->user()->id)
+                ->first(),
 
-            'barang' => Barang::leftJoin('users', 'users.id', '=', 'barangs.user_id')
-            ->join('satuans', 'satuans.id', '=', 'barangs.satuan_id')
-            ->select('barangs.*', 'satuans.satuan', 'users.username')
-            ->get(),
+                'access' => DB::table('role_has_permissions')->join('permissions', 'permissions.id', '=', 'role_has_permissions.permission_id')
+                ->select('role_has_permissions.*', 'permissions.name as name_permission')
+                ->where('role_id', auth()->user()->id)
+                ->first(),
 
-            'cardbarang' => Barang::leftJoin('users', 'users.id', '=', 'barangs.user_id')
-            ->join('satuans', 'satuans.id', '=', 'barangs.satuan_id')
-            ->join('detail_barang_keluar', 'detail_barang_keluar.id_barang', '=', 'barangs.id_barang')
-            ->select('barangs.*', 'satuans.satuan', 'users.username', 'detail_barang_keluar.tanggal', 'detail_barang_keluar.qty', 'detail_barang_keluar.satuan', 'detail_barang_keluar.id_bk_detail')
-            ->get(),
+                'perusahaan' => Perusahaan::where('setting', 'Config')->where('name_config', 'conf_perusahaan')->first(),
+                'generate' => BarangKeluar::max('id'),
 
-            'detail'  => BarangKeluar::Where('id_bk', $id_bk)->first(),
-            'barangstok' => BarangKeluar::join('detail_barang_keluar', 'detail_barang_keluar.id_bk', '=', 'barang_keluars.id_bk')
-            ->where('barang_keluars.id_bk', $id_bk)->get()
-        ];
+                'barang' => Barang::leftJoin('users', 'users.id', '=', 'barangs.user_id')
+                ->join('satuans', 'satuans.id', '=', 'barangs.satuan_id')
+                ->select('barangs.*', 'satuans.satuan', 'users.username')
+                ->get(),
 
-        return view('inventory.barang-keluar.cubarang-keluar', $data);
+                'cardbarang' => Barang::leftJoin('users', 'users.id', '=', 'barangs.user_id')
+                ->join('satuans', 'satuans.id', '=', 'barangs.satuan_id')
+                ->join('detail_barang_keluar', 'detail_barang_keluar.id_barang', '=', 'barangs.id_barang')
+                ->select('barangs.*', 'satuans.satuan', 'users.username', 'detail_barang_keluar.tanggal', 'detail_barang_keluar.qty', 'detail_barang_keluar.satuan', 'detail_barang_keluar.id_bk_detail')
+                ->get(),
+
+                'detail'  => BarangKeluar::Where('id_bk', $id_bk)->first(),
+                'barangstok' => BarangKeluar::join('detail_barang_keluar', 'detail_barang_keluar.id_bk', '=', 'barang_keluars.id_bk')
+                ->where('barang_keluars.id_bk', $id_bk)->get()
+            ];
+
+            return view('inventory.barang-keluar.cubarang-keluar', $data);
+        } catch (\Throwable $e) {
+            toast('Terjadi kesalahan pada halaman barang masuk !', 'warning');
+            return redirect('app/dashboard');
+        }
+
     }
 
     public function posts(Request $request)

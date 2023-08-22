@@ -4,17 +4,17 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 
 use App\Models\Perusahaan;
-use App\Models\RouterosAPI;
-use App\Models\Report;
 use App\Models\User;
-use App\Models\Transaksi;
 use App\Models\Stok;
 use App\Models\Barang;
+use App\Models\roleHasPermission;
+
 use DB;
 use Gate;
 
 class DashboardController extends Controller
 {
+
     public function getData(Request $request)
     {
         $start_date = $request->input('start_date');
@@ -83,11 +83,19 @@ class DashboardController extends Controller
     }
 
 
-
     public function index()
     {
+        $cekPermission = DB::table('role_has_permissions')->join('permissions', 'permissions.id', '=', 'role_has_permissions.permission_id')
+        ->select('role_has_permissions.*', 'permissions.name as name_permission')
+        ->where('role_id', auth()->user()->id)
+        ->where('permissions.name', 'pengaturan')
+        ->first();
+
         try {
-            $this->authorize('dashboard');
+            if (!$cekPermission) {
+                toast('Role user tidak mendapatkan akses!', 'warning');
+                return redirect('app/dashboard');
+            }
             $data = [
                 'auth' => User::join('detail_users', 'detail_users.id', '=', 'users.id')
                 ->where('users.id', auth()->user()->id)
@@ -97,13 +105,18 @@ class DashboardController extends Controller
                 ->where('name_config', 'conf_perusahaan')
                 ->first(),
 
+                'access' => DB::table('role_has_permissions')->join('permissions', 'permissions.id', '=', 'role_has_permissions.permission_id')
+                ->select('role_has_permissions.*', 'permissions.name as name_permission')
+                ->where('role_id', auth()->user()->id)
+                ->first(),
+
                 'barangMasuk'   => Stok::Where('sts_inout', +1)->get(),
                 'barangKeluar'  => Stok::Where('sts_inout', -1)->get(),
                 'user'          => User::all(),
                 'barang'        => Barang::all(),
             ];
 
-            return view('dashboard.index', $data);
+            return view('dashboard.index', $data, compact('cekPermission'));
         } catch (\Throwable $e) {
             // Redirect to the error page
             return view('dashboard.index');

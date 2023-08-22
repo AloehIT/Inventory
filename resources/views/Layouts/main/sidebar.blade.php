@@ -25,16 +25,17 @@
 
         <li class="side-nav-title side-nav-item">Menu</li>
 
-        @can('dashboard')
+        @if($access->name_permission == 'dashboard')
         <li class="side-nav-item">
             <a href="{{ url('app/dashboard') }}" class="side-nav-link">
                 <i class="uil-home-alt"></i>
                 <span> Dashboards </span>
             </a>
         </li>
-        @endcan
+        @endif
 
 
+        @if($access->name_permission == 'pengaturan')
         <li class="side-nav-item">
             <a href="{{ url('app/pengaturan') }}" class="side-nav-link {{ Request::is('app/pengaturan-invoice', 'app/akun-bank', 'app/whatsapp-api', 'app/payment-api') ? 'text-white' : '' }}">
                 <i class="uil-cog"></i>

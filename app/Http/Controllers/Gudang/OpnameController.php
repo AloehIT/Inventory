@@ -123,76 +123,108 @@ class OpnameController extends Controller
 
     public function index()
     {
-        $data = [
-            'auth' => User::join('detail_users', 'detail_users.id', '=', 'users.id')
-            ->where('users.id', auth()->user()->id)
-            ->first(),
-            'perusahaan'    => Perusahaan::where('setting', 'Config')->where('name_config', 'conf_perusahaan')->first(),
-            'opname'   => Opname::all(),
-            'daftarbarang'  => Opname::join('tbl_opname_detail', 'tbl_opname_detail.id_opname', '=', 'tbl_opname.id_opname')->get(),
-            // 'barang' => Barang::join('tbl_stok', 'tbl_stok.id_barang', '=', 'barangs.id_barang')->select('qty')->get()
-        ];
+        try{
+            $data = [
+                'auth' => User::join('detail_users', 'detail_users.id', '=', 'users.id')
+                ->where('users.id', auth()->user()->id)
+                ->first(),
 
+                'access' => DB::table('role_has_permissions')->join('permissions', 'permissions.id', '=', 'role_has_permissions.permission_id')
+                ->select('role_has_permissions.*', 'permissions.name as name_permission')
+                ->where('role_id', auth()->user()->id)
+                ->first(),
 
-        return view('inventory.opname.index', $data);
+                'perusahaan'    => Perusahaan::where('setting', 'Config')->where('name_config', 'conf_perusahaan')->first(),
+                'opname'   => Opname::all(),
+                'daftarbarang'  => Opname::join('tbl_opname_detail', 'tbl_opname_detail.id_opname', '=', 'tbl_opname.id_opname')->get(),
+                // 'barang' => Barang::join('tbl_stok', 'tbl_stok.id_barang', '=', 'barangs.id_barang')->select('qty')->get()
+            ];
+
+            return view('inventory.opname.index', $data);
+        } catch (\Throwable $e) {
+            toast('Terjadi kesalahan pada halaman barang masuk !', 'warning');
+            return redirect('app/barang-keliuar');
+        }
     }
 
     public function create()
     {
-        $data = [
-            'title' => 'Opname',
-            'auth' => User::join('detail_users', 'detail_users.id', '=', 'users.id')
-            ->where('users.id', auth()->user()->id)
-            ->first(),
-            'perusahaan' => Perusahaan::where('setting', 'Config')->where('name_config', 'conf_perusahaan')->first(),
-            'generate' => Opname::max('id'),
+        try{
+            $data = [
+                'title' => 'Opname',
+                'auth' => User::join('detail_users', 'detail_users.id', '=', 'users.id')
+                ->where('users.id', auth()->user()->id)
+                ->first(),
 
-            'barang' => Barang::leftJoin('users', 'users.id', '=', 'barangs.user_id')
-            ->join('satuans', 'satuans.id', '=', 'barangs.satuan_id')
-            ->select('barangs.*', 'satuans.satuan', 'users.username')
-            ->get(),
+                'access' => DB::table('role_has_permissions')->join('permissions', 'permissions.id', '=', 'role_has_permissions.permission_id')
+                ->select('role_has_permissions.*', 'permissions.name as name_permission')
+                ->where('role_id', auth()->user()->id)
+                ->first(),
 
-            'cardbarang' => Barang::leftJoin('users', 'users.id', '=', 'barangs.user_id')
-            ->join('satuans', 'satuans.id', '=', 'barangs.satuan_id')
-            ->join('detail_barang_masuk', 'detail_barang_masuk.id_barang', '=', 'barangs.id_barang')
-            ->select('barangs.*', 'satuans.satuan', 'users.username', 'detail_barang_masuk.tanggal', 'detail_barang_masuk.qty', 'detail_barang_masuk.satuan', 'detail_barang_masuk.id_bm_detail')
-            ->get(),
-        ];
+                'perusahaan' => Perusahaan::where('setting', 'Config')->where('name_config', 'conf_perusahaan')->first(),
+                'generate' => Opname::max('id'),
 
-        return view('inventory.opname.cuopname', $data);
+                'barang' => Barang::leftJoin('users', 'users.id', '=', 'barangs.user_id')
+                ->join('satuans', 'satuans.id', '=', 'barangs.satuan_id')
+                ->select('barangs.*', 'satuans.satuan', 'users.username')
+                ->get(),
+
+                'cardbarang' => Barang::leftJoin('users', 'users.id', '=', 'barangs.user_id')
+                ->join('satuans', 'satuans.id', '=', 'barangs.satuan_id')
+                ->join('detail_barang_masuk', 'detail_barang_masuk.id_barang', '=', 'barangs.id_barang')
+                ->select('barangs.*', 'satuans.satuan', 'users.username', 'detail_barang_masuk.tanggal', 'detail_barang_masuk.qty', 'detail_barang_masuk.satuan', 'detail_barang_masuk.id_bm_detail')
+                ->get(),
+            ];
+
+            return view('inventory.opname.cuopname', $data);
+        } catch (\Throwable $e) {
+            toast('Terjadi kesalahan pada halaman barang masuk !', 'warning');
+            return redirect('app/barang-keliuar');
+        }
     }
 
     public function update($id_opname)
     {
-        $data = [
-            'title' => 'Data Opname Masuk',
-            'auth' => User::join('detail_users', 'detail_users.id', '=', 'users.id')
-            ->where('users.id', auth()->user()->id)
-            ->first(),
-            'perusahaan' => Perusahaan::where('setting', 'Config')->where('name_config', 'conf_perusahaan')->first(),
-            'generate' => Opname::max('id'),
+        try{
+            $data = [
+                'title' => 'Data Opname Masuk',
+                'auth' => User::join('detail_users', 'detail_users.id', '=', 'users.id')
+                ->where('users.id', auth()->user()->id)
+                ->first(),
 
-            'barang' => Barang::leftJoin('users', 'users.id', '=', 'barangs.user_id')
-            ->join('satuans', 'satuans.id', '=', 'barangs.satuan_id')
-            ->select('barangs.*', 'satuans.satuan', 'users.username')
-            ->get(),
+                'access' => DB::table('role_has_permissions')->join('permissions', 'permissions.id', '=', 'role_has_permissions.permission_id')
+                ->select('role_has_permissions.*', 'permissions.name as name_permission')
+                ->where('role_id', auth()->user()->id)
+                ->first(),
 
-            'cardbarang' => Barang::leftJoin('users', 'users.id', '=', 'barangs.user_id')
-            ->join('satuans', 'satuans.id', '=', 'barangs.satuan_id')
-            ->join('tbl_opname_detail', 'tbl_opname_detail.id_barang', '=', 'barangs.id_barang')
-            ->select('barangs.*', 'satuans.satuan', 'users.username', 'tbl_opname_detail.tanggal', 'tbl_opname_detail.qty', 'tbl_opname_detail.satuan', 'tbl_opname_detail.id_opname_detail')
-            ->get(),
+                'perusahaan' => Perusahaan::where('setting', 'Config')->where('name_config', 'conf_perusahaan')->first(),
+                'generate' => Opname::max('id'),
 
-            'detail'  => Opname::Where('id_opname', $id_opname)->first(),
-            'barangstok' => Opname::join('tbl_opname_detail', 'tbl_opname_detail.id_opname', '=', 'tbl_opname.id_opname')
-            ->where('tbl_opname.id_opname', $id_opname)->get()
-        ];
+                'barang' => Barang::leftJoin('users', 'users.id', '=', 'barangs.user_id')
+                ->join('satuans', 'satuans.id', '=', 'barangs.satuan_id')
+                ->select('barangs.*', 'satuans.satuan', 'users.username')
+                ->get(),
 
-        $row = Opname::join('tbl_opname_detail', 'tbl_opname_detail.id_opname', '=', 'tbl_opname.id_opname')
-        ->where('tbl_opname.id_opname', $id_opname)->get();
+                'cardbarang' => Barang::leftJoin('users', 'users.id', '=', 'barangs.user_id')
+                ->join('satuans', 'satuans.id', '=', 'barangs.satuan_id')
+                ->join('tbl_opname_detail', 'tbl_opname_detail.id_barang', '=', 'barangs.id_barang')
+                ->select('barangs.*', 'satuans.satuan', 'users.username', 'tbl_opname_detail.tanggal', 'tbl_opname_detail.qty', 'tbl_opname_detail.satuan', 'tbl_opname_detail.id_opname_detail')
+                ->get(),
+
+                'detail'  => Opname::Where('id_opname', $id_opname)->first(),
+                'barangstok' => Opname::join('tbl_opname_detail', 'tbl_opname_detail.id_opname', '=', 'tbl_opname.id_opname')
+                ->where('tbl_opname.id_opname', $id_opname)->get()
+            ];
+
+            $row = Opname::join('tbl_opname_detail', 'tbl_opname_detail.id_opname', '=', 'tbl_opname.id_opname')
+            ->where('tbl_opname.id_opname', $id_opname)->get();
 
 
-        return view('inventory.opname.cuopname', $data, compact('row'));
+            return view('inventory.opname.cuopname', $data, compact('row'));
+        } catch (\Throwable $e) {
+            toast('Terjadi kesalahan pada halaman barang masuk !', 'warning');
+            return redirect('app/barang-keliuar');
+        }
     }
 
 
@@ -513,7 +545,6 @@ class OpnameController extends Controller
             }
         }
     }
-
 
 
     public function poststok(Request $request)

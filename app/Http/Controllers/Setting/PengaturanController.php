@@ -15,27 +15,36 @@ class PengaturanController extends Controller
 
     public function index()
     {
+        $cekPermission = DB::table('role_has_permissions')->join('permissions', 'permissions.id', '=', 'role_has_permissions.permission_id')
+        ->select('role_has_permissions.*', 'permissions.name as name_permission')
+        ->where('role_id', auth()->user()->id)
+        ->where('permissions.name', 'pengaturan')
+        ->first();
+
         try {
-            if (auth()->user()->role === 'Super Admin') {
-                $data = [
-                    'auth' => User::join('detail_users', 'detail_users.id', '=', 'users.id')
-                    ->where('users.id', auth()->user()->id)
-                    ->first(),
-
-                    'perusahaan' => Perusahaan::where('setting', 'Config')->where('name_config', 'conf_perusahaan')->first(),
-                    'name' => Perusahaan::where('setting', 'Config')->where('name_config', 'conf_perusahaan')->first(),
-                    'alamat' => Perusahaan::where('setting', 'Config')->where('name_config', 'conf_alamat')->first(),
-                    'phone' => Perusahaan::where('setting', 'Config')->where('name_config', 'conf_phone')->first(),
-                    'gambar' => Perusahaan::where('setting', 'Config')->where('name_config', 'conf_logo')->first(),
-                ];
-
-                return view('pengaturan.index', $data);
-            }else{
-                toast('Role user tidak mendapatkan akses !', 'warning');
+            if (!$cekPermission) {
+                toast('Role user tidak mendapatkan akses!', 'warning');
                 return redirect('app/dashboard');
             }
 
+            $data = [
+                'auth' => User::join('detail_users', 'detail_users.id', '=', 'users.id')
+                ->where('users.id', auth()->user()->id)
+                ->first(),
 
+                'access' => DB::table('role_has_permissions')->join('permissions', 'permissions.id', '=', 'role_has_permissions.permission_id')
+                ->select('role_has_permissions.*', 'permissions.name as name_permission')
+                ->where('role_id', auth()->user()->id)
+                ->first(),
+
+                'perusahaan' => Perusahaan::where('setting', 'Config')->where('name_config', 'conf_perusahaan')->first(),
+                'name' => Perusahaan::where('setting', 'Config')->where('name_config', 'conf_perusahaan')->first(),
+                'alamat' => Perusahaan::where('setting', 'Config')->where('name_config', 'conf_alamat')->first(),
+                'phone' => Perusahaan::where('setting', 'Config')->where('name_config', 'conf_phone')->first(),
+                'gambar' => Perusahaan::where('setting', 'Config')->where('name_config', 'conf_logo')->first(),
+            ];
+
+            return view('pengaturan.index', $data, compact('cekPermission'));
         } catch (\Throwable $e) {
             toast('Terjadi kesalahan pada halaman pengaturan !', 'warning');
             return redirect('app/dashboard');

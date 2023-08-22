@@ -39,6 +39,10 @@ class PermissionController extends Controller
 
     public function index($id)
     {
+        $cekPermission = DB::table('role_has_permissions')->join('permissions', 'permissions.id', '=', 'role_has_permissions.permission_id')
+        ->select('role_has_permissions.*', 'permissions.name as name_permission')
+        ->where('role_id', auth()->user()->id)->first();
+
         $data = [
             'auth' => User::join('detail_users', 'detail_users.id', '=', 'users.id')
             ->where('users.id', auth()->user()->id)
@@ -48,11 +52,15 @@ class PermissionController extends Controller
             ->where('name_config', 'conf_perusahaan')
             ->first(),
 
+            'existAccess' => DB::table('role_has_permissions')->join('permissions', 'permissions.id', '=', 'role_has_permissions.permission_id')
+            ->select('role_has_permissions.*', 'permissions.name as name_permission')
+            ->where('role_id', $id)->first(),
+
             'detail' => RoleModel::find($id),
             'permission' => DB::table('permissions')->get(),
         ];
 
-        return view('Usersmanager.permissions.index', $data);
+        return view('Usersmanager.permissions.index', $data, compact('cekPermission'));
     }
 
 
@@ -70,18 +78,12 @@ class PermissionController extends Controller
             return redirect()->back()->withErrors($validator)->withInput();
         }
 
-
-
-
         $permission = roleHasPermission::create([
             'permission_id' => $request->input('permission_id'),
             'role_id' => $request->input('role_id'),
         ]);
 
-
-
         $cekPermission = RoleModel::where('id', $request->role_id)->first();
-
 
         if ($permission) {
             $ip2 = request()->getClientIp();
@@ -126,10 +128,9 @@ class PermissionController extends Controller
         }
     }
 
-    public function deletPermission($role_id)
+    public function delete($id)
     {
-        $roles = RoleModel::Where('id', $role_id)->first();
-        $permission = roleHasPermission::where('role_id', $roles->role_id)->first();
+        $permission = roleHasPermission::where('id', $id)->first();
 
         if ($permission) {
             $permission->delete();
@@ -137,7 +138,7 @@ class PermissionController extends Controller
             $usersid = User::select('id')->where('status', 1)->where('username', auth()->user()->username)->get();
             foreach($usersid as $id);
             $setid = $id->id;
-            $aktifitas = auth()->user()->username.' '.'Berhasil menghapus permission role :'.' '. $roles->name;
+            $aktifitas = auth()->user()->username.' '.'Berhasil menghapus permission role';
             $lastid    = DB::table('log_activity')->max('id') + 1;
 
             // console LOG::START
@@ -158,7 +159,7 @@ class PermissionController extends Controller
             $usersid = User::select('id')->where('status', 1)->where('username', auth()->user()->username)->get();
             foreach($usersid as $id);
             $setid = $id->id;
-            $aktifitas = auth()->user()->username.' '.'Berhasil menghapus permission role :'.' '. $roles->name;
+            $aktifitas = auth()->user()->username.' '.'Berhasil menghapus permission role';
             $lastid    = DB::table('log_activity')->max('id') + 1;
 
             // console LOG::START

@@ -84,7 +84,10 @@
                                                     <select class="form-control mb-0 barcode select2 select @error ('permission_id') is-invalid @enderror" data-toggle="select2" name="permission_id">
                                                         <option disabled selected>Cari..</option>
                                                         @foreach ($permission as $item)
-                                                        <option value="{{ $item->id }}">{{ $item->name }} | {{ $item->set_permission }}</option>
+                                                            @if($existAccess->permission_id == $item->id)
+                                                            @else
+                                                            <option value="{{ $item->id }}">{{ $item->name }} | {{ $item->set_permission }}</option>
+                                                            @endif
                                                         @endforeach
                                                     </select>
                                                     @error('permission_id')

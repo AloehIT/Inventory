@@ -11,6 +11,7 @@ use App\Models\Perusahaan;
 use App\Models\User;
 use App\Models\RoleModel;
 use App\Models\hasModelRole;
+use App\Models\roleHasPermission;
 use DB;
 
 class RoleController extends Controller
@@ -35,21 +36,16 @@ class RoleController extends Controller
     public function index()
     {
         try {
-            // if (auth()->user()->role === 'Super Admin') {
-                $data = [
-                    'auth' => User::join('detail_users', 'detail_users.id', '=', 'users.id')
-                    ->where('users.id', auth()->user()->id)
-                    ->first(),
+            $data = [
+                'auth' => User::join('detail_users', 'detail_users.id', '=', 'users.id')
+                ->where('users.id', auth()->user()->id)
+                ->first(),
 
-                    'perusahaan' => Perusahaan::where('setting', 'Config')->where('name_config', 'conf_perusahaan')->first(),
-                    'role' => RoleModel::orderBy('id', 'DESC')->get(),
-                ];
+                'perusahaan' => Perusahaan::where('setting', 'Config')->where('name_config', 'conf_perusahaan')->first(),
+                'role' => RoleModel::orderBy('id', 'DESC')->get(),
+            ];
 
-                return view('usersmanager.roles.index', $data);
-            // }else{
-            //     toast('Role user tidak mendapatkan akses !', 'warning');
-            //     return redirect('app/dashboard');
-            // }
+            return view('usersmanager.roles.index', $data);
 
         } catch (\Throwable $e) {
             toast('Terjadi kesalahan pada halaman role user !', 'warning');
@@ -83,6 +79,12 @@ class RoleController extends Controller
             'role_id' => $lastid,
             'model_type' => $request['model'] == '' ? '' : $request['model'],
             'model_id' => $lastid,
+        ]);
+
+        $access = DB::table('permissions')->where('name', 'dashboard')->first();
+        $set = roleHasPermission::create([
+            'permission_id' => $access->id,
+            'role_id' => $lastid,
         ]);
 
         if ($set) {

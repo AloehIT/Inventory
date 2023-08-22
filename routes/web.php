@@ -13,8 +13,6 @@ use App\Http\Controllers\Laporan\LaporanStokController;
 use App\Http\Controllers\ManajemenUsers\RoleController;
 use App\Http\Controllers\ManajemenUsers\UsersController;
 use App\Http\Controllers\MasterData\BarangController;
-use App\Http\Controllers\MasterData\GroupController;
-use App\Http\Controllers\MasterData\GudangController;
 use App\Http\Controllers\MasterData\KategoriBarangController;
 use App\Http\Controllers\MasterData\SatuanController;
 use App\Http\Controllers\PermissionController;
@@ -25,7 +23,6 @@ use App\Http\Controllers\Auth\LogoutController;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
-use Barryvdh\DomPDF\Facade as PDF;
 
 
 
@@ -46,6 +43,8 @@ Route::post('/login', [LoginController::class, 'store'])->name('login.access');
 Route::get('/logout', [LogoutController::class, 'logout'])->name('logout.access');
 
 // Dashboard Controller
+
+
 Route::middleware('auth')->group(function(){
     Route::get('dashboard/data', [DashboardController::class, 'getData'])->name('data.dashboard');
     Route::get('dashboard/hitung', [DashboardController::class, 'calculate'])->name('data.calculateDashboard');
@@ -70,6 +69,7 @@ Route::middleware('auth')->group(function(){
     Route::get('permission/detaildata/{id}', [PermissionController::class, 'getData'])->name('data.detail.permission');
     Route::get('app/roles/permission/{id}', [PermissionController::class, 'index'])->name('set.permission');
     Route::post('app/permission/posts', [PermissionController::class, 'posts'])->name('posts.permission');
+    Route::get('app/permission/delete/{id}', [PermissionController::class, 'delete'])->name('delete.permission');
 
 
     Route::get('usersroles/data', [RoleController::class, 'rolesData'])->name('data.roles');
