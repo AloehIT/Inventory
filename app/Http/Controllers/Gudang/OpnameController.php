@@ -142,8 +142,8 @@ class OpnameController extends Controller
 
             return view('inventory.opname.index', $data);
         } catch (\Throwable $e) {
-            toast('Terjadi kesalahan pada halaman barang masuk !', 'warning');
-            return redirect('app/barang-keliuar');
+            toast('Terjadi kesalahan pada halaman barang history opname !', 'warning');
+            return redirect('app/dashboard');
         }
     }
 
@@ -178,8 +178,8 @@ class OpnameController extends Controller
 
             return view('inventory.opname.cuopname', $data);
         } catch (\Throwable $e) {
-            toast('Terjadi kesalahan pada halaman barang masuk !', 'warning');
-            return redirect('app/barang-keliuar');
+            toast('Terjadi kesalahan pada halaman opname !', 'warning');
+            return redirect('app/opname');
         }
     }
 
@@ -222,8 +222,8 @@ class OpnameController extends Controller
 
             return view('inventory.opname.cuopname', $data, compact('row'));
         } catch (\Throwable $e) {
-            toast('Terjadi kesalahan pada halaman barang masuk !', 'warning');
-            return redirect('app/barang-keliuar');
+            toast('Terjadi kesalahan pada daftar opname !', 'warning');
+            return redirect('app/opname');
         }
     }
 

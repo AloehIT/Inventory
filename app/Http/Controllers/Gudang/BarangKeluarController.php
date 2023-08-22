@@ -115,8 +115,8 @@ class BarangKeluarController extends Controller
 
             return view('inventory.barang-keluar.index', $data);
         } catch (\Throwable $e) {
-            // Redirect to the error page
-            return view('dashboard.index');
+            toast('Terjadi kesalahan pada halaman barang keluar !', 'warning');
+            return redirect('app/dashboard');
         }
     }
 
@@ -152,8 +152,8 @@ class BarangKeluarController extends Controller
 
             return view('inventory.barang-keluar.cubarang-keluar', $data);
         } catch (\Throwable $e) {
-            toast('Terjadi kesalahan pada halaman barang masuk !', 'warning');
-            return redirect('app/dashboard');
+            toast('Terjadi kesalahan pada halaman tambah barang keluar !', 'warning');
+            return redirect('app/barang-keluar');
         }
     }
 
@@ -192,8 +192,8 @@ class BarangKeluarController extends Controller
 
             return view('inventory.barang-keluar.cubarang-keluar', $data);
         } catch (\Throwable $e) {
-            toast('Terjadi kesalahan pada halaman barang masuk !', 'warning');
-            return redirect('app/dashboard');
+            toast('Terjadi kesalahan pada halaman data barang keluar !', 'warning');
+            return redirect('app/barang-keluar');
         }
 
     }

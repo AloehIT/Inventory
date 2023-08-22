@@ -131,8 +131,8 @@ class BarangMasukController extends Controller
 
             return view('inventory.barang-masuk.cubarang-masuk', $data);
         } catch (\Throwable $e) {
-            toast('Terjadi kesalahan pada halaman barang masuk !', 'warning');
-            return redirect('app/barang-keliuar');
+            toast('Terjadi kesalahan pada halaman tambah barang masuk !', 'warning');
+            return redirect('app/barang-masuk');
         }
     }
 
@@ -171,8 +171,8 @@ class BarangMasukController extends Controller
 
             return view('inventory.barang-masuk.cubarang-masuk', $data);
         } catch (\Throwable $e) {
-            toast('Terjadi kesalahan pada halaman barang masuk !', 'warning');
-            return redirect('app/barang-keliuar');
+            toast('Terjadi kesalahan pada halaman daftar barang masuk !', 'warning');
+            return redirect('app/barang-masuk');
         }
     }
 
