@@ -58,10 +58,11 @@ class PermissionController extends Controller
 
                 'existAccess' => DB::table('role_has_permissions')->join('permissions', 'permissions.id', '=', 'role_has_permissions.permission_id')
                 ->select('role_has_permissions.*', 'permissions.name as name_permission')
-                ->where('role_id', $id)->first(),
+                ->where('role_id', $id)
+                ->get(),
 
                 'detail' => RoleModel::find($id),
-                'permission' => DB::table('permissions')->get(),
+                'permission' => DB::table('permissions')->orderBy('id', 'ASC')->get(),
             ];
 
             return view('Usersmanager.permissions.index', $data, compact('cekPermission'));

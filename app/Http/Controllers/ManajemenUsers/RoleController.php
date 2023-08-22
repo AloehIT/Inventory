@@ -86,9 +86,15 @@ class RoleController extends Controller
             'model_id' => $lastid,
         ]);
 
-        $access = DB::table('permissions')->where('name', 'dashboard')->first();
+        $accessDashboard = DB::table('permissions')->where('name', 'dashboard')->first();
+        $accessLog = DB::table('permissions')->where('name', 'logActivity')->first();
         $set = roleHasPermission::create([
-            'permission_id' => $access->id,
+            'permission_id' => $accessDashboard->id,
+            'role_id' => $lastid,
+        ]);
+
+        $set = roleHasPermission::create([
+            'permission_id' => $accessLog->id,
             'role_id' => $lastid,
         ]);
 

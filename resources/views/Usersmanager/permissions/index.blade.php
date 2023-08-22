@@ -51,10 +51,13 @@
                                 <thead>
                                     <tr>
                                         <th>
-                                            Role <br> <input type="text" class="form-control form-control-sm" placeholder="Kode Barang" />
+                                            Role <br> <input type="text" class="form-control form-control-sm" placeholder="Role" />
                                         </th>
                                         <th>
-                                            Permission <br> <input type="text" class="form-control form-control-sm" placeholder="Nama Brang" />
+                                            Permission <br> <input type="text" class="form-control form-control-sm" placeholder="Permission" />
+                                        </th>
+                                        <th>
+                                            Set Permission <br> <input type="text" class="form-control form-control-sm" placeholder="Permission" />
                                         </th>
                                         <th>
                                             Ditambahkan <br> <input type="date" class="form-control form-control-sm" placeholder="Search Ditambahkan" />
@@ -84,10 +87,19 @@
                                                     <select class="form-control mb-0 barcode select2 select @error ('permission_id') is-invalid @enderror" data-toggle="select2" name="permission_id">
                                                         <option disabled selected>Cari..</option>
                                                         @foreach ($permission as $item)
-                                                            @if($existAccess->permission_id == $item->id)
-                                                            @else
-                                                            <option value="{{ $item->id }}">{{ $item->name }} | {{ $item->set_permission }}</option>
-                                                            @endif
+                                                            @php
+                                                                $isExist = false;
+                                                                foreach ($existAccess as $exist) {
+                                                                    if ($exist->permission_id == $item->id) {
+                                                                        $isExist = true;
+                                                                        break;
+                                                                    }
+                                                                }
+                                                            @endphp
+
+                                                            @unless ($isExist)
+                                                                <option value="{{ $item->id }}">{{ $item->name }} | {{ $item->set_permission }}</option>
+                                                            @endunless
                                                         @endforeach
                                                     </select>
                                                     @error('permission_id')
@@ -147,6 +159,7 @@
             columns: [
                 { data: 'name_role', name: 'name_role' },
                 { data: 'name_permission', name: 'name_permission' },
+                { data: 'set_permission', name: 'set_permission' },
                 { data: 'created_at', name: 'created_at' },
                 { data: 'action', name: 'action', orderable: false, searchable: false },
             ],

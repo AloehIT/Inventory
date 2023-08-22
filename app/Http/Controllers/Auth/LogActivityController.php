@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use App\Models\Perusahaan;
 use App\Models\User;
 use App\Models\LogActivity;
+use DB;
 
 class LogActivityController extends Controller
 {
@@ -17,7 +18,11 @@ class LogActivityController extends Controller
         $end_date = $request->input('end_date');
         $selected_barcode = $request->input('selected_barcode');
 
-        $log = LogActivity::query();
+        if(auth()->user()->role == 'Super Admin'){
+            $log = LogActivity::query();
+        }else{
+            $log = LogActivity::where('id_user', auth()->user()->id);
+        }
 
         if ($selected_barcode) {
             $log->where('id_user', $selected_barcode);
@@ -54,9 +59,14 @@ class LogActivityController extends Controller
                 ->where('users.id', auth()->user()->id)
                 ->first(),
 
+                'access' => DB::table('role_has_permissions')->join('permissions', 'permissions.id', '=', 'role_has_permissions.permission_id')
+                ->select('role_has_permissions.*', 'permissions.name as name_permission')
+                ->where('role_id', auth()->user()->id)
+                ->get(),
+
                 'perusahaan' => Perusahaan::where('setting', 'Config')
                 ->where('name_config', 'conf_perusahaan')
-                ->get(),
+                ->first(),
 
                 'user' => User::all()
 
