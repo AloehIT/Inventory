@@ -39,26 +39,21 @@ class UsersController extends Controller
     public function index()
     {
         try {
-            if (auth()->user()->role === 'Super Admin' || auth()->user()->role === 'Admin Gudang') {
-                $data = [
-                    'auth' => User::join('detail_users', 'detail_users.id', '=', 'users.id')
-                    ->where('users.id', auth()->user()->id)
-                    ->first(),
+            $data = [
+                'auth' => User::join('detail_users', 'detail_users.id', '=', 'users.id')
+                ->where('users.id', auth()->user()->id)
+                ->first(),
 
-                    'perusahaan' => Perusahaan::where('setting', 'Config')
-                    ->where('name_config', 'conf_perusahaan')
-                    ->first(),
+                'perusahaan' => Perusahaan::where('setting', 'Config')
+                ->where('name_config', 'conf_perusahaan')
+                ->first(),
 
 
-                    'users' => User::Where('users.status', 1)
-                    ->get(),
-                ];
+                'users' => User::Where('users.status', 1)
+                ->get(),
+            ];
 
-                return view('usersmanager.users.index', $data);
-            }else{
-                toast('Role user tidak mendapatkan akses !', 'warning');
-                return redirect('app/dashboard');
-            }
+            return view('usersmanager.users.index', $data);
         } catch (\Throwable $e) {
             toast('Terjadi kesalahan pada halaman users !', 'warning');
             return redirect('app/dashboard');
@@ -85,11 +80,11 @@ class UsersController extends Controller
                 return view('usersmanager.users.cuuser', $data);
             }else{
                 toast('Tambah user tidak mendapatkan akses !', 'warning');
-                return redirect('app/dashboard');
+                return redirect('app/usermanager');
             }
         } catch (\Throwable $e) {
-            // Redirect to the error page
-            return view('maintenece.maintenece');
+            toast('Terjadi kesalahan pada halaman tambah user !', 'warning');
+            return redirect('app/usermanager');
         }
     }
 
@@ -115,8 +110,8 @@ class UsersController extends Controller
 
             return view('usersmanager.users.cuuser', $data);
         } catch (\Throwable $e) {
-            // Redirect to the error page
-            return view('error.maintenece');
+            toast('Terjadi kesalahan pada halaman ubah user !', 'warning');
+            return redirect('app/usermanager');
         }
     }
 

@@ -45,8 +45,8 @@ class KategoriBarangController extends Controller
 
             return view('inventory.kategori-barang.index', $data);
         } catch (\Throwable $e) {
-            // Redirect to the error page
-            return view('error.500');
+            toast('Terjadi kesalahan pada halaman kaategori barang !', 'warning');
+            return redirect('app/dashboard');
         }
     }
 

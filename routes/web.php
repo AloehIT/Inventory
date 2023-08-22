@@ -64,7 +64,7 @@ Route::middleware('auth')->group(function(){
     Route::resource('app/log', LogActivityController::class);
 });
 
-//Data Role Users
+//Data Permission Users
 Route::middleware('auth')->group(function(){
     Route::get('permission/detaildata/{id}', [PermissionController::class, 'getData'])->name('data.detail.permission');
     Route::get('app/roles/permission/{id}', [PermissionController::class, 'index'])->name('set.permission');

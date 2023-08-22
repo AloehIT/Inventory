@@ -118,8 +118,9 @@ class DashboardController extends Controller
 
             return view('dashboard.index', $data, compact('cekPermission'));
         } catch (\Throwable $e) {
-            // Redirect to the error page
-            return view('dashboard.index');
+            auth()->logout();
+            toast('Anda tidak bisa masuk ke sistem !','warning');
+            return redirect()->route('login');
         }
     }
 }

@@ -64,8 +64,8 @@ class BarangController extends Controller
 
             return view('inventory.daftar-barang.index', $data);
         } catch (\Throwable $e) {
-            // Redirect to the error page
-            return view('error.500');
+            toast('Terjadi kesalahan pada halaman daftar barang !', 'warning');
+            return redirect('app/dashboard');
         }
     }
 
@@ -86,8 +86,8 @@ class BarangController extends Controller
 
             return view('inventory.daftar-barang.cubarang', $data);
         } catch (\Throwable $e) {
-            // Redirect to the error page
-            return view('error.500');
+            toast('Terjadi kesalahan pada halaman tambah daftar barang !', 'warning');
+            return redirect('app/daftar-barang');
         }
     }
 
@@ -109,8 +109,8 @@ class BarangController extends Controller
 
             return view('inventory.daftar-barang.cubarang', $data);
         } catch (\Throwable $e) {
-            // Redirect to the error page
-            return view('error.500');
+            toast('Terjadi kesalahan pada halaman ubah daftar barang !', 'warning');
+            return redirect('app/daftar-barang');
         }
     }
 
@@ -214,8 +214,6 @@ class BarangController extends Controller
             return redirect()->back();
         }
     }
-
-
 
     public function delete(Request $request, $id)
     {
