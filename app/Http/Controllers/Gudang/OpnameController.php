@@ -132,7 +132,7 @@ class OpnameController extends Controller
                 'access' => DB::table('role_has_permissions')->join('permissions', 'permissions.id', '=', 'role_has_permissions.permission_id')
                 ->select('role_has_permissions.*', 'permissions.name as name_permission')
                 ->where('role_id', auth()->user()->id)
-                ->first(),
+                ->get(),
 
                 'perusahaan'    => Perusahaan::where('setting', 'Config')->where('name_config', 'conf_perusahaan')->first(),
                 'opname'   => Opname::all(),
@@ -159,7 +159,7 @@ class OpnameController extends Controller
                 'access' => DB::table('role_has_permissions')->join('permissions', 'permissions.id', '=', 'role_has_permissions.permission_id')
                 ->select('role_has_permissions.*', 'permissions.name as name_permission')
                 ->where('role_id', auth()->user()->id)
-                ->first(),
+                ->get(),
 
                 'perusahaan' => Perusahaan::where('setting', 'Config')->where('name_config', 'conf_perusahaan')->first(),
                 'generate' => Opname::max('id'),
@@ -195,7 +195,7 @@ class OpnameController extends Controller
                 'access' => DB::table('role_has_permissions')->join('permissions', 'permissions.id', '=', 'role_has_permissions.permission_id')
                 ->select('role_has_permissions.*', 'permissions.name as name_permission')
                 ->where('role_id', auth()->user()->id)
-                ->first(),
+                ->get(),
 
                 'perusahaan' => Perusahaan::where('setting', 'Config')->where('name_config', 'conf_perusahaan')->first(),
                 'generate' => Opname::max('id'),

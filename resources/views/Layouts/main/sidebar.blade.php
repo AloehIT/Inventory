@@ -18,6 +18,12 @@
     </span>
 </a>
 
+@php
+    $dashboardPermission    = $access->where('name_permission', 'dashboard')->first();
+    $pengaturanPermission   = $access->where('name_permission', 'pengaturan')->first();
+    $userRolePermission     = $access->where('name_permission', 'user role')->first();
+@endphp
+
 <div class="h-100" id="leftside-menu-container" data-simplebar="">
 
     <!--- Sidemenu -->
@@ -25,7 +31,7 @@
 
         <li class="side-nav-title side-nav-item">Menu</li>
 
-        @if($access->name_permission == 'dashboard')
+        @if($dashboardPermission)
         <li class="side-nav-item">
             <a href="{{ url('app/dashboard') }}" class="side-nav-link">
                 <i class="uil-home-alt"></i>
@@ -35,13 +41,15 @@
         @endif
 
 
-        @if($access->name_permission == 'pengaturan')
+        @if($pengaturanPermission)
         <li class="side-nav-item">
             <a href="{{ url('app/pengaturan') }}" class="side-nav-link {{ Request::is('app/pengaturan-invoice', 'app/akun-bank', 'app/whatsapp-api', 'app/payment-api') ? 'text-white' : '' }}">
                 <i class="uil-cog"></i>
                 <span> Pengaturan </span>
             </a>
         </li>
+        @endif
+
 
         <li class="side-nav-item">
             <a data-bs-toggle="collapse" href="#sidebarUsers" aria-expanded="false" aria-controls="sidebarUsers"
@@ -52,9 +60,11 @@
             </a>
             <div class="collapse {{ Request::is('app/group/*', 'app/usersroles/*', 'app/usermanager/*', 'app/roles/permission/*') ? 'show' : '' }}" id="sidebarUsers">
                 <ul class="side-nav-second-level">
+                    @if($userRolePermission)
                     <li>
                         <a href="{{ url('app/usersroles') }}" class="{{ Request::is('app/usersroles/*', 'app/roles/permission/*') ? 'text-white' : '' }}">Role Access</a>
                     </li>
+                    @endif
                     <li>
                         <a href="{{ url('app/usermanager') }}" class="{{ Request::is('app/usermanager/*') ? 'text-white' : '' }}">User</a>
                     </li>

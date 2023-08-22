@@ -108,7 +108,7 @@ class DashboardController extends Controller
                 'access' => DB::table('role_has_permissions')->join('permissions', 'permissions.id', '=', 'role_has_permissions.permission_id')
                 ->select('role_has_permissions.*', 'permissions.name as name_permission')
                 ->where('role_id', auth()->user()->id)
-                ->first(),
+                ->get(),
 
                 'barangMasuk'   => Stok::Where('sts_inout', +1)->get(),
                 'barangKeluar'  => Stok::Where('sts_inout', -1)->get(),

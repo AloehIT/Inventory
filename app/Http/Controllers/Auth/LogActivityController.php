@@ -56,7 +56,7 @@ class LogActivityController extends Controller
 
                 'perusahaan' => Perusahaan::where('setting', 'Config')
                 ->where('name_config', 'conf_perusahaan')
-                ->first(),
+                ->get(),
 
                 'user' => User::all()
 
