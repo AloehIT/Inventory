@@ -153,6 +153,7 @@ Route::middleware('auth')->group(function(){
     Route::get('opname/detaildata/{id_opname}', [OpnameController::class, 'detailData'])->name('data.detail.opname');
     Route::get('opname/data', [OpnameController::class, 'getData'])->name('data.opname');
     Route::get('app/opname/detail/{id_opname}', [OpnameController::class, 'update'])->name('update.opname');
+    Route::get('app/opname/daftar/{id_opname}', [OpnameController::class, 'daftar'])->name('daftar.opname');
     Route::get('app/opname/tambah', [OpnameController::class, 'create'])->name('create.opname');
     Route::resource('app/opname', OpnameController::class);
     Route::post('app/opname/posts', [OpnameController::class, 'posts'])->name('posts.opname');

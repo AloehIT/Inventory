@@ -2,6 +2,9 @@
 @extends('layouts.app')
 @section('title', 'Daftar Opname')
 @section('content-page')
+@php
+    $tambah     = $access->where('name_permission', 'lakukan opname')->first();
+@endphp
 <style>
     .dataTables_filter {
         display: none; /* Menyembunyikan kotak pencarian */
@@ -51,7 +54,9 @@
                                         </div>
                                         <div class="col-sm-3">
                                             <label></label><br>
+                                            @if($tambah)
                                             <a href="{{ route('create.opname') }}" class="btn btn-sm btn-info"><i class="uil-plus"></i> Tambah</a>
+                                            @endif
                                             <button id="refresh-btn" class="btn btn-sm text-white" style="background: rgb(27, 96, 255);"><i class="bi bi-arrow-clockwise"></i> Refresh</button>
                                         </div>
                                     </div>

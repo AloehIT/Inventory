@@ -115,6 +115,7 @@ $status = isset($detail['status']) ? ($detail['status'] == "approve" ? "approve"
                                         <th>
                                             Ditambahkan <br> <input type="date" class="form-control form-control-sm" placeholder="Search Ditambahkan" />
                                         </th>
+                                        <th style="width: 75px;">Action <br> <span><br></span></th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -137,6 +138,7 @@ $status = isset($detail['status']) ? ($detail['status'] == "approve" ? "approve"
                                         <th>
                                             Ditambahkan <br> <input type="date" class="form-control form-control-sm" placeholder="Search Ditambahkan" />
                                         </th>
+                                        <th style="width: 75px;">Action <br> <span><br></span></th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -259,6 +261,7 @@ $status = isset($detail['status']) ? ($detail['status'] == "approve" ? "approve"
                 { data: 'nama_barang', name: 'detail_barang_masuk.nama_barang' },
                 { data: 'qty', name: 'detail_barang_masuk.qty' },
                 { data: 'created_at', name: 'detail_barang_masuk.created_at' },
+                { data: 'action', name: 'action', orderable: false, searchable: false },
             ],
             language: {
                 search: '',

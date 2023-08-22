@@ -260,6 +260,50 @@ class OpnameController extends Controller
         }
     }
 
+    public function daftar($id_opname)
+    {
+        try{
+            $data = [
+                'title' => 'Data Opname Masuk',
+                'auth' => User::join('detail_users', 'detail_users.id', '=', 'users.id')
+                ->where('users.id', auth()->user()->id)
+                ->first(),
+
+                'access' => DB::table('role_has_permissions')->join('permissions', 'permissions.id', '=', 'role_has_permissions.permission_id')
+                ->select('role_has_permissions.*', 'permissions.name as name_permission')
+                ->where('role_id', auth()->user()->id)
+                ->get(),
+
+                'perusahaan' => Perusahaan::where('setting', 'Config')->where('name_config', 'conf_perusahaan')->first(),
+                'generate' => Opname::max('id'),
+
+                'barang' => Barang::leftJoin('users', 'users.id', '=', 'barangs.user_id')
+                ->join('satuans', 'satuans.id', '=', 'barangs.satuan_id')
+                ->select('barangs.*', 'satuans.satuan', 'users.username')
+                ->get(),
+
+                'cardbarang' => Barang::leftJoin('users', 'users.id', '=', 'barangs.user_id')
+                ->join('satuans', 'satuans.id', '=', 'barangs.satuan_id')
+                ->join('tbl_opname_detail', 'tbl_opname_detail.id_barang', '=', 'barangs.id_barang')
+                ->select('barangs.*', 'satuans.satuan', 'users.username', 'tbl_opname_detail.tanggal', 'tbl_opname_detail.qty', 'tbl_opname_detail.satuan', 'tbl_opname_detail.id_opname_detail')
+                ->get(),
+
+                'detail'  => Opname::Where('id_opname', $id_opname)->first(),
+                'barangstok' => Opname::join('tbl_opname_detail', 'tbl_opname_detail.id_opname', '=', 'tbl_opname.id_opname')
+                ->where('tbl_opname.id_opname', $id_opname)->get()
+            ];
+
+            $row = Opname::join('tbl_opname_detail', 'tbl_opname_detail.id_opname', '=', 'tbl_opname.id_opname')
+            ->where('tbl_opname.id_opname', $id_opname)->get();
+
+
+            return view('inventory.opname.daftar-opname', $data, compact('row'));
+        } catch (\Throwable $e) {
+            toast('Terjadi kesalahan pada daftar opname !', 'warning');
+            return redirect('app/opname');
+        }
+    }
+
 
     public function posts(Request $request)
     {

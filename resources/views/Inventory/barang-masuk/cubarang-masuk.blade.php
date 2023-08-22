@@ -9,6 +9,8 @@ $random = sprintf("%04s", $no);
 $id_bm = 'BRG-IN-'. $tanggal.'-'.$random;
 
 $status = isset($detail['status']) ? ($detail['status'] == "approve" ? "approve" : "") : "";
+
+$aplikasikanStok     = $access->where('name_permission', 'aplikasikan stok')->first();
 @endphp
 
 <style>
@@ -424,10 +426,11 @@ $status = isset($detail['status']) ? ($detail['status'] == "approve" ? "approve"
                                 @if($status === "approve")
                                 @else
                                     <button type="submit" name="action" value="simpan" class="btn btn-sm text-white mx-1" style="background: green;"><i class="bi bi-check-circle-fill"></i> Simpan</button>
-                                    @if ($stoks > 0)
-                                        <button type="submit" name="action" value="approveStok" class="btn btn-sm text-white" style="background: blue;"><i class="bi bi-download"></i> Rekam</button>
-                                    @else
-
+                                    @if($aplikasikanStok)
+                                        @if ($stoks > 0)
+                                            <button type="submit" name="action" value="approveStok" class="btn btn-sm text-white" style="background: blue;"><i class="bi bi-download"></i> Rekam</button>
+                                        @else
+                                        @endif
                                     @endif
                                 @endif
                             </div>
