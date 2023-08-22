@@ -231,6 +231,48 @@ class BarangKeluarController extends Controller
 
     }
 
+    public function daftar($id_bk)
+    {
+        try {
+
+            $data = [
+                'title' => 'Data Barang Keluar',
+                'auth' => User::join('detail_users', 'detail_users.id', '=', 'users.id')
+                ->where('users.id', auth()->user()->id)
+                ->first(),
+
+                'access' => DB::table('role_has_permissions')->join('permissions', 'permissions.id', '=', 'role_has_permissions.permission_id')
+                ->select('role_has_permissions.*', 'permissions.name as name_permission')
+                ->where('role_id', auth()->user()->id)
+                ->get(),
+
+                'perusahaan' => Perusahaan::where('setting', 'Config')->where('name_config', 'conf_perusahaan')->first(),
+                'generate' => BarangKeluar::max('id'),
+
+                'barang' => Barang::leftJoin('users', 'users.id', '=', 'barangs.user_id')
+                ->join('satuans', 'satuans.id', '=', 'barangs.satuan_id')
+                ->select('barangs.*', 'satuans.satuan', 'users.username')
+                ->get(),
+
+                'cardbarang' => Barang::leftJoin('users', 'users.id', '=', 'barangs.user_id')
+                ->join('satuans', 'satuans.id', '=', 'barangs.satuan_id')
+                ->join('detail_barang_keluar', 'detail_barang_keluar.id_barang', '=', 'barangs.id_barang')
+                ->select('barangs.*', 'satuans.satuan', 'users.username', 'detail_barang_keluar.tanggal', 'detail_barang_keluar.qty', 'detail_barang_keluar.satuan', 'detail_barang_keluar.id_bk_detail')
+                ->get(),
+
+                'detail'  => BarangKeluar::Where('id_bk', $id_bk)->first(),
+                'barangstok' => BarangKeluar::join('detail_barang_keluar', 'detail_barang_keluar.id_bk', '=', 'barang_keluars.id_bk')
+                ->where('barang_keluars.id_bk', $id_bk)->get()
+            ];
+
+            return view('inventory.barang-keluar.daftar-keluar', $data);
+        } catch (\Throwable $e) {
+            toast('Terjadi kesalahan pada halaman data barang keluar !', 'warning');
+            return redirect('app/barang-keluar');
+        }
+
+    }
+
     public function posts(Request $request)
     {
         $action = $request->input('action');

@@ -34,9 +34,9 @@
     $opname               = $access->where('name_permission', 'opname')->first();
 
     //laporan
-    $laporanBarangMasuk          = $access->where('name_permission', 'barang masuk')->first();
-    $laporanBarangKeluar         = $access->where('name_permission', 'barang keluar')->first();
-    $laporanOpname               = $access->where('name_permission', 'opname')->first();
+    $laporanBarangMasuk          = $access->where('name_permission', 'laporan barang masuk')->first();
+    $laporanBarangKeluar         = $access->where('name_permission', 'laporan barang keluar')->first();
+    $laporanOpname               = $access->where('name_permission', 'laporan opname')->first();
     $logActivity                 = $access->where('name_permission', 'logActivity')->first();
 @endphp
 

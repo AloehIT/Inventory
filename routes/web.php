@@ -124,6 +124,7 @@ Route::middleware('auth')->group(function(){
     Route::get('barangmasuk/detaildata/{id_bm}', [BarangMasukController::class, 'detailData'])->name('data.detail.barangmasuk');
     Route::get('barangmasuk/data', [BarangMasukController::class, 'barangmasukData'])->name('data.barangmasuk');
     Route::get('app/barang-masuk/detail/{id_bm}', [BarangMasukController::class, 'update'])->name('update.barang-masuk');
+    Route::get('app/barang-masuk/daftar/{id_bm}', [BarangMasukController::class, 'daftar'])->name('daftar.barang-masuk');
     Route::get('app/barang-masuk/tambah', [BarangMasukController::class, 'create'])->name('create.barang-masuk');
     Route::resource('app/barang-masuk', BarangMasukController::class);
     Route::post('app/barang-masuk/posts', [BarangMasukController::class, 'posts'])->name('posts.barangmasuk');
@@ -138,6 +139,7 @@ Route::middleware('auth')->group(function(){
     Route::get('barangkeluar/detaildata/{id_bk}', [BarangKeluarController::class, 'detailData'])->name('data.detail.barangkeluar');
     Route::get('barangkeluar/data', [BarangKeluarController::class, 'barangkeluarData'])->name('data.barangkeluar');
     Route::get('app/barang-keluar/detail/{id_bk}', [BarangKeluarController::class, 'update'])->name('update.barang-keluar');
+    Route::get('app/barang-keluar/daftar/{id_bk}', [BarangKeluarController::class, 'daftar'])->name('daftar.barang-keluar');
     Route::get('app/barang-keluar/tambah', [BarangKeluarController::class, 'create'])->name('create.barang-keluar');
     Route::resource('app/barang-keluar', BarangKeluarController::class);
     Route::post('app/barang-keluar/posts', [BarangKeluarController::class, 'posts'])->name('posts.barangkeluar');
