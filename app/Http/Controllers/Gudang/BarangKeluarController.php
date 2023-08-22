@@ -90,7 +90,18 @@ class BarangKeluarController extends Controller
 
     public function index()
     {
+        $cekPermission = DB::table('role_has_permissions')->join('permissions', 'permissions.id', '=', 'role_has_permissions.permission_id')
+        ->select('role_has_permissions.*', 'permissions.name as name_permission')
+        ->where('role_id', auth()->user()->id)
+        ->where('permissions.name', 'barang keluar')
+        ->first();
+
         try {
+            if (!$cekPermission) {
+                toast('Halaman tidak ditemukan', 'warning');
+                return redirect('app/dashboard');
+            }
+
             $stokCount = Stok::count();
 
             if ($stokCount === 0) {
@@ -122,7 +133,18 @@ class BarangKeluarController extends Controller
 
     public function create()
     {
+        $cekPermission = DB::table('role_has_permissions')->join('permissions', 'permissions.id', '=', 'role_has_permissions.permission_id')
+        ->select('role_has_permissions.*', 'permissions.name as name_permission')
+        ->where('role_id', auth()->user()->id)
+        ->where('permissions.name', 'tambah barang keluar')
+        ->first();
+
         try {
+            if (!$cekPermission) {
+                toast('Halaman tidak ditemukan', 'warning');
+                return redirect('app/barang-keluar');
+            }
+
             $data = [
                 'title' => 'Tambah Barang Keluar',
 
@@ -159,7 +181,18 @@ class BarangKeluarController extends Controller
 
     public function update($id_bk)
     {
+        $cekPermission = DB::table('role_has_permissions')->join('permissions', 'permissions.id', '=', 'role_has_permissions.permission_id')
+        ->select('role_has_permissions.*', 'permissions.name as name_permission')
+        ->where('role_id', auth()->user()->id)
+        ->where('permissions.name', 'ubah barang keluar')
+        ->first();
+
         try {
+            if (!$cekPermission) {
+                toast('Halaman tidak ditemukan', 'warning');
+                return redirect('app/barang-keluar');
+            }
+
             $data = [
                 'title' => 'Data Barang Keluar',
                 'auth' => User::join('detail_users', 'detail_users.id', '=', 'users.id')

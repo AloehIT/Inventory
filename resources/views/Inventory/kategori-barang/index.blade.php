@@ -2,6 +2,9 @@
 @extends('layouts.app')
 @section('title', 'Kategori Barang')
 @section('content-page')
+@php
+    $tambah     = $access->where('name_permission', 'tambah kategori')->first();
+@endphp
 <style>
     .dataTables_filter {
         display: none; /* Menyembunyikan kotak pencarian */
@@ -38,6 +41,7 @@
                     <div class="row mb-2">
                         <div class="col-sm-12">
                             <div class="d-flex flex-row">
+                                @if($tambah)
                                 <div class="dropdown">
                                     <a class="btn btn-sm btn-secondary dropdown-toggle btn-info" href="#" role="button" id="dropdownMenuLink" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                         <i class="mdi mdi-menu"></i> Manajemen Kategori
@@ -47,6 +51,7 @@
                                         <a class="dropdown-item" type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#add"><i class="uil-plus"></i> Tambah Kategori Baru</a>
                                     </div>
                                 </div>
+                                @endif
                                 <button id="refresh-btn" class="btn btn-sm mx-1 text-white" style="background: rgb(27, 96, 255);"><i class="bi bi-arrow-clockwise"></i> Refresh</button>
                             </div>
                         </div>

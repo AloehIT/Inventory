@@ -2,6 +2,9 @@
 @extends('layouts.app')
 @section('title', 'Manajemen users')
 @section('content-page')
+@php
+    $tambah     = $access->where('name_permission', 'tambah users')->first();
+@endphp
 <style>
     .dataTables_filter {
         display: none;
@@ -40,6 +43,7 @@
                     <div class="row mb-2">
                         <div class="col-sm-12">
                             <div class="d-flex flex-row">
+                                @if($tambah)
                                 <div class="dropdown">
                                     <a class="btn btn-sm btn-secondary dropdown-toggle btn-info" href="#" role="button"
                                         id="dropdownMenuLink" data-bs-toggle="dropdown" aria-haspopup="true"
@@ -52,6 +56,7 @@
                                                 class="mdi mdi-account-multiple-plus"></i> Tambah Users Baru</a>
                                     </div>
                                 </div>
+                                @endif
                                 <button id="refresh-btn" class="btn btn-sm mx-1 text-white" style="background: rgb(27, 96, 255);"><i class="bi bi-arrow-clockwise"></i> Refresh</button>
                             </div>
                         </div>
@@ -93,65 +98,6 @@
     </div>
 
 </div>
-
-
-{{--
-<div class="modal fade" id="detail{{ $id ?? '' }}" tabindex="-1" role="dialog" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content">
-            <div class="modal-body ">
-                <div class="px-4 py-2">
-
-                    <div class="d-flex justify-content-between mt-3">
-                        <div>
-                            <h5 class="text-uppercase mb-0"><i class="bi bi-people-fill text-info"></i> {{
-                                $user['nama_users'] ?? '' }}</h5>
-                            <p class="mb-4">{{ $perusahaan['value'] ?? '' }}</p>
-                        </div>
-
-                        <a type="button" data-bs-dismiss="modal" class="text-danger" style="font-size: 25px;"><i
-                                class="uil-multiply"></i></a>
-                    </div>
-
-
-                    <div class="d-flex justify-content-between">
-                        <span class="theme-color">Details</span>
-                        <span>Terakhir diubah : {{ $carbon::parse($user['updated_at'] ?? 'd-m-Y')->isoFormat('dddd, D
-                            MMMM Y') }}</span>
-                    </div>
-                    <div class="mb-3">
-                        <hr class="new1">
-                    </div>
-                    <div class="mt-2 mb-2">
-                        <img src="{{ asset('storage/profile/'. $user->profile) }}" alt="users" class="rounded"
-                            width="100">
-                    </div>
-                    <div class="d-flex justify-content-between">
-                        <span class="font-weight-bold">Username :</span>
-                        <span class="text-muted">{{ $user['username'] ?? '' }}</span>
-                    </div>
-                    <div class="d-flex justify-content-between">
-                        <span class="font-weight-bold">Password :</span>
-                        <span class="text-muted">{{ $user['unique'] ?? '' }}</span>
-                    </div>
-                    <div class="d-flex justify-content-between">
-                        <span class="font-weight-bold">Posisi :</span>
-                        <span class="text-muted">{{ $user['role'] ?? '' }}</span>
-                    </div>
-                    <div class="d-flex justify-content-between">
-                        <span class="font-weight-bold">Telpon/WhatsApp :</span>
-                        <span class="text-muted">{{ $user['telpon'] ?? '' }}</span>
-                    </div>
-                    <div class="mt-2 mb-3">
-                        <p class="font-weight-bold mb-0">Alamat :</p>
-                        <p class="text-muted text-start">{{ $user['alamat_users'] ?? '' }}</p>
-                    </div>
-
-                </div>
-            </div>
-        </div>
-    </div>
-</div> --}}
 
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>

@@ -23,7 +23,7 @@ class PengaturanController extends Controller
 
         try {
             if (!$cekPermission) {
-                toast('Role user tidak mendapatkan akses!', 'warning');
+                toast('Halaman tidak ditemukan', 'warning');
                 return redirect('app/dashboard');
             }
 

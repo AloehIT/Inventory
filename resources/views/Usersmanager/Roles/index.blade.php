@@ -2,6 +2,9 @@
 @extends('layouts.app')
 @section('title', 'Role Users')
 @section('content-page')
+@php
+    $tambah     = $access->where('name_permission', 'tambah role user')->first();
+@endphp
 <style>
     .dataTables_filter {
         display: none;
@@ -46,7 +49,9 @@
                                     <div class="row mb-3 g-1 col-lg-12">
                                         <div class="col-sm-3">
                                             <label></label><br>
-                                            <a type="button" data-bs-toggle="modal" data-bs-target="#add" class="btn btn-sm btn-info"><i class="uil-plus"></i> Tambah</a>
+                                            @if($tambah)
+                                                <a type="button" data-bs-toggle="modal" data-bs-target="#add" class="btn btn-sm btn-info"><i class="uil-plus"></i> Tambah</a>
+                                            @endif
                                             <button id="refresh-btn" class="btn btn-sm text-white" style="background: rgb(27, 96, 255);"><i class="bi bi-arrow-clockwise"></i> Refresh</button>
                                         </div>
                                     </div>

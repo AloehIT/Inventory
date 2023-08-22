@@ -2,6 +2,9 @@
 @extends('layouts.app')
 @section('title', 'Satuan Barang')
 @section('content-page')
+@php
+    $tambah     = $access->where('name_permission', 'tambah satuan')->first();
+@endphp
 <style>
     .dataTables_filter {
         display: none;
@@ -39,6 +42,7 @@
                 <div class="card-body">
                     <div class="row mb-2">
                         <div class="col-sm-4">
+                            @if($tambah)
                             <div class="dropdown">
                                 <a class="btn btn-sm btn-secondary dropdown-toggle btn-info" href="#" role="button" id="dropdownMenuLink" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                     <i class="mdi mdi-menu"></i> Manajemen Satuan
@@ -48,6 +52,8 @@
                                     <a class="dropdown-item" type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#add"><i class="mdi mdi-plus"></i> Tambah Satuan</a>
                                 </div>
                             </div>
+                            @endif
+                            <button id="refresh-btn" class="btn btn-sm mx-1 text-white" style="background: rgb(27, 96, 255);"><i class="bi bi-arrow-clockwise"></i> Refresh</button>
                         </div>
                     </div>
 

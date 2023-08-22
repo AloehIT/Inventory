@@ -3,7 +3,8 @@
 @section('title', 'Pengaturan Umum')
 @section('content-page')
 @php
-    $gambar =  $gambar['value'] ?? 'upload.gif';
+    $gambar     =  $gambar['value'] ?? 'upload.gif';
+    $action     = $access->where('name_permission', 'dapat mengubah pengaturan')->first();
 @endphp
 
 <div class="container-fluid">
@@ -29,13 +30,14 @@
 
     <form action="{{ url('app/pengaturan/posts') }}" method="POST" class="row" enctype="multipart/form-data">
         @csrf
+        @if($action)
         <div class="col-xl-3">
             <div class="row">
                 <div class="col-lg-12">
                     <div class="info-box card px-4 pt-3 pb-5">
                         <h4>Logo Perusahaan</h4>
                         <div class="mt-3 mb-0">
-                            <div class="col-lg-12 mb-4 mt-0 d-flex justify-content-center">
+                            <div class="col-lg-12 mb-3 mt-0 d-flex justify-content-center">
                                 <img id="blah" src="{{ asset('storage/logo/'. $gambar) }}" alt="your image" class="img-fluid">
                             </div>
                             <input type="hidden" name="setting_gambar" value="Config">
@@ -114,6 +116,83 @@
             </div>
 
         </div>
+        @else
+        <div class="col-xl-3">
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="info-box card px-4 pt-3 pb-5">
+                        <h4>Logo Perusahaan</h4>
+                        <div class="mt-3 mb-0">
+                            <div class="col-lg-12 mt-0 d-flex justify-content-center">
+                                <img id="blah" src="{{ asset('storage/logo/'. $gambar) }}" alt="your image" class="img-fluid">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-9">
+            <div class="card p-4">
+
+                <div class="row gy-4 g-2">
+                    <input type="hidden" name="setting[]" value="Config">
+                    <input type="hidden" name="name_config[]" value="conf_perusahaan">
+                    <div class="col-sm-12 mb-0">
+                        <div class="form-group form-group-default">
+                            <label><span class="text-primary">!</span>Nama Perusahaan</label>
+                            <input name="value[]" type="text" id="name"
+                                class="form-control mb-0 bg-transparent @error ('value') is-invalid @enderror"
+                                placeholder="Nama perusahaan" value="{{ $name['value'] ?? '' }}" autocomplete="off" readonly>
+
+                            @error('value')
+                            <span class="invalid-feedback" role="alert" style="font-size: 11px;">
+                                <strong>{{ $message }}</strong>
+                            </span>
+                            @enderror
+                        </div>
+                    </div>
+
+
+                    <div class="col-sm-12 mb-0">
+                        <div class="form-group form-group-default">
+                            <label><span class="text-primary">!</span>No. HP</label>
+                            <input type="hidden" name="setting[]" value="Config">
+                            <input type="hidden" name="name_config[]" value="conf_phone">
+                            <input name="value[]" type="number" id="phone"
+                                class="form-control mb-0 bg-transparent @error ('value') is-invalid @enderror" placeholder="No. Hp"
+                                value="{{ $phone['value'] ?? '' }}" autocomplete="off" readonly>
+
+                            @error('value')
+                            <span class="invalid-feedback" role="alert" style="font-size: 11px;">
+                                <strong>{{ $message }}</strong>
+                            </span>
+                            @enderror
+                        </div>
+                    </div>
+
+                    <div class="col-sm-12 mb-0">
+                        <div calass="form-group form-group-default">
+                            <input type="hidden" name="setting[]" value="Config">
+                            <input type="hidden" name="name_config[]" value="conf_alamat">
+                            <label>Alamat</label>
+                            <textarea name="value[]" id="alamat" type="text"
+                                class="form-control bg-transparent @error('value') is-invalid @enderror" placeholder="Alamat"
+                                autocomplete="off" readonly>{{ $alamat['value'] ?? '' }}</textarea>
+                            @error('value')
+                            <span class="invalid-feedback" role="alert" style="font-size: 11px;">
+                                <strong>{{ $message }}</strong>
+                            </span>
+                            @enderror
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+        @endif
+
     </form>
 
 </div>

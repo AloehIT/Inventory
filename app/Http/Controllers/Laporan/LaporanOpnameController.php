@@ -97,7 +97,18 @@ class LaporanOpnameController extends Controller
 
     public function index()
     {
+        $cekPermission = DB::table('role_has_permissions')->join('permissions', 'permissions.id', '=', 'role_has_permissions.permission_id')
+        ->select('role_has_permissions.*', 'permissions.name as name_permission')
+        ->where('role_id', auth()->user()->id)
+        ->where('permissions.name', 'laporan opname')
+        ->first();
+
         try{
+            if (!$cekPermission) {
+                toast('Halaman tidak ditemukan', 'warning');
+                return redirect('app/dashboard');
+            }
+
             $data = [
                 'auth' => User::join('detail_users', 'detail_users.id', '=', 'users.id')
                 ->where('users.id', auth()->user()->id)
