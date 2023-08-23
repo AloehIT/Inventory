@@ -144,14 +144,7 @@
 
                     <div class="card">
                         <div class="card-body">
-                            <div class="d-flex justify-content-between">
-                                <div class="col-lg-5 ml-auto">
-                                    <label for=""><br></label>
-                                    <div class="">
-                                        <a href="javascript:void(0)" class="btn text-white" style="background: blue;" id="print-pdf" target="_blank"><i class="uil-print"></i> Print PDF</a>
-                                        <a href="javascript:void(0)" class="btn text-white" style="background: green;" id="print-excel" target="_blank"><i class="uil-print"></i> Print Excel</a>
-                                    </div>
-                                </div>
+                            <div class="d-flex justify-content-end">
 
                                 <div class="col-lg-3">
                                     <label for="">Jumlah Stok</label>

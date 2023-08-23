@@ -7,6 +7,9 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Yajra\DataTables\Facades\DataTables;
 use DB;
+use App\Exports\StokExport;
+use Maatwebsite\Excel\Facades\Excel;
+use Illuminate\Support\Facades\View;
 
 
 use App\Models\Perusahaan;
@@ -130,8 +133,75 @@ class LaporanOpnameController extends Controller
         }
     }
 
+    public function printPDF(Request $request) {
+        $auth = User::join('detail_users', 'detail_users.id', '=', 'users.id')
+            ->where('users.id', auth()->user()->id)
+            ->first();
+        $perusahaan = Perusahaan::where('setting', 'Config')->where('name_config', 'conf_perusahaan')->first();
 
-    public function printPDF(Request $request)
+        $start_date = $request->input('start_date');
+        $end_date = $request->input('end_date');
+        $selected_barcode = $request->input('selected_barcode');
+
+        $barang = Stok::join('tbl_opname', 'tbl_opname.id_opname', '=', 'tbl_stok.id_transaksi')
+            ->leftJoin('tbl_opname_detail', 'tbl_opname_detail.kode_barang', '=', 'tbl_stok.kode_barang')
+            ->where('tbl_opname.id_opname', $selected_barcode)
+            ->select('tbl_opname.*', 'tbl_opname_detail.nama_barang', 'tbl_opname_detail.current_qty', 'tbl_opname_detail.qty as detail_qty', 'tbl_stok.qty as total_qty', 'tbl_stok.sts_inout', 'tbl_stok.kode_transaksi');
+
+        if ($selected_barcode) {
+            $barang->where('tbl_opname_detail.id_opname', $selected_barcode);
+        } else {
+            $barang->where('tbl_opname_detail.id_opname', '');
+        }
+
+        if ($start_date && $end_date) {
+            $barang->whereBetween('tbl_opname_detail.tanggal', [$start_date, $end_date]);
+        } elseif ($start_date) {
+            $barang->where('tbl_opname_detail.tanggal', '>=', $start_date);
+        } elseif ($end_date) {
+            $barang->where('tbl_opname_detail.tanggal', '<=', $end_date);
+        }
+
+        if (!$start_date && !$end_date) {
+            $start_date = now()->toDateString();
+            $end_date = now()->toDateString();
+        }
+
+        $data = $barang->get();
+
+        // Check if data is empty
+        if ($data->isEmpty()) {
+            // return response()->json(['message' => 'Data kosong'], 400);
+            toast('Data stok kosong !!', 'warning');
+            return redirect()->back();
+        }
+
+        $dompdf = new Dompdf();
+        $html = view('inventory.laporan-opname.print-stok', ['data' => $data, 'auth' => $auth, 'perusahaan' => $perusahaan, 'start_date' => $start_date, 'end_date' => $end_date, 'selected_barcode' => $selected_barcode])->render();
+        $dompdf->loadHtml($html);
+        $dompdf->setPaper('A4', 'landscape');
+        $dompdf->render();
+
+        // Simpan PDF ke dalam variable
+        $output = $dompdf->output();
+
+        // Beri nama file PDF sesuai keinginan
+        $filename = 'laporan-opname.pdf';
+
+        // Mengirimkan file PDF sebagai respons
+        return response($output, 200)
+            ->header('Content-Type', 'application/pdf')
+            ->header('Content-Disposition', 'inline; filename="' . $filename . '"');
+    }
+
+
+
+
+
+
+
+
+    public function exportExcel(Request $request)
     {
         $start_date = $request->input('start_date');
         $end_date = $request->input('end_date');
@@ -142,13 +212,12 @@ class LaporanOpnameController extends Controller
             ->first();
         $perusahaan = Perusahaan::where('setting', 'Config')->where('name_config', 'conf_perusahaan')->first();
 
-        $barang = Opname::join('tbl_opname_detail', 'tbl_opname_detail.id_opname', '=', 'tbl_opname.id_opname.id_opname')
-                  ->where('tbl_stok.id_barang', '=', 'tbl_opname_detail.id_barang');
+        $barang = Stok::join('tbl_opname', 'tbl_opname.id_opname', '=', 'tbl_stok.id_transaksi')
+        ->leftJoin('tbl_opname_detail', 'tbl_opname_detail.kode_barang', '=', 'tbl_stok.kode_barang')
+        ->select('tbl_opname.*', 'tbl_opname_detail.nama_barang', 'tbl_opname_detail.current_qty', 'tbl_opname_detail.qty as detail_qty', 'tbl_stok.qty as total_qty', 'tbl_stok.sts_inout', 'tbl_stok.kode_transaksi');
 
         if ($selected_barcode) {
-            $barang->where('tbl_opname.id_opname', $selected_barcode);
-        } else {
-            $barang->where('tbl_opname.id_opname', ''); // Filter kosong agar tidak tampil data pada awalnya
+            $barang->where('tbl_opname_detail.id_opname', $selected_barcode);
         }
 
         if ($start_date && $end_date) {
@@ -159,13 +228,20 @@ class LaporanOpnameController extends Controller
             $barang->where('tanggal', '<=', $end_date);
         }
 
+        if (!$start_date && !$end_date) {
+            $start_date = now()->toDateString();
+            $end_date = now()->toDateString();
+        }
+
         $data = $barang->get();
 
-        $dompdf = new Dompdf();
-        $html = view('inventory.laporan-opname.print-opname', ['data' => $data], compact('auth', 'perusahaan', 'start_date', 'end_date'))->render();
-        $dompdf->loadHtml($html);
-        $dompdf->setPaper('A4', 'landscape');
-        $dompdf->render();
-        $dompdf->stream('print-stok.pdf', ['Attachment' => false]);
+        if ($data->isEmpty()) {
+            toast('Data stok kosong !!', 'warning');
+            return redirect()->back();
+        }
+
+        $view = View::make('inventory.laporan-opname.export-stok', ['data' => $data, 'auth' => $auth, 'perusahaan' => $perusahaan, 'start_date' => $start_date, 'end_date' => $end_date, 'selected_barcode' => $selected_barcode]);
+
+        return Excel::download(new StokExport($view), 'laporan-opname.xlsx');
     }
 }

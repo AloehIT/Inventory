@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Print Laporan Barang Keluar</title>
+    <title>Print Laporan Opname</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -31,12 +31,12 @@
 </head>
 <body>
     @php
-        $nama_barang  = $data->where('id_barang', $selected_barcode)->first();
-        $total_stok = $nama_barang->where('sts_inout', -1)->where('id_barang', $selected_barcode)->sum(DB::raw('qty'));
+        $total_stok = $data->sum(DB::raw('sts_inout * qty'))
     @endphp
     <div>
         <h2>{{ $perusahaan->value }}</h2>
-        <p style="margin-bottom: 0;">Laporan Data Barang Keluar : <b>{{ $nama_barang->nama_barang }}</b></p>
+        <p style="margin-bottom: 0;">Laporan Data Opname</p>
+        <p style="margin-bottom: 0;">ID Opname : {{ $selected_barcode }}</p>
         <p style="margin-bottom: 30px;">Tanggal : {{ $start_date }} - {{ $end_date }}</p>
     </div>
 
@@ -47,16 +47,39 @@
                 <th>Tanggal</th>
                 <th>Kode Transaksi</th>
                 <th>Nama Barang</th>
+                <th>
+                    Opname Qty
+                </th>
+
+                <th>
+                    Qty Sebelumnya
+                </th>
+
+                <th>
+                    Hasil Opname
+                </th>
                 <th>Kategori</th>
-                <th>Stok</th>
             </tr>
         </thead>
         <tbody>
             @foreach ($data as $item)
+            @php
+                $hasil = $item->detail_qty - $item->current_qty;
+                if($hasil < 0){
+                    $total_qty = '-'.abs($hasil);
+                }else if($hasil > 0){
+                    $total_qty = '+'.abs($hasil);
+                }else{
+                    $total_qty = abs($hasil);
+                }
+            @endphp
             <tr>
-                <td>{{ $item->tanggal }}</td>
+                <td>{{ $item->tgl_opname }}</td>
                 <td>{{ $item->kode_transaksi }}</td>
                 <td>{{ $item->nama_barang }}</td>
+                <td>{{ $item->detail_qty }}</td>
+                <td>{{ $item->current_qty }}</td>
+                <td>{{ $total_qty }}</td>
                 <td>
                     @if ($item->sts_inout == -1)
                         Barang Keluar
@@ -64,19 +87,9 @@
                         Barang Masuk
                     @endif
                 </td>
-                <td>{{ $item->qty }}</td>
             </tr>
             @endforeach
         </tbody>
-        <tfoot>
-            <tr>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td><b>Jumlah Stok :</b></td>
-                <td><b>{{ $total_stok }}</b></td>
-            </tr>
-        </tfoot>
     </table>
 
 

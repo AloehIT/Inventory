@@ -194,7 +194,8 @@ Route::middleware('auth')->group(function(){
 Route::middleware('auth')->group(function(){
     Route::get('laporan/opname/data', [LaporanOpnameController::class, 'getData'])->name('data.daftarOpname');
     Route::get('laporan/opname/hitung', [LaporanOpnameController::class, 'calculate'])->name('data.calculateOpname');
-    Route::get('/laporan/opname/print-stok', [LaporanOpnameController::class, 'printPDF'])->name('print.pdf');
+    Route::get('/laporan-opname/print-opname', [LaporanOpnameController::class, 'printPDF'])->name('print.opname');
+    Route::get('/laporan-opname/export-opname', [LaporanOpnameController::class, 'exportExcel'])->name('excel.opname');
     Route::resource('app/laporan/opname', LaporanOpnameController::class);
 });
 
