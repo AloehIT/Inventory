@@ -105,8 +105,8 @@
                                         <label for=""><br></label>
                                         @if($action)
                                         <div class="">
-                                            <a href="javascript:void(0)" class="btn text-white" style="background: blue;" id="print-pdf" target="_blank"><i class="uil-print"></i> Print PDF</a>
-                                            <a href="javascript:void(0)" class="btn text-white" style="background: green;" id="print-excel" target="_blank"><i class="uil-print"></i> Print Excel</a>
+                                            <button class="btn text-white" style="background: blue;" id="btnPrint" target="_blank"><i class="uil-print"></i> Print PDF</button>
+                                            <button class="btn text-white" style="background: green;" id="btnExport" target="_blank"><i class="uil-print"></i> Print Excel</button>
                                         </div>
                                         @endif
                                     </div>
@@ -128,7 +128,61 @@
     <!-- end row -->
 </div>
 
+<div id="emptyDataModal" class="modal fade" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
 
+            <div class="modal-body">
+                <div class="text-start mt-2 mb-2 mx-3">
+                    <div class="d-flex justify-content-between mt-3">
+                        <div>
+                            <h5 class="text-uppercase mb-0"><i class="bi bi-database-slash text-warning"></i> Stok Kosong</h5>
+                        </div>
+
+                        <a type="button" data-bs-dismiss="modal" class="text-danger" style="font-size: 25px;"><i class="uil-multiply"></i></a>
+                   </div>
+                </div>
+
+                <div class="ps-3 pe-3">
+                    <div class="">
+                        <div class="mb-3">
+                            Tidak bisa melakukan proses print
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="emptyDataBarcode" class="modal fade" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+
+            <div class="modal-body">
+                <div class="text-start mt-2 mb-2 mx-3">
+                    <div class="d-flex justify-content-between mt-3">
+                        <div>
+                            <h5 class="text-uppercase mb-0"><i class="bi bi-database-slash text-warning"></i> Pilih Barang</h5>
+                        </div>
+
+                        <a type="button" data-bs-dismiss="modal" class="text-danger" style="font-size: 25px;"><i class="uil-multiply"></i></a>
+                   </div>
+                </div>
+
+                <div class="ps-3 pe-3">
+                    <div class="">
+                        <div class="mb-3">
+                            Pilih Barang terlebih dahulu
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
 <script>
@@ -251,11 +305,92 @@ $(document).ready(function() {
         updateHasilPerhitungan(); // Perbarui hasil perhitungan saat dropdown berubah
     });
 
+    function printPDF() {
+        var selectedBarcode = $('#opsi-laporan-stok').val();
+
+        if (!selectedBarcode) {
+            $('#emptyDataBarcode').modal('show'); // Tampilkan modal jika selectedBarcode kosong
+            return; // Hentikan eksekusi fungsi
+        }
+
+        $.ajax({
+            url: '/laporan-barang-keluar/print-barang-keluar',
+            method: 'GET',
+            data: {
+                selected_barcode: selectedBarcode,
+                start_date: $('#start_date').val(),
+                end_date: $('#end_date').val()
+            },
+            xhrFields: {
+                responseType: 'blob'
+            },
+            success: function(response) {
+                if (table.data().count() === 0) {
+                    $('#emptyDataModal').modal('show'); // Tampilkan modal jika data kosong
+                } else {
+                    var blobUrl = URL.createObjectURL(response);
+                    window.open(blobUrl);
+                }
+            },
+            error: function() {
+                console.error('Terjadi kesalahan saat mencetak PDF.');
+            }
+        });
+    }
+
+    function exportExcel() {
+        var selectedBarcode = $('#opsi-laporan-stok').val();
+
+        if (!selectedBarcode) {
+            alert('Please select a barcode.');
+            return;
+        }
+
+        $.ajax({
+            url: '/laporan-barang-keluar/export-barang-keluar',
+            method: 'GET',
+            data: {
+                selected_barcode: selectedBarcode,
+                start_date: $('#start_date').val(),
+                end_date: $('#end_date').val()
+            },
+            xhrFields: {
+                responseType: 'blob'
+            },
+            success: function(response) {
+                var blob = new Blob([response], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+
+                // Create a temporary URL for the blob
+                var blobUrl = URL.createObjectURL(blob);
+
+                // Create a temporary anchor element to trigger the download
+                var link = document.createElement('a');
+                link.href = blobUrl;
+                link.download = 'laporan-barang-keluar.xlsx';
+
+                // Trigger the download
+                link.click();
+
+                // Clean up
+                URL.revokeObjectURL(blobUrl);
+            },
+            error: function() {
+                console.error('Error exporting Excel.');
+            }
+        });
+    }
 
 
-    $('#print-pdf').on('click', function(){
-        var selectedOption = $('#opsi-laporan-stok').val();
-        window.location.href = '/laporan-stok/print-stok?opsi=' + selectedOption;
+    $(document).ready(function() {
+        $('#btnPrint').click(function() {
+            printPDF();
+        });
+    });
+
+    $(document).ready(function() {
+        $('#btnExport').click(function() {
+            exportExcel();
+        });
     });
 
     displayDateRange();

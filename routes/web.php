@@ -185,7 +185,8 @@ Route::middleware('auth')->group(function(){
 Route::middleware('auth')->group(function(){
     Route::get('laporan/barang-keluar/data', [LaporanBarangKeluarController::class, 'getData'])->name('data.daftarKeluar');
     Route::get('laporan/barang-keluar/hitung', [LaporanBarangKeluarController::class, 'calculate'])->name('data.calculateKeluar');
-    Route::get('/laporan/barang-keluar/print-stok', [LaporanBarangKeluarController::class, 'printPDF'])->name('print.pdf');
+    Route::get('/laporan-barang-keluar/print-barang-keluar', [LaporanBarangKeluarController::class, 'printPDF'])->name('print.barang-keluar');
+    Route::get('/laporan-barang-keluar/export-barang-keluar', [LaporanBarangKeluarController::class, 'exportExcel'])->name('excel.barang-keluar');
     Route::resource('app/laporan/barang-keluar', LaporanBarangKeluarController::class);
 });
 

@@ -518,7 +518,7 @@ class BarangKeluarController extends Controller
                         $last = Stok::max('id'),
                         $lastid = $last + 1,
                         $id_stok = sprintf("%04s", $last).rand(),
-                        $kode_transaksi = 'TRX'.'-'.'IN'.'-'.sprintf("%04s", $last).rand(),
+                        $kode_transaksi = 'TRX'.'-'.'OUT'.'-'.sprintf("%04s", $last).rand(),
 
                         'sts_inout' => $sts_inout,
                         'id' => $lastid,

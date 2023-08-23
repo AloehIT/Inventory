@@ -127,7 +127,7 @@ class LaporanBarangKeluarController extends Controller
             ->first();
         $perusahaan = Perusahaan::where('setting', 'Config')->where('name_config', 'conf_perusahaan')->first();
 
-        $barang = Stok::query();
+        $barang = Stok::Where('sts_inout', -1);
 
         if ($selected_barcode) {
             $barang->where('id_barang', $selected_barcode);
@@ -156,7 +156,7 @@ class LaporanBarangKeluarController extends Controller
         }
 
         $dompdf = new Dompdf();
-        $html = view('inventory.laporan-stok.print-stok', ['data' => $data, 'auth' => $auth, 'perusahaan' => $perusahaan, 'start_date' => $start_date, 'end_date' => $end_date, 'selected_barcode' => $selected_barcode])->render();
+        $html = view('inventory.laporan-barang-keluar.print-stok', ['data' => $data, 'auth' => $auth, 'perusahaan' => $perusahaan, 'start_date' => $start_date, 'end_date' => $end_date, 'selected_barcode' => $selected_barcode])->render();
         $dompdf->loadHtml($html);
         $dompdf->setPaper('A4', 'landscape');
         $dompdf->render();
@@ -184,7 +184,7 @@ class LaporanBarangKeluarController extends Controller
             ->first();
         $perusahaan = Perusahaan::where('setting', 'Config')->where('name_config', 'conf_perusahaan')->first();
 
-        $barang = Stok::query();
+        $barang = Stok::Where('sts_inout', -1);
 
         if ($selected_barcode) {
             $barang->where('id_barang', $selected_barcode);
@@ -210,9 +210,9 @@ class LaporanBarangKeluarController extends Controller
             return redirect()->back();
         }
 
-        $view = View::make('inventory.laporan-stok.export-stok', ['data' => $data, 'auth' => $auth, 'perusahaan' => $perusahaan, 'start_date' => $start_date, 'end_date' => $end_date, 'selected_barcode' => $selected_barcode]);
+        $view = View::make('inventory.laporan-barang-keluar.export-stok', ['data' => $data, 'auth' => $auth, 'perusahaan' => $perusahaan, 'start_date' => $start_date, 'end_date' => $end_date, 'selected_barcode' => $selected_barcode]);
 
-        return Excel::download(new StokExport($view), 'laporan-stok.xlsx');
+        return Excel::download(new StokExport($view), 'laporan-barang-keluar.xlsx');
     }
 
 }

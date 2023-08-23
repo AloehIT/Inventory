@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Print Laporan Stok</title>
+    <title>Print Laporan Barang Masuk</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -32,11 +32,11 @@
 <body>
     @php
         $nama_barang  = $data->where('id_barang', $selected_barcode)->first();
-        $total_stok = $nama_barang->where('id_barang', $selected_barcode)->sum(DB::raw('sts_inout * qty'));
+        $total_stok = $nama_barang->where('sts_inout', +1)->where('id_barang', $selected_barcode)->sum(DB::raw('qty'));
     @endphp
     <div>
         <h2>{{ $perusahaan->value }}</h2>
-        <p style="margin-bottom: 0;">Laporan Data Stok Barang : <b>{{ $nama_barang->nama_barang }}</b></p>
+        <p style="margin-bottom: 0;">Laporan Data Barang Masuk : <b>{{ $nama_barang->nama_barang }}</b></p>
         <p style="margin-bottom: 30px;">Tanggal : {{ $start_date }} - {{ $end_date }}</p>
     </div>
 
@@ -73,7 +73,7 @@
                 <td></td>
                 <td></td>
                 <td></td>
-                <td><b>Jumlah Stok :</b></td>
+                <td><b>Jumlah :</b></td>
                 <td><b>{{ $total_stok }}</b></td>
             </tr>
         </tfoot>

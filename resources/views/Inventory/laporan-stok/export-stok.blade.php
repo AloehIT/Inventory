@@ -73,7 +73,7 @@
                 <td></td>
                 <td></td>
                 <td></td>
-                <td><b>Jumlah Stok :</b></td>
+                <td><b>Jumlah :</b></td>
                 <td><b>{{ $total_stok }}</b></td>
             </tr>
         </tfoot>
