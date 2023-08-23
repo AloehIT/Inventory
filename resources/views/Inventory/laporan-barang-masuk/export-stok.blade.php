@@ -15,6 +15,7 @@
             text-align: center;
             padding: 8px;
             border-bottom: 1px solid #ddd;
+            width: 150px;
         }
         th {
             background-color: #f2f2f2;

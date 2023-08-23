@@ -82,7 +82,7 @@ class BarangKeluarController extends Controller
                 return $row->created_at->isoFormat('Y-MM-DD');
             })
             ->editColumn('qty', function ($row) {
-                return $row->qty.' '.$row->satuan;
+                return '-'.$row->qty.' '.$row->satuan;
             })
             ->rawColumns(['action'])
             ->toJson();

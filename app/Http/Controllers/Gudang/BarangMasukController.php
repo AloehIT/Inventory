@@ -66,7 +66,7 @@ class BarangMasukController extends Controller
                 return view('inventory.barang-masuk.actionsdetail', compact('row'))->render();
             })
             ->editColumn('qty', function ($row) {
-                return $row->qty.' '.$row->satuan;
+                return '+'.$row->qty.' '.$row->satuan;
             })
             ->editColumn('created_at', function ($row) {
                 return $row->created_at->isoFormat('Y-MM-DD');

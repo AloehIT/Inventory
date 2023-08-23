@@ -8,6 +8,9 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Yajra\DataTables\Facades\DataTables;
 use DB;
+use App\Exports\StokExport;
+use Maatwebsite\Excel\Facades\Excel;
+use Illuminate\Support\Facades\View;
 
 use App\Models\Perusahaan;
 use App\Models\User;
@@ -17,7 +20,6 @@ use App\Models\Barang;
 
 class LaporanStokController extends Controller
 {
-
     public function getData(Request $request)
     {
         $start_date = $request->input('start_date');
@@ -44,12 +46,21 @@ class LaporanStokController extends Controller
 
         // Ubah data menjadi array asosiatif
         $data = $data->map(function ($item) {
+            $status = $item->sts_inout;
+            if($status == -1){
+                $qty = '-'.abs($item->qty);
+            }else if($status == 1){
+                $qty = '+'.abs($item->qty);
+            }
+
+            $sts_inout = $item->sts_inout == -1 ? '<span style="color: red;"><i class="bi bi-folder-minus"></i> Barang Keluar</span>' : '<span style="color: green;"><i class="bi bi-folder-plus"></i> Barang Masuk</span>';
+
             return [
                 'tanggal' => $item->tanggal,
                 'kode_transaksi' => $item->kode_transaksi,
                 'nama_barang' => $item->nama_barang,
-                'qty' => $item->qty,
-                'sts_inout' => $item->sts_inout == -1 ? 'Barang Keluar' : 'Barang Masuk',
+                'qty' => $qty,
+                'sts_inout' => $sts_inout,
             ];
         });
 
@@ -111,57 +122,6 @@ class LaporanStokController extends Controller
         }
     }
 
-
-    // public function printPDF(Request $request){
-    //     $start_date = $request->input('start_date');
-    //     $end_date = $request->input('end_date');
-    //     $selected_barcode = $request->input('selected_barcode');
-
-    //     $auth = User::join('detail_users', 'detail_users.id', '=', 'users.id')
-    //         ->where('users.id', auth()->user()->id)
-    //         ->first();
-    //     $perusahaan = Perusahaan::where('setting', 'Config')->where('name_config', 'conf_perusahaan')->first();
-
-    //     $barang = Stok::query();
-
-    //     if ($selected_barcode) {
-    //         $barang->where('id_barang', $selected_barcode);
-    //     }
-
-    //     if ($start_date && $end_date) {
-    //         $barang->whereBetween('tanggal', [$start_date, $end_date]);
-    //     } elseif ($start_date) {
-    //         $barang->where('tanggal', '>=', $start_date);
-    //     } elseif ($end_date) {
-    //         $barang->where('tanggal', '<=', $end_date);
-    //     }
-
-    //     if (!$start_date && !$end_date) {
-    //         $start_date = now()->toDateString();
-    //         $end_date = now()->toDateString();
-    //     }
-
-    //     $data = $barang->get();
-
-    //     $dompdf = new Dompdf();
-    //     $html = view('inventory.laporan-stok.print-stok', ['data' => $data, 'auth' => $auth, 'perusahaan' => $perusahaan, 'start_date' => $start_date, 'end_date' => $end_date, 'selected_barcode' => $selected_barcode])->render();
-    //     $dompdf->loadHtml($html);
-    //     $dompdf->setPaper('A4', 'landscape');
-    //     $dompdf->render();
-
-    //     // Simpan PDF ke dalam variable
-    //     $output = $dompdf->output();
-
-    //     // Beri nama file PDF sesuai keinginan
-    //     $filename = 'laporan-stok.pdf';
-
-    //     // Mengirimkan file PDF sebagai respons
-    //     return response($output, 200)
-    //         ->header('Content-Type', 'application/pdf')
-    //         ->header('Content-Disposition', 'inline; filename="' . $filename . '"');
-    // }
-
-
     public function printPDF(Request $request) {
         $start_date = $request->input('start_date');
         $end_date = $request->input('end_date');
@@ -216,6 +176,48 @@ class LaporanStokController extends Controller
         return response($output, 200)
             ->header('Content-Type', 'application/pdf')
             ->header('Content-Disposition', 'inline; filename="' . $filename . '"');
+    }
+
+    public function exportExcel(Request $request)
+    {
+        $start_date = $request->input('start_date');
+        $end_date = $request->input('end_date');
+        $selected_barcode = $request->input('selected_barcode');
+
+        $auth = User::join('detail_users', 'detail_users.id', '=', 'users.id')
+            ->where('users.id', auth()->user()->id)
+            ->first();
+        $perusahaan = Perusahaan::where('setting', 'Config')->where('name_config', 'conf_perusahaan')->first();
+
+        $barang = Stok::query();
+
+        if ($selected_barcode) {
+            $barang->where('id_barang', $selected_barcode);
+        }
+
+        if ($start_date && $end_date) {
+            $barang->whereBetween('tanggal', [$start_date, $end_date]);
+        } elseif ($start_date) {
+            $barang->where('tanggal', '>=', $start_date);
+        } elseif ($end_date) {
+            $barang->where('tanggal', '<=', $end_date);
+        }
+
+        if (!$start_date && !$end_date) {
+            $start_date = now()->toDateString();
+            $end_date = now()->toDateString();
+        }
+
+        $data = $barang->get();
+
+        if ($data->isEmpty()) {
+            toast('Data stok kosong !!', 'warning');
+            return redirect()->back();
+        }
+
+        $view = View::make('inventory.laporan-stok.export-stok', ['data' => $data, 'auth' => $auth, 'perusahaan' => $perusahaan, 'start_date' => $start_date, 'end_date' => $end_date, 'selected_barcode' => $selected_barcode]);
+
+        return Excel::download(new StokExport($view), 'laporan-stok.xlsx');
     }
 
 }

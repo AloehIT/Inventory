@@ -167,6 +167,7 @@ Route::middleware('auth')->group(function(){
     Route::get('kartu-stok/data', [LaporanStokController::class, 'getData'])->name('data.daftarStok');
     Route::get('kartu-stok/hitung', [LaporanStokController::class, 'calculate'])->name('data.calculate');
     Route::get('/laporan-stok/print-stok', [LaporanStokController::class, 'printPDF'])->name('print.stok');
+    Route::get('/laporan-stok/export-stok', [LaporanStokController::class, 'exportExcel'])->name('excel.stok');
     Route::resource('app/kartu-stok', LaporanStokController::class);
 });
 
@@ -174,7 +175,8 @@ Route::middleware('auth')->group(function(){
 Route::middleware('auth')->group(function(){
     Route::get('laporan/barang-masuk/data', [LaporanBarangMasukController::class, 'getData'])->name('data.daftarMasuk');
     Route::get('laporan/barang-masuk/hitung', [LaporanBarangMasukController::class, 'calculate'])->name('data.calculateMasuk');
-    Route::get('/laporan/barang-maasuk/print-stok', [LaporanBarangMasukController::class, 'printPDF'])->name('print.pdf');
+    Route::get('/laporan-barang-masuk/print-barang-masuk', [LaporanBarangMasukController::class, 'printPDF'])->name('print.barang-masuk');
+    Route::get('/laporan-barang-masuk/export-barang-masuk', [LaporanBarangMasukController::class, 'exportExcel'])->name('excel.barang-masuk');
     Route::resource('app/laporan/barang-masuk', LaporanBarangMasukController::class);
 });
 

@@ -7,11 +7,13 @@
     "require": {
         "php": "^7.3|^8.0",
         "barryvdh/laravel-dompdf": "^2.0",
+        "box/spout": "*",
         "fruitcake/laravel-cors": "^2.0",
         "guzzlehttp/guzzle": "^7.0.1",
         "laravel/framework": "^8.75",
         "laravel/sanctum": "^2.11",
         "laravel/tinker": "^2.5",
+        "maatwebsite/excel": "*",
         "milon/barcode": "^10.0",
         "realrashid/sweet-alert": "^7.0",
         "silviolleite/laravelpwa": "^2.0",

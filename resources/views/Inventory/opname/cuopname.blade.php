@@ -463,7 +463,7 @@ $aplikasikanOpname     = $access->where('name_permission', 'aplikasikan opname')
                             @endforeach
                             @php
                                 $stoks = \App\Models\Opname::join('tbl_opname_detail', 'tbl_opname_detail.id_opname', '=', 'tbl_opname.id_opname')
-                                ->where('tbl_opname.id_opname', $id_opname)->count();
+                                ->where('tbl_opname.id_opname', $detail->id_opname)->count();
                             @endphp
                             <input type="hidden" name="status" value="approve">
                             <div class="d-flex">

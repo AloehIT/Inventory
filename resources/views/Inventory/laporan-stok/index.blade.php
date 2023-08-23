@@ -107,7 +107,7 @@
                                         @if($action)
                                         <div>
                                             <button class="btn text-white" style="background: blue;" id="btnPrint" target="_blank"><i class="uil-print"></i> Print PDF</button>
-                                            <a href="javascript:void(0)" class="btn text-white" style="background: green;" id="print-excel" target="_blank"><i class="uil-print"></i> Print Excel</a>
+                                            <button class="btn text-white" style="background: green;" id="btnExport" target="_blank"><i class="uil-print"></i> Print Excel</button>
                                         </div>
                                         @endif
                                     </div>
@@ -340,10 +340,60 @@ $(document).ready(function() {
         });
     }
 
+    function exportExcel() {
+        var selectedBarcode = $('#opsi-laporan-stok').val();
+
+        if (!selectedBarcode) {
+            alert('Please select a barcode.');
+            return;
+        }
+
+        $.ajax({
+            url: '/laporan-stok/export-stok',
+            method: 'GET',
+            data: {
+                selected_barcode: selectedBarcode,
+                start_date: $('#start_date').val(),
+                end_date: $('#end_date').val()
+            },
+            xhrFields: {
+                responseType: 'blob'
+            },
+            success: function(response) {
+                var blob = new Blob([response], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+
+                // Create a temporary URL for the blob
+                var blobUrl = URL.createObjectURL(blob);
+
+                // Create a temporary anchor element to trigger the download
+                var link = document.createElement('a');
+                link.href = blobUrl;
+                link.download = 'laporan-stok.xlsx';
+
+                // Trigger the download
+                link.click();
+
+                // Clean up
+                URL.revokeObjectURL(blobUrl);
+            },
+            error: function() {
+                console.error('Error exporting Excel.');
+            }
+        });
+    }
+
+
+
 
     $(document).ready(function() {
         $('#btnPrint').click(function() {
             printPDF();
+        });
+    });
+
+    $(document).ready(function() {
+        $('#btnExport').click(function() {
+            exportExcel();
         });
     });
 
