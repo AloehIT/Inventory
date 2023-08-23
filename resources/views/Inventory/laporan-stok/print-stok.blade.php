@@ -31,7 +31,7 @@
 <body>
     @php
         $nama_barang  = $data->where('id_barang', $selected_barcode)->first();
-        $total_stok = $nama_barang->sum(DB::raw('sts_inout * qty'));
+        $total_stok = $nama_barang->where('id_barang', $selected_barcode)->sum(DB::raw('sts_inout * qty'));
     @endphp
     <div>
         <h2>{{ $perusahaan->value }}</h2>

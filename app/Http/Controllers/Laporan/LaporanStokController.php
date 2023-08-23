@@ -112,7 +112,57 @@ class LaporanStokController extends Controller
     }
 
 
-    public function printPDF(Request $request){
+    // public function printPDF(Request $request){
+    //     $start_date = $request->input('start_date');
+    //     $end_date = $request->input('end_date');
+    //     $selected_barcode = $request->input('selected_barcode');
+
+    //     $auth = User::join('detail_users', 'detail_users.id', '=', 'users.id')
+    //         ->where('users.id', auth()->user()->id)
+    //         ->first();
+    //     $perusahaan = Perusahaan::where('setting', 'Config')->where('name_config', 'conf_perusahaan')->first();
+
+    //     $barang = Stok::query();
+
+    //     if ($selected_barcode) {
+    //         $barang->where('id_barang', $selected_barcode);
+    //     }
+
+    //     if ($start_date && $end_date) {
+    //         $barang->whereBetween('tanggal', [$start_date, $end_date]);
+    //     } elseif ($start_date) {
+    //         $barang->where('tanggal', '>=', $start_date);
+    //     } elseif ($end_date) {
+    //         $barang->where('tanggal', '<=', $end_date);
+    //     }
+
+    //     if (!$start_date && !$end_date) {
+    //         $start_date = now()->toDateString();
+    //         $end_date = now()->toDateString();
+    //     }
+
+    //     $data = $barang->get();
+
+    //     $dompdf = new Dompdf();
+    //     $html = view('inventory.laporan-stok.print-stok', ['data' => $data, 'auth' => $auth, 'perusahaan' => $perusahaan, 'start_date' => $start_date, 'end_date' => $end_date, 'selected_barcode' => $selected_barcode])->render();
+    //     $dompdf->loadHtml($html);
+    //     $dompdf->setPaper('A4', 'landscape');
+    //     $dompdf->render();
+
+    //     // Simpan PDF ke dalam variable
+    //     $output = $dompdf->output();
+
+    //     // Beri nama file PDF sesuai keinginan
+    //     $filename = 'laporan-stok.pdf';
+
+    //     // Mengirimkan file PDF sebagai respons
+    //     return response($output, 200)
+    //         ->header('Content-Type', 'application/pdf')
+    //         ->header('Content-Disposition', 'inline; filename="' . $filename . '"');
+    // }
+
+
+    public function printPDF(Request $request) {
         $start_date = $request->input('start_date');
         $end_date = $request->input('end_date');
         $selected_barcode = $request->input('selected_barcode');
@@ -143,6 +193,13 @@ class LaporanStokController extends Controller
 
         $data = $barang->get();
 
+        // Check if data is empty
+        if ($data->isEmpty()) {
+            // return response()->json(['message' => 'Data kosong'], 400);
+            toast('Data stok kosong !!', 'warning');
+            return redirect()->back();
+        }
+
         $dompdf = new Dompdf();
         $html = view('inventory.laporan-stok.print-stok', ['data' => $data, 'auth' => $auth, 'perusahaan' => $perusahaan, 'start_date' => $start_date, 'end_date' => $end_date, 'selected_barcode' => $selected_barcode])->render();
         $dompdf->loadHtml($html);
@@ -160,6 +217,5 @@ class LaporanStokController extends Controller
             ->header('Content-Type', 'application/pdf')
             ->header('Content-Disposition', 'inline; filename="' . $filename . '"');
     }
-
 
 }

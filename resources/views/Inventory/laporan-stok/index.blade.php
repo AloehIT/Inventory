@@ -5,6 +5,7 @@
     $action     = $access->where('name_permission', 'print laporan')->first();
 @endphp
 
+
 <style>
     .dataTables_filter {
         display: none; /* Menyembunyikan kotak pencarian */
@@ -129,6 +130,63 @@
 </div>
 
 
+<div id="emptyDataModal" class="modal fade" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+
+            <div class="modal-body">
+                <div class="text-start mt-2 mb-2 mx-3">
+                    <div class="d-flex justify-content-between mt-3">
+                        <div>
+                            <h5 class="text-uppercase mb-0"><i class="bi bi-database-slash text-warning"></i> Stok Kosong</h5>
+                        </div>
+
+                        <a type="button" data-bs-dismiss="modal" class="text-danger" style="font-size: 25px;"><i class="uil-multiply"></i></a>
+                   </div>
+                </div>
+
+                <div class="ps-3 pe-3">
+                    <div class="">
+                        <div class="mb-3">
+                            Tidak bisa melakukan proses print
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="emptyDataBarcode" class="modal fade" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+
+            <div class="modal-body">
+                <div class="text-start mt-2 mb-2 mx-3">
+                    <div class="d-flex justify-content-between mt-3">
+                        <div>
+                            <h5 class="text-uppercase mb-0"><i class="bi bi-database-slash text-warning"></i> Pilih Barang</h5>
+                        </div>
+
+                        <a type="button" data-bs-dismiss="modal" class="text-danger" style="font-size: 25px;"><i class="uil-multiply"></i></a>
+                   </div>
+                </div>
+
+                <div class="ps-3 pe-3">
+                    <div class="">
+                        <div class="mb-3">
+                            Pilih Barang terlebih dahulu
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
 <script>
@@ -249,9 +307,13 @@ $(document).ready(function() {
         updateHasilPerhitungan();
     });
 
-
     function printPDF() {
         var selectedBarcode = $('#opsi-laporan-stok').val();
+
+        if (!selectedBarcode) {
+            $('#emptyDataBarcode').modal('show'); // Tampilkan modal jika selectedBarcode kosong
+            return; // Hentikan eksekusi fungsi
+        }
 
         $.ajax({
             url: '/laporan-stok/print-stok',
@@ -265,8 +327,12 @@ $(document).ready(function() {
                 responseType: 'blob'
             },
             success: function(response) {
-                var blobUrl = URL.createObjectURL(response);
-                window.open(blobUrl);
+                if (table.data().count() === 0) {
+                    $('#emptyDataModal').modal('show'); // Tampilkan modal jika data kosong
+                } else {
+                    var blobUrl = URL.createObjectURL(response);
+                    window.open(blobUrl);
+                }
             },
             error: function() {
                 console.error('Terjadi kesalahan saat mencetak PDF.');
@@ -274,12 +340,12 @@ $(document).ready(function() {
         });
     }
 
+
     $(document).ready(function() {
         $('#btnPrint').click(function() {
             printPDF();
         });
     });
-
 
 
     displayDateRange();
