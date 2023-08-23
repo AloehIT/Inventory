@@ -359,7 +359,7 @@ class OpnameController extends Controller
                 $sequence = $nullsqn += 1;
 
             }else{
-                $opnameBarang = OpnameDetail::Where('id_opname', $request->id_opname)->first();
+                $opnameBarang = OpnameDetail::Where('id_opname', $request->id_opname_set)->first();
                 $barang = Opname::where('id_opname', $opnameBarang->id_opname)->first();
                 $totalQty = $barang->total_qty += $qty;
                 if($existingItem){

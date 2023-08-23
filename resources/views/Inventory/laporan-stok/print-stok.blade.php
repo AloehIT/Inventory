@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
+    <title>Print Laporan Stok</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -28,9 +29,13 @@
     </style>
 </head>
 <body>
+    @php
+        $nama_barang  = $data->where('id_barang', $selected_barcode)->first();
+        $total_stok = $nama_barang->sum(DB::raw('sts_inout * qty'));
+    @endphp
     <div>
         <h2>{{ $perusahaan->value }}</h2>
-        <p style="margin-bottom: 0;">Laporan Stok</p>
+        <p style="margin-bottom: 0;">Laporan Data Stok Barang : <b>{{ $nama_barang->nama_barang }}</b></p>
         <p style="margin-bottom: 30px;">Tanggal : {{ $start_date }} - {{ $end_date }}</p>
     </div>
 
@@ -39,10 +44,10 @@
         <thead>
             <tr>
                 <th>No</th>
-                <th>Kode Barang</th>
+                <th>Kode Transaksi</th>
                 <th>Nama Barang</th>
-                <th>Stok</th>
                 <th>Kategori</th>
+                <th>Stok</th>
             </tr>
         </thead>
         <tbody>
@@ -51,7 +56,6 @@
                 <td>{{ $item->tanggal }}</td>
                 <td>{{ $item->kode_transaksi }}</td>
                 <td>{{ $item->nama_barang }}</td>
-                <td>{{ $item->qty }}</td>
                 <td>
                     @if ($item->sts_inout == -1)
                         Barang Keluar
@@ -59,14 +63,27 @@
                         Barang Masuk
                     @endif
                 </td>
+                <td>{{ $item->qty }}</td>
             </tr>
             @endforeach
         </tbody>
+        <tfoot>
+            <tr>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td><b>Jumlah Stok :</b></td>
+                <td><b>{{ $total_stok }}</b></td>
+            </tr>
+        </tfoot>
     </table>
 
+
     <div class="footer">
-        Dicetak oleh: {{ $auth->nama_users }}<br>
-        Tanggal: {{ date('d-m-Y') }}
+        <div>
+            Dicetak oleh: {{ $auth->nama_users }}<br>
+            Tanggal: {{ date('d-m-Y') }}
+        </div>
     </div>
 </body>
 </html>

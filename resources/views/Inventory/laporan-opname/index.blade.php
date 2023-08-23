@@ -1,6 +1,9 @@
 @extends('layouts.app')
 @section('title', 'Laporan Opname')
 @section('content-page')
+@php
+    $action     = $access->where('name_permission', 'print laporan')->first();
+@endphp
 <style>
     .dataTables_filter {
         display: none; /* Menyembunyikan kotak pencarian */
@@ -103,10 +106,12 @@
                                 <div class="d-flex justify-content-between">
                                     <div class="col-lg-5 ml-auto">
                                         <label for=""><br></label>
+                                        @if($action)
                                         <div class="">
                                             <a href="javascript:void(0)" class="btn text-white" style="background: blue;" id="print-pdf" target="_blank"><i class="uil-print"></i> Print PDF</a>
                                             <a href="javascript:void(0)" class="btn text-white" style="background: green;" id="print-excel" target="_blank"><i class="uil-print"></i> Print Excel</a>
                                         </div>
+                                        @endif
                                     </div>
                                 </div>
                             </div>

@@ -77,8 +77,7 @@ class LaporanStokController extends Controller
         return response()->json(['total' => $result]);
     }
 
-    public function index()
-    {
+    public function index(){
         $cekPermission = DB::table('role_has_permissions')->join('permissions', 'permissions.id', '=', 'role_has_permissions.permission_id')
         ->select('role_has_permissions.*', 'permissions.name as name_permission')
         ->where('role_id', auth()->user()->id)
@@ -112,8 +111,8 @@ class LaporanStokController extends Controller
         }
     }
 
-    public function printPDF(Request $request)
-    {
+
+    public function printPDF(Request $request){
         $start_date = $request->input('start_date');
         $end_date = $request->input('end_date');
         $selected_barcode = $request->input('selected_barcode');
@@ -127,8 +126,6 @@ class LaporanStokController extends Controller
 
         if ($selected_barcode) {
             $barang->where('id_barang', $selected_barcode);
-        } else {
-            $barang->where('id_barang', ''); // Filter kosong agar tidak tampil data pada awalnya
         }
 
         if ($start_date && $end_date) {
@@ -139,14 +136,30 @@ class LaporanStokController extends Controller
             $barang->where('tanggal', '<=', $end_date);
         }
 
+        if (!$start_date && !$end_date) {
+            $start_date = now()->toDateString();
+            $end_date = now()->toDateString();
+        }
+
         $data = $barang->get();
 
         $dompdf = new Dompdf();
-        $html = view('inventory.laporan-stok.print-stok', ['data' => $data], compact('auth', 'perusahaan', 'start_date', 'end_date'))->render();
+        $html = view('inventory.laporan-stok.print-stok', ['data' => $data, 'auth' => $auth, 'perusahaan' => $perusahaan, 'start_date' => $start_date, 'end_date' => $end_date, 'selected_barcode' => $selected_barcode])->render();
         $dompdf->loadHtml($html);
         $dompdf->setPaper('A4', 'landscape');
         $dompdf->render();
-        $dompdf->stream('print-stok.pdf', ['Attachment' => false]);
+
+        // Simpan PDF ke dalam variable
+        $output = $dompdf->output();
+
+        // Beri nama file PDF sesuai keinginan
+        $filename = 'laporan-stok.pdf';
+
+        // Mengirimkan file PDF sebagai respons
+        return response($output, 200)
+            ->header('Content-Type', 'application/pdf')
+            ->header('Content-Disposition', 'inline; filename="' . $filename . '"');
     }
+
 
 }

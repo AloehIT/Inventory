@@ -1,6 +1,10 @@
 @extends('layouts.app')
 @section('title', 'Laporan Stok')
 @section('content-page')
+@php
+    $action     = $access->where('name_permission', 'print laporan')->first();
+@endphp
+
 <style>
     .dataTables_filter {
         display: none; /* Menyembunyikan kotak pencarian */
@@ -99,10 +103,12 @@
                                 <div class="d-flex justify-content-between">
                                     <div class="col-lg-5 ml-auto">
                                         <label for=""><br></label>
-                                        <div class="">
-                                            <a href="javascript:void(0)" class="btn text-white" style="background: blue;" id="print-pdf" target="_blank"><i class="uil-print"></i> Print PDF</a>
+                                        @if($action)
+                                        <div>
+                                            <button class="btn text-white" style="background: blue;" id="btnPrint" target="_blank"><i class="uil-print"></i> Print PDF</button>
                                             <a href="javascript:void(0)" class="btn text-white" style="background: green;" id="print-excel" target="_blank"><i class="uil-print"></i> Print Excel</a>
                                         </div>
+                                        @endif
                                     </div>
 
                                     <div class="col-lg-3">
@@ -185,7 +191,6 @@ $(document).ready(function() {
         }
     }
 
-
     // Event change pada dropdown
     $('#opsi-laporan-stok').on('change', function () {
         table.ajax.reload();
@@ -212,7 +217,7 @@ $(document).ready(function() {
     // Event change pada input tanggal "start_date" dan "end_date"
     $('#start_date, #end_date').on('change', function() {
         table.ajax.reload();
-        updateHasilPerhitungan(); // Perbarui hasil perhitungan saat tanggal berubah
+        updateHasilPerhitungan();
     });
 
     // Tampilkan tanggal awal dan akhir di input date ketika halaman dimuat
@@ -241,15 +246,41 @@ $(document).ready(function() {
             table.rows.add(data).draw();
         });
         table.ajax.reload(null, false);
-        updateHasilPerhitungan(); // Perbarui hasil perhitungan saat dropdown berubah
+        updateHasilPerhitungan();
     });
 
 
+    function printPDF() {
+        var selectedBarcode = $('#opsi-laporan-stok').val();
 
-    $('#print-pdf').on('click', function(){
-        var selectedOption = $('#opsi-laporan-stok').val();
-        window.location.href = '/laporan-stok/print-stok?opsi=' + selectedOption;
+        $.ajax({
+            url: '/laporan-stok/print-stok',
+            method: 'GET',
+            data: {
+                selected_barcode: selectedBarcode,
+                start_date: $('#start_date').val(),
+                end_date: $('#end_date').val()
+            },
+            xhrFields: {
+                responseType: 'blob'
+            },
+            success: function(response) {
+                var blobUrl = URL.createObjectURL(response);
+                window.open(blobUrl);
+            },
+            error: function() {
+                console.error('Terjadi kesalahan saat mencetak PDF.');
+            }
+        });
+    }
+
+    $(document).ready(function() {
+        $('#btnPrint').click(function() {
+            printPDF();
+        });
     });
+
+
 
     displayDateRange();
     updateHasilPerhitungan();

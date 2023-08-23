@@ -145,6 +145,13 @@ class BarangKeluarController extends Controller
                 return redirect('app/barang-keluar');
             }
 
+            $stokCount = Stok::count();
+
+            if ($stokCount === 0) {
+                toast('Oops stok masih kosong !', 'warning');
+                return redirect('app/barang-masuk');
+            }
+
             $data = [
                 'title' => 'Tambah Barang Keluar',
 
@@ -191,6 +198,13 @@ class BarangKeluarController extends Controller
             if (!$cekPermission) {
                 toast('Halaman tidak ditemukan', 'warning');
                 return redirect('app/barang-keluar');
+            }
+
+            $stokCount = Stok::count();
+
+            if ($stokCount === 0) {
+                toast('Oops stok masih kosong !', 'warning');
+                return redirect('app/barang-masuk');
             }
 
             $data = [
